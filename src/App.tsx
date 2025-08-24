@@ -5,6 +5,9 @@ import Home from './pages/Home'
 import About from './pages/About'
 import Services from './pages/Services'
 import Contact from './pages/Contact'
+import TermsOfService from './pages/TermsOfService'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import CookiesPolicy from './pages/CookiesPolicy'
 
 function App() {
   return (
@@ -15,6 +18,9 @@ function App() {
           <Route path="about" element={<About />} />
           <Route path="services" element={<Services />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="terms" element={<TermsOfService />} />
+          <Route path="privacy" element={<PrivacyPolicy />} />
+          <Route path="cookies" element={<CookiesPolicy />} />
         </Route>
       </Routes>
     </Router>

@@ -96,15 +96,15 @@ const Footer: React.FC = () => {
               © 2025 HoppOn. All rights reserved. • Connecting riders and drivers worldwide.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="text-sm text-neutral-600 hover:text-primary-600 transition-colors">
+              <Link to="/terms" className="text-sm text-neutral-600 hover:text-primary-600 transition-colors">
                 Terms
-              </a>
-              <a href="#" className="text-sm text-neutral-600 hover:text-primary-600 transition-colors">
+              </Link>
+              <Link to="/privacy" className="text-sm text-neutral-600 hover:text-primary-600 transition-colors">
                 Privacy
-              </a>
-              <a href="#" className="text-sm text-neutral-600 hover:text-primary-600 transition-colors">
+              </Link>
+              <Link to="/cookies" className="text-sm text-neutral-600 hover:text-primary-600 transition-colors">
                 Cookies
-              </a>
+              </Link>
             </div>
           </div>
         </div>
