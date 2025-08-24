@@ -3,8 +3,10 @@ import { motion } from 'framer-motion'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
 import { ArrowRight, Zap, Shield, Smartphone, Star, Users, Rocket, Globe } from 'lucide-react'
+import { useAuthStore } from '../store/authStore'
 
 const Home: React.FC = () => {
+  const { isAuthenticated, openAuthModal } = useAuthStore()
   const features = [
     {
       icon: <Zap className="w-8 h-8" />,
@@ -114,11 +116,20 @@ const Home: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
               >
-                <Button size="lg" className="group shadow-lg">
-                  Book a Ride Now
+                <Button 
+                  size="lg" 
+                  className="group shadow-lg"
+                  onClick={() => isAuthenticated ? null : openAuthModal('signup')}
+                >
+                  {isAuthenticated ? 'Book a Ride Now' : 'Get Started'}
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Button variant="outline" size="lg" className="border-2 hover:bg-primary-50">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-2 hover:bg-primary-50"
+                  onClick={() => openAuthModal('signup')}
+                >
                   Become a Driver
                 </Button>
               </motion.div>

@@ -3,10 +3,13 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Button } from '../ui/Button'
 import { Menu, X } from 'lucide-react'
+import { useAuthStore } from '../../store/authStore'
+import UserDropdown from '../auth/UserDropdown'
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const location = useLocation()
+  const { isAuthenticated, openAuthModal } = useAuthStore()
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -55,12 +58,31 @@ const Header: React.FC = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="text-neutral-600 hover:text-primary-600">
-              Sign In
-            </Button>
-            <Button size="sm">
-              Book a Ride
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Button size="sm">
+                  Book a Ride
+                </Button>
+                <UserDropdown />
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-neutral-600 hover:text-primary-600"
+                  onClick={() => openAuthModal('signin')}
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={() => openAuthModal('signup')}
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -98,12 +120,37 @@ const Header: React.FC = () => {
                 </Link>
               ))}
               <div className="flex flex-col space-y-2 pt-4">
-                <Button variant="ghost" size="sm" className="justify-start">
-                  Sign In
-                </Button>
-                <Button size="sm">
-                  Book a Ride
-                </Button>
+                {isAuthenticated ? (
+                  <>
+                    <Button size="sm">
+                      Book a Ride
+                    </Button>
+                    <UserDropdown />
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="justify-start"
+                      onClick={() => {
+                        openAuthModal('signin')
+                        setIsMenuOpen(false)
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                    <Button 
+                      size="sm"
+                      onClick={() => {
+                        openAuthModal('signup')
+                        setIsMenuOpen(false)
+                      }}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

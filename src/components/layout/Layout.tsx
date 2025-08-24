@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Header from './Header'
 import Footer from './Footer'
+import AuthModal from '../auth/AuthModal'
 
 const Layout: React.FC = () => {
   return (
@@ -17,6 +18,7 @@ const Layout: React.FC = () => {
         <Outlet />
       </motion.main>
       <Footer />
+      <AuthModal />
     </div>
   )
 }
