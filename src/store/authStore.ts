@@ -42,6 +42,14 @@ const mockSignIn = async (email: string, password: string): Promise<User> => {
           phone: '+1 (555) 123-4567',
           avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
         })
+      } else if (email === 'google.user@gmail.com' && password === 'google-auth') {
+        resolve({
+          id: '2',
+          name: 'Google User',
+          email: 'google.user@gmail.com',
+          phone: '+1 (555) 000-0000',
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face'
+        })
       } else {
         reject(new Error('Invalid email or password'))
       }
