@@ -12,6 +12,7 @@ const Home: React.FC = () => {
       description: 'Average pickup time under 3 minutes. Our AI-powered matching connects you with the nearest driver instantly.',
       gradient: 'from-secondary-400 to-secondary-600',
       bgColor: 'bg-secondary-100',
+      features: ['AI-Powered Matching', 'Real-Time Tracking', 'Instant Notifications', 'Quick Pickup']
     },
     {
       icon: <Shield className="w-8 h-8" />,
@@ -19,6 +20,7 @@ const Home: React.FC = () => {
       description: 'Real-time GPS tracking, emergency assistance, and thoroughly vetted drivers ensure your peace of mind.',
       gradient: 'from-success-400 to-success-600',
       bgColor: 'bg-success-100',
+      features: ['Verified Drivers', 'Emergency Assistance', 'GPS Tracking', 'Safety Ratings']
     },
     {
       icon: <Smartphone className="w-8 h-8" />,
@@ -26,6 +28,7 @@ const Home: React.FC = () => {
       description: 'Intuitive app with live tracking, fare estimation, and seamless payment integration for effortless rides.',
       gradient: 'from-primary-400 to-primary-600',
       bgColor: 'bg-primary-100',
+      features: ['Mobile App', 'Fare Estimation', 'Seamless Payments', 'Live Updates']
     },
   ]
 
@@ -204,8 +207,8 @@ const Home: React.FC = () => {
 
 
 
-      {/* How It Works Section */}
-      <section className="py-24 bg-gradient-to-b from-white to-primary-50/30">
+      {/* Features Section */}
+      <section className="py-24 bg-gradient-to-b from-white to-neutral-50/50">
         <div className="container">
           <div className="text-center mb-20">
             <motion.h2
@@ -215,7 +218,7 @@ const Home: React.FC = () => {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              How <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">HoppOn</span> Works
+              Why Choose <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">HoppOn</span>?
             </motion.h2>
             <motion.p
               className="text-xl text-neutral-600 max-w-2xl mx-auto"
@@ -224,74 +227,37 @@ const Home: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
             >
-              Getting a ride has never been easier. Just three simple steps to your destination.
+              Experience the difference with our cutting-edge features designed for your comfort and convenience.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            {/* Connection Lines */}
-            <div className="hidden md:block absolute top-1/2 left-1/3 w-1/3 h-0.5 bg-gradient-to-r from-primary-300 to-primary-500 transform -translate-y-1/2" />
-            <div className="hidden md:block absolute top-1/2 right-1/3 w-1/3 h-0.5 bg-gradient-to-r from-primary-300 to-primary-500 transform -translate-y-1/2" />
-
-            {/* Step 1 */}
-            <motion.div
-              className="text-center relative"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              viewport={{ once: true }}
-            >
-              <div className="relative mb-8">
-                <div className="w-24 h-24 bg-gradient-to-br from-primary-600 to-primary-800 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-2xl">
-                  1
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                className="group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <div className={`${feature.bgColor} rounded-3xl p-8 h-full transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-2`}>
+                  <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-neutral-900 mb-4">{feature.title}</h3>
+                  <p className="text-neutral-600 leading-relaxed mb-6">{feature.description}</p>
+                  <ul className="space-y-2">
+                    {feature.features.map((item, itemIndex) => (
+                      <li key={itemIndex} className="flex items-center text-neutral-700">
+                        <div className="w-2 h-2 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full mr-3"></div>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="absolute -inset-4 bg-primary-200 rounded-full opacity-20 animate-pulse" />
-              </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-4">Request a Ride</h3>
-              <p className="text-neutral-600 leading-relaxed">
-                Open the app, enter your destination, and choose your ride type. Our smart algorithm finds the best match.
-              </p>
-            </motion.div>
-
-            {/* Step 2 */}
-            <motion.div
-              className="text-center relative"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <div className="relative mb-8">
-                <div className="w-24 h-24 bg-gradient-to-br from-primary-600 to-primary-800 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-2xl">
-                  2
-                </div>
-                <div className="absolute -inset-4 bg-primary-200 rounded-full opacity-20 animate-pulse animation-delay-2000" />
-              </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-4">Get Matched</h3>
-              <p className="text-neutral-600 leading-relaxed">
-                We connect you with a nearby driver. Track their location in real-time and see their estimated arrival.
-              </p>
-            </motion.div>
-
-            {/* Step 3 */}
-            <motion.div
-              className="text-center relative"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              viewport={{ once: true }}
-            >
-              <div className="relative mb-8">
-                <div className="w-24 h-24 bg-gradient-to-br from-primary-600 to-primary-800 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-2xl">
-                  3
-                </div>
-                <div className="absolute -inset-4 bg-primary-200 rounded-full opacity-20 animate-pulse animation-delay-4000" />
-              </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-4">Enjoy Your Ride</h3>
-              <p className="text-neutral-600 leading-relaxed">
-                Hop in and relax! Payment is automatic, and you can rate your experience when you arrive.
-              </p>
-            </motion.div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
