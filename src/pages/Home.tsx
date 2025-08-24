@@ -34,15 +34,15 @@ const Home: React.FC = () => {
       icon: <Users className="w-6 h-6" />, 
       value: '10M+', 
       label: 'Happy Riders',
-      gradient: 'from-primary-100 to-primary-200',
-      iconColor: 'text-primary-600'
+      gradient: 'from-blue-100 to-blue-200',
+      iconColor: 'text-blue-600'
     },
     { 
       icon: <Globe className="w-6 h-6" />, 
       value: '500+', 
       label: 'Cities',
-      gradient: 'from-secondary-100 to-secondary-200',
-      iconColor: 'text-secondary-600'
+      gradient: 'from-purple-100 to-purple-200',
+      iconColor: 'text-purple-600'
     },
     { 
       icon: <Star className="w-6 h-6" />, 
@@ -55,8 +55,8 @@ const Home: React.FC = () => {
       icon: <Rocket className="w-6 h-6" />, 
       value: '2M+', 
       label: 'Rides Completed',
-      gradient: 'from-success-100 to-success-200',
-      iconColor: 'text-success-600'
+      gradient: 'from-emerald-100 to-emerald-200',
+      iconColor: 'text-emerald-600'
     },
   ]
 
