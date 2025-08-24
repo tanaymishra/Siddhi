@@ -34,15 +34,15 @@ const Home: React.FC = () => {
       icon: <Users className="w-6 h-6" />, 
       value: '10M+', 
       label: 'Happy Riders',
-      gradient: 'from-neutral-100 to-neutral-200',
-      iconColor: 'text-neutral-600'
+      gradient: 'from-primary-100 to-primary-200',
+      iconColor: 'text-primary-600'
     },
     { 
       icon: <Globe className="w-6 h-6" />, 
       value: '500+', 
       label: 'Cities',
-      gradient: 'from-neutral-100 to-neutral-200',
-      iconColor: 'text-neutral-600'
+      gradient: 'from-secondary-100 to-secondary-200',
+      iconColor: 'text-secondary-600'
     },
     { 
       icon: <Star className="w-6 h-6" />, 
@@ -55,8 +55,8 @@ const Home: React.FC = () => {
       icon: <Rocket className="w-6 h-6" />, 
       value: '2M+', 
       label: 'Rides Completed',
-      gradient: 'from-neutral-100 to-neutral-200',
-      iconColor: 'text-neutral-600'
+      gradient: 'from-success-100 to-success-200',
+      iconColor: 'text-success-600'
     },
   ]
 
@@ -173,7 +173,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-b from-white to-neutral-50/50">
         <div className="container">
           <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
@@ -185,13 +185,13 @@ const Home: React.FC = () => {
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
-                className="text-center"
+                className="text-center group"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className={`w-16 h-16 bg-gradient-to-br ${stat.gradient} rounded-2xl flex items-center justify-center ${stat.iconColor} mx-auto mb-4`}>
+                <div className={`w-16 h-16 bg-gradient-to-br ${stat.gradient} rounded-2xl flex items-center justify-center ${stat.iconColor} mx-auto mb-4 shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
                   {stat.icon}
                 </div>
                 <div className="text-3xl font-bold text-neutral-900 mb-2">{stat.value}</div>
@@ -205,7 +205,7 @@ const Home: React.FC = () => {
 
 
       {/* How It Works Section */}
-      <section className="py-24 bg-gradient-to-b from-white to-neutral-50">
+      <section className="py-24 bg-gradient-to-b from-white to-primary-50/30">
         <div className="container">
           <div className="text-center mb-20">
             <motion.h2
@@ -230,8 +230,8 @@ const Home: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
             {/* Connection Lines */}
-            <div className="hidden md:block absolute top-1/2 left-1/3 w-1/3 h-0.5 bg-gradient-to-r from-neutral-300 to-neutral-400 transform -translate-y-1/2" />
-            <div className="hidden md:block absolute top-1/2 right-1/3 w-1/3 h-0.5 bg-gradient-to-r from-neutral-300 to-neutral-400 transform -translate-y-1/2" />
+            <div className="hidden md:block absolute top-1/2 left-1/3 w-1/3 h-0.5 bg-gradient-to-r from-primary-300 to-primary-500 transform -translate-y-1/2" />
+            <div className="hidden md:block absolute top-1/2 right-1/3 w-1/3 h-0.5 bg-gradient-to-r from-primary-300 to-primary-500 transform -translate-y-1/2" />
 
             {/* Step 1 */}
             <motion.div
@@ -242,10 +242,10 @@ const Home: React.FC = () => {
               viewport={{ once: true }}
             >
               <div className="relative mb-8">
-                <div className="w-24 h-24 bg-gradient-to-br from-neutral-600 to-neutral-800 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-2xl">
+                <div className="w-24 h-24 bg-gradient-to-br from-primary-600 to-primary-800 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-2xl">
                   1
                 </div>
-                <div className="absolute -inset-4 bg-neutral-200 rounded-full opacity-20 animate-pulse" />
+                <div className="absolute -inset-4 bg-primary-200 rounded-full opacity-20 animate-pulse" />
               </div>
               <h3 className="text-2xl font-bold text-neutral-900 mb-4">Request a Ride</h3>
               <p className="text-neutral-600 leading-relaxed">
@@ -262,10 +262,10 @@ const Home: React.FC = () => {
               viewport={{ once: true }}
             >
               <div className="relative mb-8">
-                <div className="w-24 h-24 bg-gradient-to-br from-neutral-600 to-neutral-800 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-2xl">
+                <div className="w-24 h-24 bg-gradient-to-br from-primary-600 to-primary-800 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-2xl">
                   2
                 </div>
-                <div className="absolute -inset-4 bg-neutral-200 rounded-full opacity-20 animate-pulse animation-delay-2000" />
+                <div className="absolute -inset-4 bg-primary-200 rounded-full opacity-20 animate-pulse animation-delay-2000" />
               </div>
               <h3 className="text-2xl font-bold text-neutral-900 mb-4">Get Matched</h3>
               <p className="text-neutral-600 leading-relaxed">
@@ -282,10 +282,10 @@ const Home: React.FC = () => {
               viewport={{ once: true }}
             >
               <div className="relative mb-8">
-                <div className="w-24 h-24 bg-gradient-to-br from-neutral-600 to-neutral-800 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-2xl">
+                <div className="w-24 h-24 bg-gradient-to-br from-primary-600 to-primary-800 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-2xl">
                   3
                 </div>
-                <div className="absolute -inset-4 bg-neutral-200 rounded-full opacity-20 animate-pulse animation-delay-4000" />
+                <div className="absolute -inset-4 bg-primary-200 rounded-full opacity-20 animate-pulse animation-delay-4000" />
               </div>
               <h3 className="text-2xl font-bold text-neutral-900 mb-4">Enjoy Your Ride</h3>
               <p className="text-neutral-600 leading-relaxed">
