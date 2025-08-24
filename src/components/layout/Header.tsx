@@ -10,8 +10,9 @@ const Header: React.FC = () => {
 
   const navigation = [
     { name: 'Home', href: '/' },
+    { name: 'Ride', href: '/ride' },
+    { name: 'Drive', href: '/drive' },
     { name: 'About', href: '/about' },
-    { name: 'Services', href: '/services' },
     { name: 'Contact', href: '/contact' },
   ]
 
@@ -22,13 +23,17 @@ const Header: React.FC = () => {
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-3">
             <motion.div
-              className="w-8 h-8 bg-primary-600 rounded-lg shadow-sm"
+              className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl shadow-lg flex items-center justify-center"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-            />
-            <span className="text-xl font-semibold text-neutral-900">Siddhi</span>
+            >
+              <span className="text-white font-bold text-lg">H</span>
+            </motion.div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
+              HoppOn
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -50,11 +55,11 @@ const Header: React.FC = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm">
+            <Button variant="ghost" size="sm" className="text-neutral-600 hover:text-primary-600">
               Sign In
             </Button>
             <Button size="sm">
-              Get Started
+              Book a Ride
             </Button>
           </div>
 
@@ -93,11 +98,11 @@ const Header: React.FC = () => {
                 </Link>
               ))}
               <div className="flex flex-col space-y-2 pt-4">
-                <Button variant="outline" size="sm">
+                <Button variant="ghost" size="sm" className="justify-start">
                   Sign In
                 </Button>
                 <Button size="sm">
-                  Get Started
+                  Book a Ride
                 </Button>
               </div>
             </div>
