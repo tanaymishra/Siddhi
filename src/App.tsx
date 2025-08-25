@@ -8,6 +8,9 @@ import Contact from './pages/Contact'
 import TermsOfService from './pages/TermsOfService'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import CookiesPolicy from './pages/CookiesPolicy'
+import DriverRegistration from './pages/DriverRegistration'
+import DriverLogin from './pages/DriverLogin'
+import DriverForgotPassword from './pages/DriverForgotPassword'
 
 function App() {
   return (
@@ -22,6 +25,10 @@ function App() {
           <Route path="privacy" element={<PrivacyPolicy />} />
           <Route path="cookies" element={<CookiesPolicy />} />
         </Route>
+        {/* Driver routes without layout */}
+        <Route path="/driver/register" element={<DriverRegistration />} />
+        <Route path="/driver/login" element={<DriverLogin />} />
+        <Route path="/driver/forgot-password" element={<DriverForgotPassword />} />
       </Routes>
     </Router>
   )

@@ -1,0 +1,760 @@
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import { Button } from '../components/ui/Button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Car, 
+  FileText, 
+  Shield, 
+  CheckCircle, 
+  ArrowRight,
+  Upload,
+  Calendar,
+  CreditCard
+} from 'lucide-react'
+
+const DriverRegistration: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState(1)
+  const [formData, setFormData] = useState({
+    // Personal Information
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    
+    // Vehicle Information
+    vehicleMake: '',
+    vehicleModel: '',
+    vehicleYear: '',
+    vehicleColor: '',
+    licensePlate: '',
+    
+    // Documents
+    driversLicense: null as File | null,
+    vehicleRegistration: null as File | null,
+    insurance: null as File | null,
+    
+    // Banking
+    bankName: '',
+    accountNumber: '',
+    routingNumber: ''
+  })
+
+  const steps = [
+    { id: 1, title: 'Personal Info', description: 'Basic information about you' },
+    { id: 2, title: 'Vehicle Details', description: 'Information about your vehicle' },
+    { id: 3, title: 'Documents', description: 'Upload required documents' },
+    { id: 4, title: 'Banking', description: 'Payment information' },
+    { id: 5, title: 'Review', description: 'Review and submit' }
+  ]
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+    const file = e.target.files?.[0] || null
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: file
+    }))
+  }
+
+  const nextStep = () => {
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1)
+    }
+  }
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Handle form submission
+    console.log('Driver registration submitted:', formData)
+    // Redirect to success page or dashboard
+  }
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  First Name *
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    placeholder="Enter your first name"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Last Name *
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    placeholder="Enter your last name"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Email Address *
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="Enter your email address"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Phone Number *
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    placeholder="Enter your phone number"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Date of Birth *
+                </label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={formData.dateOfBirth}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Address *
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="Enter your street address"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  City *
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="City"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  State *
+                </label>
+                <select
+                  name="state"
+                  value={formData.state}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  required
+                >
+                  <option value="">Select State</option>
+                  <option value="CA">California</option>
+                  <option value="NY">New York</option>
+                  <option value="TX">Texas</option>
+                  <option value="FL">Florida</option>
+                  {/* Add more states as needed */}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  ZIP Code *
+                </label>
+                <input
+                  type="text"
+                  name="zipCode"
+                  value={formData.zipCode}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="ZIP Code"
+                  required
+                />
+              </div>
+            </div>
+          </motion.div>
+        )
+
+      case 2:
+        return (
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Vehicle Make *
+                </label>
+                <div className="relative">
+                  <Car className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    name="vehicleMake"
+                    value={formData.vehicleMake}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    placeholder="e.g., Toyota, Honda, Ford"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Vehicle Model *
+                </label>
+                <input
+                  type="text"
+                  name="vehicleModel"
+                  value={formData.vehicleModel}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="e.g., Camry, Civic, Focus"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Vehicle Year *
+                </label>
+                <select
+                  name="vehicleYear"
+                  value={formData.vehicleYear}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  required
+                >
+                  <option value="">Select Year</option>
+                  {Array.from({ length: 15 }, (_, i) => 2025 - i).map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Vehicle Color *
+                </label>
+                <input
+                  type="text"
+                  name="vehicleColor"
+                  value={formData.vehicleColor}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="e.g., White, Black, Silver"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                License Plate Number *
+              </label>
+              <input
+                type="text"
+                name="licensePlate"
+                value={formData.licensePlate}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                placeholder="Enter your license plate number"
+                required
+              />
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <h4 className="font-medium text-blue-900 mb-2">Vehicle Requirements</h4>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Vehicle must be 2010 or newer</li>
+                <li>• 4-door sedan, SUV, or hatchback</li>
+                <li>• Valid registration and insurance</li>
+                <li>• Clean interior and exterior</li>
+              </ul>
+            </div>
+          </motion.div>
+        )
+
+      case 3:
+        return (
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Driver's License *
+                </label>
+                <div className="border-2 border-dashed border-neutral-300 rounded-xl p-6 text-center hover:border-primary-400 transition-colors">
+                  <Upload className="w-8 h-8 text-neutral-400 mx-auto mb-2" />
+                  <p className="text-sm text-neutral-600 mb-2">
+                    Upload a clear photo of your driver's license
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => handleFileChange(e, 'driversLicense')}
+                    className="hidden"
+                    id="driversLicense"
+                  />
+                  <label
+                    htmlFor="driversLicense"
+                    className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 cursor-pointer transition-colors"
+                  >
+                    Choose File
+                  </label>
+                  {formData.driversLicense && (
+                    <p className="text-sm text-green-600 mt-2">
+                      ✓ {formData.driversLicense.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Vehicle Registration *
+                </label>
+                <div className="border-2 border-dashed border-neutral-300 rounded-xl p-6 text-center hover:border-primary-400 transition-colors">
+                  <FileText className="w-8 h-8 text-neutral-400 mx-auto mb-2" />
+                  <p className="text-sm text-neutral-600 mb-2">
+                    Upload your vehicle registration document
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => handleFileChange(e, 'vehicleRegistration')}
+                    className="hidden"
+                    id="vehicleRegistration"
+                  />
+                  <label
+                    htmlFor="vehicleRegistration"
+                    className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 cursor-pointer transition-colors"
+                  >
+                    Choose File
+                  </label>
+                  {formData.vehicleRegistration && (
+                    <p className="text-sm text-green-600 mt-2">
+                      ✓ {formData.vehicleRegistration.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Insurance Certificate *
+                </label>
+                <div className="border-2 border-dashed border-neutral-300 rounded-xl p-6 text-center hover:border-primary-400 transition-colors">
+                  <Shield className="w-8 h-8 text-neutral-400 mx-auto mb-2" />
+                  <p className="text-sm text-neutral-600 mb-2">
+                    Upload your current insurance certificate
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => handleFileChange(e, 'insurance')}
+                    className="hidden"
+                    id="insurance"
+                  />
+                  <label
+                    htmlFor="insurance"
+                    className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 cursor-pointer transition-colors"
+                  >
+                    Choose File
+                  </label>
+                  {formData.insurance && (
+                    <p className="text-sm text-green-600 mt-2">
+                      ✓ {formData.insurance.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+              <h4 className="font-medium text-yellow-900 mb-2">Document Requirements</h4>
+              <ul className="text-sm text-yellow-700 space-y-1">
+                <li>• All documents must be current and valid</li>
+                <li>• Images should be clear and readable</li>
+                <li>• Accepted formats: JPG, PNG, PDF</li>
+                <li>• Maximum file size: 10MB per document</li>
+              </ul>
+            </div>
+          </motion.div>
+        )
+
+      case 4:
+        return (
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Bank Name *
+              </label>
+              <div className="relative">
+                <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                <input
+                  type="text"
+                  name="bankName"
+                  value={formData.bankName}
+                  onChange={handleInputChange}
+                  className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="Enter your bank name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Account Number *
+              </label>
+              <input
+                type="text"
+                name="accountNumber"
+                value={formData.accountNumber}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                placeholder="Enter your account number"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Routing Number *
+              </label>
+              <input
+                type="text"
+                name="routingNumber"
+                value={formData.routingNumber}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                placeholder="Enter your routing number"
+                required
+              />
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+              <h4 className="font-medium text-green-900 mb-2">Secure Banking</h4>
+              <p className="text-sm text-green-700">
+                Your banking information is encrypted and secure. We use bank-level security 
+                to protect your financial data and ensure fast, reliable payments.
+              </p>
+            </div>
+          </motion.div>
+        )
+
+      case 5:
+        return (
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="bg-neutral-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-neutral-900 mb-4">Review Your Information</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-neutral-700 mb-2">Personal Information</h4>
+                  <p className="text-sm text-neutral-600">
+                    {formData.firstName} {formData.lastName} • {formData.email} • {formData.phone}
+                  </p>
+                  <p className="text-sm text-neutral-600">
+                    {formData.address}, {formData.city}, {formData.state} {formData.zipCode}
+                  </p>
+                </div>
+                
+                <div>
+                  <h4 className="font-medium text-neutral-700 mb-2">Vehicle Information</h4>
+                  <p className="text-sm text-neutral-600">
+                    {formData.vehicleYear} {formData.vehicleMake} {formData.vehicleModel} ({formData.vehicleColor})
+                  </p>
+                  <p className="text-sm text-neutral-600">License Plate: {formData.licensePlate}</p>
+                </div>
+                
+                <div>
+                  <h4 className="font-medium text-neutral-700 mb-2">Documents</h4>
+                  <div className="space-y-1">
+                    <p className="text-sm text-neutral-600 flex items-center">
+                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                      Driver's License: {formData.driversLicense?.name || 'Not uploaded'}
+                    </p>
+                    <p className="text-sm text-neutral-600 flex items-center">
+                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                      Vehicle Registration: {formData.vehicleRegistration?.name || 'Not uploaded'}
+                    </p>
+                    <p className="text-sm text-neutral-600 flex items-center">
+                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                      Insurance: {formData.insurance?.name || 'Not uploaded'}
+                    </p>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-medium text-neutral-700 mb-2">Banking Information</h4>
+                  <p className="text-sm text-neutral-600">
+                    {formData.bankName} • Account ending in {formData.accountNumber.slice(-4)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <h4 className="font-medium text-blue-900 mb-2">Next Steps</h4>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• We'll review your application within 24-48 hours</li>
+                <li>• You'll receive an email with your approval status</li>
+                <li>• Once approved, you can start driving immediately</li>
+                <li>• Download the HoppOn Driver app to get started</li>
+              </ul>
+            </div>
+          </motion.div>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100 py-12">
+      <div className="container max-w-4xl">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Link to="/" className="inline-block mb-6">
+            <img src="/logo.png" alt="HoppOn Logo" className="w-32 h-16 object-contain mx-auto" />
+          </Link>
+          <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
+            Become a <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">HoppOn Driver</span>
+          </h1>
+          <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
+            Join thousands of drivers earning flexible income on their own schedule. 
+            Complete your registration in just a few minutes.
+          </p>
+        </motion.div>
+
+        {/* Progress Steps */}
+        <motion.div
+          className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => (
+              <div key={step.id} className="flex items-center">
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                      currentStep >= step.id
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-neutral-200 text-neutral-600'
+                    }`}
+                  >
+                    {currentStep > step.id ? (
+                      <CheckCircle className="w-5 h-5" />
+                    ) : (
+                      step.id
+                    )}
+                  </div>
+                  <div className="mt-2 text-center">
+                    <p className="text-sm font-medium text-neutral-900">{step.title}</p>
+                    <p className="text-xs text-neutral-500 hidden sm:block">{step.description}</p>
+                  </div>
+                </div>
+                {index < steps.length - 1 && (
+                  <div
+                    className={`flex-1 h-0.5 mx-4 transition-all ${
+                      currentStep > step.id ? 'bg-primary-600' : 'bg-neutral-200'
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Form Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Card className="shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                {steps.find(step => step.id === currentStep)?.title}
+              </CardTitle>
+              <CardDescription>
+                {steps.find(step => step.id === currentStep)?.description}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit}>
+                {renderStepContent()}
+                
+                {/* Navigation Buttons */}
+                <div className="flex justify-between mt-8 pt-6 border-t border-neutral-200">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={prevStep}
+                    disabled={currentStep === 1}
+                    className={currentStep === 1 ? 'invisible' : ''}
+                  >
+                    Previous
+                  </Button>
+                  
+                  {currentStep < 5 ? (
+                    <Button type="button" onClick={nextStep}>
+                      Next Step
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  ) : (
+                    <Button type="submit" className="bg-success-600 hover:bg-success-700">
+                      Submit Application
+                      <CheckCircle className="ml-2 w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Already have an account */}
+        <motion.div
+          className="text-center mt-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <p className="text-neutral-600">
+            Already have a driver account?{' '}
+            <Link
+              to="/driver/login"
+              className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
+            >
+              Sign in here
+            </Link>
+          </p>
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+export default DriverRegistration

@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
 import { ArrowRight, Zap, Shield, Smartphone, Star, Users, Rocket, Globe } from 'lucide-react'
@@ -124,14 +125,15 @@ const Home: React.FC = () => {
                   {isAuthenticated ? 'Book a Ride Now' : 'Get Started'}
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="border-2 hover:bg-primary-50"
-                  onClick={() => openAuthModal('signup')}
-                >
-                  Become a Driver
-                </Button>
+                <Link to="/driver/register">
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="border-2 hover:bg-primary-50"
+                  >
+                    Become a Driver
+                  </Button>
+                </Link>
               </motion.div>
             </div>
             
@@ -338,10 +340,12 @@ const Home: React.FC = () => {
                 </div>
               </div>
 
-              <Button size="lg" className="bg-white text-primary-700 hover:bg-neutral-100 shadow-lg">
-                Start Driving Today
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+              <Link to="/driver/register">
+                <Button size="lg" className="bg-white text-primary-700 hover:bg-neutral-100 shadow-lg">
+                  Start Driving Today
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
             </motion.div>
 
             {/* Right Content - Driver Dashboard */}
