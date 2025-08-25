@@ -214,11 +214,11 @@ const AuthModal: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <div className="w-32 h-16 flex items-center justify-center mx-auto mb-4">
                     <img 
                       src="/logo.png" 
                       alt="HoppOn Logo" 
-                      className="w-16 h-16 object-contain"
+                      className="w-32 h-16 object-contain"
                     />
                   </div>
                   <h2 className="text-2xl font-bold text-neutral-900 mb-2">

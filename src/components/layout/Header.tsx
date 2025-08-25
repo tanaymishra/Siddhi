@@ -26,21 +26,18 @@ const Header: React.FC = () => {
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center">
             <motion.div
-              className="w-10 h-10 flex items-center justify-center"
+              className="w-24 h-10 flex items-center justify-center"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <img
                 src="/logo.png"
                 alt="HoppOn Logo"
-                className="w-10 h-10 object-contain"
+                className="w-24 h-10 object-contain"
               />
             </motion.div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
-              HoppOn
-            </span>
           </Link>
 
           {/* Desktop Navigation */}

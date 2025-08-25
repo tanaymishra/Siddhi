@@ -9,17 +9,14 @@ const Footer: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand */}
             <div className="col-span-1 md:col-span-2">
-              <Link to="/" className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 flex items-center justify-center">
+              <Link to="/" className="flex items-center mb-4">
+                <div className="w-24 h-10 flex items-center justify-center">
                   <img 
                     src="/logo.png" 
                     alt="HoppOn Logo" 
-                    className="w-10 h-10 object-contain"
+                    className="w-24 h-10 object-contain"
                   />
                 </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
-                  HoppOn
-                </span>
               </Link>
               <p className="text-neutral-600 text-sm max-w-md mb-4">
                 Your reliable ride-sharing partner. Safe, fast, and affordable transportation whenever you need it.
