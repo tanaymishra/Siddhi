@@ -85,11 +85,11 @@ const DriverLogin: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100">
       <div className="container">
         <div className="min-h-screen flex items-center justify-center py-12">
-          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl w-full">
-            {/* Left Side - Login Form */}
+          <div className="max-w-md w-full">
+            {/* Login Form */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
               <Card className="shadow-2xl">
@@ -225,92 +225,6 @@ const DriverLogin: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
-
-            {/* Right Side - Benefits */}
-            <motion.div
-              className="space-y-8"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <div>
-                <h2 className="text-4xl font-bold text-neutral-900 mb-4">
-                  Drive with <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">HoppOn</span>
-                </h2>
-                <p className="text-xl text-neutral-600 mb-8">
-                  Join thousands of drivers earning flexible income on their own schedule.
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                {driverBenefits.map((benefit, index) => (
-                  <motion.div
-                    key={benefit.title}
-                    className="group"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                  >
-                    <div className={`${benefit.bgColor} rounded-2xl p-6 transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1`}>
-                      <div className="flex items-start space-x-4">
-                        <div className={`w-12 h-12 bg-gradient-to-br ${benefit.gradient} rounded-xl flex items-center justify-center text-white shadow-lg`}>
-                          {benefit.icon}
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-neutral-900 mb-2">{benefit.title}</h3>
-                          <p className="text-neutral-600">{benefit.description}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Stats */}
-              <motion.div
-                className="bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl p-8 text-white"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-              >
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">$247</div>
-                    <div className="text-primary-200 text-sm">Average Daily Earnings</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">4.9⭐</div>
-                    <div className="text-primary-200 text-sm">Driver Rating</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">50K+</div>
-                    <div className="text-primary-200 text-sm">Active Drivers</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">24/7</div>
-                    <div className="text-primary-200 text-sm">Support Available</div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* CTA */}
-              <motion.div
-                className="text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.7 }}
-              >
-                <p className="text-neutral-600 mb-4">
-                  Ready to start earning? It only takes a few minutes to get started.
-                </p>
-                <Link to="/driver/register">
-                  <Button size="lg" variant="outline" className="border-2 hover:bg-primary-50">
-                    <Car className="mr-2 w-5 h-5" />
-                    Apply to Drive
-                  </Button>
-                </Link>
-              </motion.div>
             </motion.div>
           </div>
         </div>
