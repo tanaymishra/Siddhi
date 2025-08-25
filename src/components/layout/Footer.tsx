@@ -10,8 +10,12 @@ const Footer: React.FC = () => {
             {/* Brand */}
             <div className="col-span-1 md:col-span-2">
               <Link to="/" className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl shadow-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">H</span>
+                <div className="w-10 h-10 flex items-center justify-center">
+                  <img 
+                    src="/logo.png" 
+                    alt="HoppOn Logo" 
+                    className="w-10 h-10 object-contain"
+                  />
                 </div>
                 <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
                   HoppOn

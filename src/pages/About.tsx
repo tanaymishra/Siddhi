@@ -13,10 +13,10 @@ const About: React.FC = () => {
       >
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            About Us
+            About HoppOn
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            We're passionate about creating exceptional digital experiences that make a difference.
+            We're passionate about revolutionizing transportation and connecting communities through safe, reliable rides.
           </p>
         </div>
 
@@ -25,7 +25,7 @@ const About: React.FC = () => {
             <CardHeader>
               <CardTitle>Our Mission</CardTitle>
               <CardDescription>
-                To empower developers and businesses with modern, accessible, and performant web solutions.
+                To make transportation accessible, safe, and efficient for everyone while creating economic opportunities for drivers worldwide.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -34,7 +34,7 @@ const About: React.FC = () => {
             <CardHeader>
               <CardTitle>Our Vision</CardTitle>
               <CardDescription>
-                A world where technology serves humanity through thoughtful design and inclusive development.
+                A world where getting from point A to point B is seamless, sustainable, and strengthens communities through shared mobility.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -43,14 +43,14 @@ const About: React.FC = () => {
         <div className="prose prose-lg max-w-none">
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">Our Story</h2>
           <p className="text-gray-600 mb-6">
-            Founded with the belief that great software should be accessible to everyone, we've been 
-            dedicated to creating tools and experiences that bridge the gap between complex technology 
-            and human needs.
+            Founded with the belief that transportation should be reliable and accessible to everyone, we've been 
+            dedicated to connecting riders with trusted drivers through innovative technology that prioritizes 
+            safety and convenience.
           </p>
           <p className="text-gray-600">
-            Our team combines years of experience in design, development, and user experience to 
-            deliver solutions that not only work beautifully but also make a positive impact on 
-            the people who use them.
+            Our team combines years of experience in transportation, technology, and community building to 
+            deliver rides that are not only fast and affordable but also create meaningful economic 
+            opportunities for drivers in cities worldwide.
           </p>
         </div>
       </motion.div>

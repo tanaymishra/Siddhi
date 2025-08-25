@@ -28,11 +28,15 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <motion.div
-              className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl shadow-lg flex items-center justify-center"
+              className="w-10 h-10 flex items-center justify-center"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="text-white font-bold text-lg">H</span>
+              <img
+                src="/logo.png"
+                alt="HoppOn Logo"
+                className="w-10 h-10 object-contain"
+              />
             </motion.div>
             <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
               HoppOn
@@ -45,11 +49,10 @@ const Header: React.FC = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary-600 ${
-                  isActive(item.href)
-                    ? 'text-primary-600 font-semibold'
-                    : 'text-neutral-600'
-                }`}
+                className={`text-sm font-medium transition-colors hover:text-primary-600 ${isActive(item.href)
+                  ? 'text-primary-600 font-semibold'
+                  : 'text-neutral-600'
+                  }`}
               >
                 {item.name}
               </Link>
@@ -67,15 +70,15 @@ const Header: React.FC = () => {
               </>
             ) : (
               <>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="text-neutral-600 hover:text-primary-600"
                   onClick={() => openAuthModal('signin')}
                 >
                   Sign In
                 </Button>
-                <Button 
+                <Button
                   size="sm"
                   onClick={() => openAuthModal('signup')}
                 >
@@ -109,11 +112,10 @@ const Header: React.FC = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`block text-sm font-medium transition-colors hover:text-primary-600 ${
-                    isActive(item.href)
-                      ? 'text-primary-600 font-semibold'
-                      : 'text-neutral-600'
-                  }`}
+                  className={`block text-sm font-medium transition-colors hover:text-primary-600 ${isActive(item.href)
+                    ? 'text-primary-600 font-semibold'
+                    : 'text-neutral-600'
+                    }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
@@ -129,9 +131,9 @@ const Header: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="justify-start"
                       onClick={() => {
                         openAuthModal('signin')
@@ -140,7 +142,7 @@ const Header: React.FC = () => {
                     >
                       Sign In
                     </Button>
-                    <Button 
+                    <Button
                       size="sm"
                       onClick={() => {
                         openAuthModal('signup')
