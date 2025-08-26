@@ -13,6 +13,7 @@ import CookiesPolicy from './pages/CookiesPolicy'
 import DriverRegistration from './pages/DriverRegistration'
 import DriverLogin from './pages/DriverLogin'
 import DriverForgotPassword from './pages/DriverForgotPassword'
+import MapTest from './pages/MapTest'
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
           </Route>
           {/* Ride page without layout (full screen map) */}
           <Route path="/ride" element={<Ride />} />
+          {/* Map test page for debugging */}
+          <Route path="/maptest" element={<MapTest />} />
           {/* Driver routes without layout */}
           <Route path="/driver/register" element={<DriverRegistration />} />
           <Route path="/driver/login" element={<DriverLogin />} />

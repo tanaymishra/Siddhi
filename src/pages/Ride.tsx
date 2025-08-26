@@ -5,7 +5,6 @@ import {
     MapSection,
     LocationInputSection,
     RouteInfoSection,
-    DebugSection,
     CurrentLocationSection,
     RouteCalculationSection
 } from '../sections'
@@ -19,9 +18,6 @@ const Ride: React.FC = () => {
             <div className="flex-1 relative">
                 {/* Route Calculation Logic */}
                 <RouteCalculationSection />
-
-                {/* Debug Info */}
-                <DebugSection />
 
                 {/* Google Maps Background */}
                 <MapSection />
