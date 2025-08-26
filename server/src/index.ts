@@ -6,9 +6,11 @@ import dotenv from 'dotenv'
 import { connectDB } from './config/database'
 import { errorHandler } from './middleware/errorHandler'
 import { notFound } from './middleware/notFound'
+import { handleMulterError } from './middleware/upload'
 import authRoutes from './routes/auth'
 import rideRoutes from './routes/rides'
 import paymentRoutes from './routes/payment'
+import driverRoutes from './routes/drivers'
 
 // Load environment variables
 dotenv.config()
@@ -49,7 +51,8 @@ app.get('/api', (req, res) => {
       api: '/api',
       auth: '/api/auth',
       rides: '/api/rides',
-      payment: '/api/payment'
+      payment: '/api/payment',
+      drivers: '/api/drivers'
     }
   })
 })
@@ -63,7 +66,11 @@ app.use('/api/rides', rideRoutes)
 // Payment routes
 app.use('/api/payment', paymentRoutes)
 
+// Driver routes
+app.use('/api/drivers', driverRoutes)
+
 // Error handling middleware
+app.use(handleMulterError)
 app.use(notFound)
 app.use(errorHandler)
 

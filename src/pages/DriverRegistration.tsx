@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
 import { 
@@ -15,12 +15,21 @@ import {
   ArrowRight,
   Upload,
   Calendar,
-  CreditCard
+  CreditCard,
+  Loader2,
+  AlertCircle
 } from 'lucide-react'
+import { registerDriver } from '../services/driverService'
+import type { DriverRegistrationData } from '../types/driver'
 
 const DriverRegistration: React.FC = () => {
+  const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState({
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [submitSuccess, setSubmitSuccess] = useState(false)
+  
+  const [formData, setFormData] = useState<DriverRegistrationData>({
     // Personal Information
     firstName: '',
     lastName: '',
@@ -40,9 +49,9 @@ const DriverRegistration: React.FC = () => {
     licensePlate: '',
     
     // Documents
-    driversLicense: null as File | null,
-    vehicleRegistration: null as File | null,
-    insurance: null as File | null,
+    driversLicense: null,
+    vehicleRegistration: null,
+    insurance: null,
     
     // Banking
     bankName: '',
@@ -74,6 +83,12 @@ const DriverRegistration: React.FC = () => {
   }
 
   const nextStep = () => {
+    if (!validateStep(currentStep)) {
+      setSubmitError('Please fill in all required fields before proceeding.')
+      return
+    }
+    
+    setSubmitError('')
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1)
     }
@@ -85,11 +100,63 @@ const DriverRegistration: React.FC = () => {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 1:
+        return !!(formData.firstName && formData.lastName && formData.email && 
+                 formData.phone && formData.dateOfBirth && formData.address && 
+                 formData.city && formData.state && formData.zipCode)
+      case 2:
+        return !!(formData.vehicleMake && formData.vehicleModel && 
+                 formData.vehicleYear && formData.vehicleColor && formData.licensePlate)
+      case 3:
+        return !!(formData.driversLicense && formData.vehicleRegistration && formData.insurance)
+      case 4:
+        return !!(formData.bankName && formData.accountNumber && formData.routingNumber)
+      default:
+        return true
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log('Driver registration submitted:', formData)
-    // Redirect to success page or dashboard
+    
+    if (!validateStep(currentStep)) {
+      setSubmitError('Please fill in all required fields.')
+      return
+    }
+
+    if (currentStep < 5) {
+      nextStep()
+      return
+    }
+
+    // Final submission
+    setIsSubmitting(true)
+    setSubmitError('')
+
+    try {
+      const response = await registerDriver(formData)
+      
+      if (response.success) {
+        setSubmitSuccess(true)
+        // Redirect to success page after a delay
+        setTimeout(() => {
+          navigate('/driver/login', { 
+            state: { 
+              message: 'Registration submitted successfully! You can login once approved.' 
+            }
+          })
+        }, 3000)
+      } else {
+        setSubmitError(response.message || 'Registration failed. Please try again.')
+      }
+    } catch (error) {
+      console.error('Registration error:', error)
+      setSubmitError('An unexpected error occurred. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const renderStepContent = () => {
@@ -706,27 +773,74 @@ const DriverRegistration: React.FC = () => {
               <form onSubmit={handleSubmit}>
                 {renderStepContent()}
                 
+                {/* Error Message */}
+                {submitError && (
+                  <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <div className="flex items-center">
+                      <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
+                      <p className="text-sm text-red-700">{submitError}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Success Message */}
+                {submitSuccess && (
+                  <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                      <div>
+                        <p className="text-sm text-green-700 font-medium">Registration Submitted Successfully!</p>
+                        <p className="text-sm text-green-600 mt-1">
+                          We'll review your application within 24-48 hours. You'll receive an email with your approval status.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 {/* Navigation Buttons */}
                 <div className="flex justify-between mt-8 pt-6 border-t border-neutral-200">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={prevStep}
-                    disabled={currentStep === 1}
+                    disabled={currentStep === 1 || isSubmitting}
                     className={currentStep === 1 ? 'invisible' : ''}
                   >
                     Previous
                   </Button>
                   
                   {currentStep < 5 ? (
-                    <Button type="button" onClick={nextStep}>
+                    <Button 
+                      type="button" 
+                      onClick={nextStep}
+                      disabled={isSubmitting}
+                    >
                       Next Step
                       <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
                   ) : (
-                    <Button type="submit" className="bg-success-600 hover:bg-success-700">
-                      Submit Application
-                      <CheckCircle className="ml-2 w-4 h-4" />
+                    <Button 
+                      type="submit" 
+                      className="bg-success-600 hover:bg-success-700"
+                      disabled={isSubmitting || submitSuccess}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : submitSuccess ? (
+                        <>
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Submitted
+                        </>
+                      ) : (
+                        <>
+                          Submit Application
+                          <CheckCircle className="ml-2 w-4 h-4" />
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>

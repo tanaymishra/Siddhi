@@ -3,7 +3,7 @@ import axios from 'axios'
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api'
 
 class ApiService {
-  private api: ReturnType<typeof axios.create>
+  public api: ReturnType<typeof axios.create>
 
   constructor() {
     this.api = axios.create({

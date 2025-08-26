@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from 'express'
-import { verifyToken, JWTPayload } from '../utils/jwt'
+import jwt from 'jsonwebtoken'
 import { User } from '../models/User'
+import { Driver } from '../models/Driver'
 
 export interface AuthRequest extends Request {
   user?: any
 }
 
-export const authenticate = async (
+// General authentication middleware that works for both users and drivers
+export const auth = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -25,12 +27,33 @@ export const authenticate = async (
     const token = authHeader.substring(7) // Remove 'Bearer ' prefix
 
     try {
-      const decoded = verifyToken(token) as JWTPayload
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any
       
-      // Get user from database
-      const user = await User.findById(decoded.userId).select('-password')
+      let user: any = null
       
-      if (!user || !user.isActive) {
+      // Check if it's a driver token
+      if (decoded.role === 'driver' && decoded.driverId) {
+        const driver = await Driver.findById(decoded.driverId).select('-password')
+        if (driver) {
+          user = {
+            ...driver.toObject(),
+            role: 'driver',
+            userId: decoded.driverId, // For compatibility
+            driverId: decoded.driverId
+          }
+        }
+      } else if (decoded.userId) {
+        // Regular user token
+        const regularUser = await User.findById(decoded.userId).select('-password')
+        if (regularUser) {
+          user = {
+            ...regularUser.toObject(),
+            userId: decoded.userId
+          }
+        }
+      }
+      
+      if (!user || (user.isActive === false)) {
         res.status(401).json({
           success: false,
           message: 'Invalid token or user not found'
@@ -55,6 +78,9 @@ export const authenticate = async (
     })
   }
 }
+
+// Legacy authenticate function for backward compatibility
+export const authenticate = auth
 
 export const authorize = (...roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
