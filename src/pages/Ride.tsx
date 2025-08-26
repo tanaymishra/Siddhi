@@ -4,7 +4,6 @@ import '../styles/maps.css'
 import {
     MapSection,
     LocationInputSection,
-    RouteInfoSection,
     CurrentLocationSection,
     RouteCalculationSection
 } from '../sections'
@@ -24,9 +23,6 @@ const Ride: React.FC = () => {
 
                 {/* Location Input Panel */}
                 <LocationInputSection />
-
-                {/* Route Information */}
-                <RouteInfoSection />
 
                 {/* Current Location Button */}
                 <CurrentLocationSection />

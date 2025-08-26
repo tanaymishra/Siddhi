@@ -73,6 +73,7 @@ app.listen(PORT, () => {
   console.log(`🌍 Environment: ${process.env.NODE_ENV}`)
   console.log(`📊 Health check: http://localhost:${PORT}/health`)
   console.log(`🔗 API endpoint: http://localhost:${PORT}/api`)
+  console.log(`💳 Razorpay Key ID: ${process.env.RAZORPAY_KEY_ID ? 'Loaded' : 'Missing'}`)
 })
 
 export default app

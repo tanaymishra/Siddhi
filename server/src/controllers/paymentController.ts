@@ -1,13 +1,28 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 import { Request, Response } from 'express'
 import Razorpay from 'razorpay'
 import { Ride } from '../models/Ride'
 import crypto from 'crypto'
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!
-})
+// Function to get Razorpay instance
+const getRazorpayInstance = () => {
+  const keyId = process.env.RAZORPAY_KEY_ID
+  const keySecret = process.env.RAZORPAY_KEY_SECRET
+  
+  console.log('Razorpay Key ID:', keyId ? 'Present' : 'Missing')
+  console.log('Razorpay Key Secret:', keySecret ? 'Present' : 'Missing')
+  
+  if (!keyId || !keySecret) {
+    throw new Error('Razorpay credentials are missing from environment variables')
+  }
+  
+  return new Razorpay({
+    key_id: keyId,
+    key_secret: keySecret
+  })
+}
 
 // Create payment order
 export const createPaymentOrder = async (req: Request, res: Response): Promise<void> => {
@@ -36,6 +51,7 @@ export const createPaymentOrder = async (req: Request, res: Response): Promise<v
       }
     }
 
+    const razorpay = getRazorpayInstance()
     const order = await razorpay.orders.create(options)
 
     res.status(200).json({

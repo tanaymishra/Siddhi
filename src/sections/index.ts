@@ -1,6 +1,5 @@
 export { default as MapSection } from './MapSection'
 export { default as LocationInputSection } from './LocationInputSection'
-export { default as RouteInfoSection } from './RouteInfoSection'
 export { default as DebugSection } from './DebugSection'
 export { default as CurrentLocationSection } from './CurrentLocationSection'
 export { default as RouteCalculationSection } from './RouteCalculationSection'

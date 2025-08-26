@@ -4,8 +4,14 @@ import { Loader2, Clock, Navigation, Car } from 'lucide-react'
 import { useRideStore } from '../store/rideStore'
 import SimpleAutocomplete from '../components/SimpleAutocomplete'
 import { Button } from '../components/ui/Button'
-import { bookRide } from '../services/rideService'
 import { calculateRouteFromCoordinates } from '../utils/mapUtils'
+
+// Razorpay type declaration
+declare global {
+  interface Window {
+    Razorpay: any
+  }
+}
 
 interface LocationInputSectionProps {
   className?: string
@@ -40,25 +46,80 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
   const handleBookRide = async () => {
     const routeToUse = staticRouteInfo || routeInfo
     if (!routeToUse) {
-      alert('Route information not available yet.')
+      setError('Route information not available yet.')
       return
     }
 
     try {
       setCalculatingRoute(true)
-      const response = await bookRide({
-        fromLocation,
-        toLocation,
-        routeInfo: routeToUse
-      })
+      console.log('Starting ride booking process...')
 
-      if (response.success) {
-        console.log('Ride booked successfully:', response)
-        alert(`Ride booked! Driver: ${response.driverInfo?.name}, ETA: ${response.estimatedArrival}`)
+      // For testing, let's directly open payment gateway with mock data
+      const mockRideId = `test_ride_${Date.now()}`
+      console.log('Opening payment gateway for test ride:', mockRideId)
+
+      // Create a mock payment order directly
+      const mockPaymentData = {
+        orderId: `order_${Date.now()}`,
+        amount: routeToUse.fare * 100, // Convert to paise
+        currency: 'INR',
+        keyId: 'rzp_test_R9vdXcskR15ETJ', // Your test key
+        rideId: mockRideId,
+        fare: routeToUse.fare
       }
+
+      // Load Razorpay script and open payment
+      if (!window.Razorpay) {
+        const script = document.createElement('script')
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+        script.onload = () => openRazorpay(mockPaymentData)
+        script.onerror = () => {
+          setError('Failed to load payment gateway')
+          setCalculatingRoute(false)
+        }
+        document.body.appendChild(script)
+      } else {
+        openRazorpay(mockPaymentData)
+      }
+
+      function openRazorpay(paymentData: any) {
+        const options = {
+          key: paymentData.keyId,
+          amount: paymentData.amount,
+          currency: paymentData.currency,
+          name: 'HoppOn',
+          description: `Ride Payment - ₹${paymentData.fare}`,
+          order_id: paymentData.orderId,
+          handler: (response: any) => {
+            console.log('Payment successful:', response)
+            setCalculatingRoute(false)
+            alert('Payment successful! Your driver will arrive in 5-8 minutes.')
+          },
+          prefill: {
+            name: 'Test User',
+            email: 'test@example.com',
+            contact: '9999999999'
+          },
+          theme: {
+            color: '#3B82F6'
+          }
+        }
+
+        const rzp = new window.Razorpay(options)
+
+        rzp.on('payment.failed', (response: any) => {
+          console.error('Payment failed:', response)
+          setError('Payment failed. Please try again.')
+          setCalculatingRoute(false)
+        })
+
+        console.log('Opening Razorpay checkout...')
+        rzp.open()
+      }
+
     } catch (error) {
+      console.error('Error booking ride:', error)
       setError('Failed to book ride. Please try again.')
-    } finally {
       setCalculatingRoute(false)
     }
   }
