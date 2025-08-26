@@ -4,12 +4,14 @@ import { motion } from 'framer-motion'
 import { Button } from '../ui/Button'
 import { Menu, X } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
+import { useAuthenticated } from '../../hooks/useAuthenticated'
 import UserDropdown from '../auth/UserDropdown'
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const location = useLocation()
-  const { isAuthenticated, openAuthModal } = useAuthStore()
+  const { openAuthModal } = useAuthStore()
+  const { isAuthenticated } = useAuthenticated()
 
   const navigation = [
     { name: 'Home', href: '/' },

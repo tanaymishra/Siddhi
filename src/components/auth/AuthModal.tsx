@@ -2,18 +2,20 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Eye, EyeOff, Mail, Lock, User, Phone, Loader2 } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
+import { useAuthenticated } from '../../hooks/useAuthenticated'
 import { Button } from '../ui/Button'
 
 const AuthModal: React.FC = () => {
   const { 
     isAuthModalOpen, 
-    authMode, 
-    isLoading,
+    authMode,
     closeAuthModal, 
     setAuthMode, 
     signIn, 
     signUp 
   } = useAuthStore()
+
+  const { isLoading } = useAuthenticated()
 
   const [formData, setFormData] = useState({
     name: '',

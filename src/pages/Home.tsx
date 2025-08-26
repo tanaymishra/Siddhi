@@ -5,9 +5,11 @@ import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
 import { ArrowRight, Zap, Shield, Smartphone, Star, Users, Rocket, Globe } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
+import { useAuthenticated } from '../hooks/useAuthenticated'
 
 const Home: React.FC = () => {
-  const { isAuthenticated, openAuthModal } = useAuthStore()
+  const { openAuthModal } = useAuthStore()
+  const { isAuthenticated } = useAuthenticated()
   const features = [
     {
       icon: <Zap className="w-8 h-8" />,
