@@ -128,15 +128,7 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
         </div>
       )}
 
-      {/* Debug Info - Remove this later */}
-      {fromLocation.coordinates && toLocation.coordinates && (
-        <div className="p-4 bg-yellow-50 border-t border-yellow-100 text-xs">
-          <p>Debug: From: {fromLocation.address}</p>
-          <p>Debug: To: {toLocation.address}</p>
-          <p>Debug: RouteInfo: {routeInfo ? 'Available' : 'Not available'}</p>
-          <p>Debug: Calculating: {isCalculatingRoute ? 'Yes' : 'No'}</p>
-        </div>
-      )}
+
 
       {/* Fare Estimate and Book Button */}
       {fromLocation.coordinates && toLocation.coordinates && !isCalculatingRoute && (
