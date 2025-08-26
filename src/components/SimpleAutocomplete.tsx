@@ -18,8 +18,9 @@ const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({ placeholder, on
         
         try {
           const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-            types: ['geocode'],
-            fields: ['formatted_address', 'geometry', 'name']
+            types: ['establishment', 'geocode'],
+            componentRestrictions: { country: 'in' },
+            fields: ['formatted_address', 'geometry', 'name', 'place_id', 'types']
           })
 
           autocomplete.addListener('place_changed', () => {
