@@ -1,12 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { User, Settings, LogOut, ChevronDown } from 'lucide-react'
+import { User, Settings, LogOut, ChevronDown, Car, Calendar } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
+import { useAuthenticated } from '../../hooks/useAuthenticated'
+import { useNavigate } from 'react-router-dom'
 
 const UserDropdown: React.FC = () => {
-  const { user, signOut } = useAuthStore()
+  const { signOut } = useAuthStore()
+  const { user } = useAuthenticated()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -26,6 +30,11 @@ const UserDropdown: React.FC = () => {
     setIsOpen(false)
   }
 
+  const handleNavigation = (path: string) => {
+    navigate(path)
+    setIsOpen(false)
+  }
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* User Button */}
@@ -34,17 +43,15 @@ const UserDropdown: React.FC = () => {
         className="flex items-center space-x-3 p-2 rounded-xl hover:bg-neutral-100 transition-colors"
       >
         <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-          {user.avatar ? (
-            <img 
-              src={user.avatar} 
-              alt={user.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-white text-sm font-medium">
-              {user.name.charAt(0).toUpperCase()}
-            </span>
-          )}
+          <img 
+            src={user.avatar || '/avatar.png'} 
+            alt={user.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/avatar.png';
+            }}
+          />
         </div>
         <div className="hidden md:block text-left">
           <p className="text-sm font-medium text-neutral-900">{user.name}</p>
@@ -67,17 +74,15 @@ const UserDropdown: React.FC = () => {
             <div className="p-4 border-b border-neutral-100">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-                  {user.avatar ? (
-                    <img 
-                      src={user.avatar} 
-                      alt={user.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-white font-medium">
-                      {user.name.charAt(0).toUpperCase()}
-                    </span>
-                  )}
+                  <img 
+                    src={user.avatar || '/avatar.png'} 
+                    alt={user.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/avatar.png';
+                    }}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-neutral-900 truncate">{user.name}</p>
@@ -91,12 +96,36 @@ const UserDropdown: React.FC = () => {
 
             {/* Menu Items */}
             <div className="py-2">
-              <button className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-neutral-50 transition-colors">
+              <button 
+                onClick={() => handleNavigation('/ride')}
+                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-neutral-50 transition-colors"
+              >
+                <Car className="w-5 h-5 text-neutral-400" />
+                <span className="text-sm text-neutral-700">Book Ride</span>
+              </button>
+              
+              <button 
+                onClick={() => handleNavigation('/my-rides')}
+                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-neutral-50 transition-colors"
+              >
+                <Calendar className="w-5 h-5 text-neutral-400" />
+                <span className="text-sm text-neutral-700">My Rides</span>
+              </button>
+              
+              <div className="border-t border-neutral-100 my-2"></div>
+              
+              <button 
+                onClick={() => handleNavigation('/profile')}
+                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-neutral-50 transition-colors"
+              >
                 <User className="w-5 h-5 text-neutral-400" />
                 <span className="text-sm text-neutral-700">Profile</span>
               </button>
               
-              <button className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-neutral-50 transition-colors">
+              <button 
+                onClick={() => handleNavigation('/settings')}
+                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-neutral-50 transition-colors"
+              >
                 <Settings className="w-5 h-5 text-neutral-400" />
                 <span className="text-sm text-neutral-700">Settings</span>
               </button>
@@ -108,7 +137,7 @@ const UserDropdown: React.FC = () => {
                 className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-50 transition-colors group"
               >
                 <LogOut className="w-5 h-5 text-neutral-400 group-hover:text-red-500" />
-                <span className="text-sm text-neutral-700 group-hover:text-red-600">Sign Out</span>
+                <span className="text-sm text-neutral-700 group-hover:text-red-600">Logout</span>
               </button>
             </div>
           </motion.div>
