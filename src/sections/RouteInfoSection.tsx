@@ -33,7 +33,14 @@ const RouteInfoSection: React.FC<RouteInfoSectionProps> = ({ className = "" }) =
       if (response.success) {
         // Handle successful booking - could show a success modal or redirect
         console.log('Ride booked successfully:', response)
-        alert(`Ride booked! Driver: ${response.driverInfo?.name}, ETA: ${response.estimatedArrival}`)
+        alert(`Ride booked successfully! 
+Driver: ${response.driverInfo?.name}
+Phone: ${response.driverInfo?.phone}
+Vehicle: ${response.driverInfo?.vehicle}
+ETA: ${response.estimatedArrival}
+Fare: $${routeInfo.fare}`)
+      } else {
+        setError(response.message || 'Failed to book ride. Please try again.')
       }
     } catch (error) {
       setError('Failed to book ride. Please try again.')

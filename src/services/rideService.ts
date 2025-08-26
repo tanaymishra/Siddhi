@@ -1,57 +1,160 @@
 import type { LocationInput, RouteInfo, RideBookingData, RideBookingResponse } from '../types/ride'
 
-// Mock ride booking service - replace with actual API calls
+// API base URL - using environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api'
+
+// Debug log to verify the API URL
+console.log('API_BASE_URL:', API_BASE_URL)
+
+// Book ride service - integrates with backend API
 export const bookRide = async (bookingData: RideBookingData): Promise<RideBookingResponse> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 2000))
-  
-  // Mock successful booking
-  return {
-    success: true,
-    rideId: `ride_${Date.now()}`,
-    estimatedArrival: '5-8 minutes',
-    driverInfo: {
-      name: 'John Driver',
-      phone: '+1 (555) 123-4567',
-      vehicle: 'Toyota Camry - ABC 123',
-      rating: 4.9
-    },
-    message: 'Your ride has been booked successfully!'
+  try {
+    const response = await fetch(`${API_BASE_URL}/rides`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bookingData)
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to book ride')
+    }
+
+    return {
+      success: true,
+      rideId: data.data.rideId,
+      estimatedArrival: data.data.estimatedArrival,
+      driverInfo: {
+        name: data.data.driverInfo.name,
+        phone: data.data.driverInfo.phone,
+        vehicle: data.data.driverInfo.vehicleNumber,
+        rating: 4.8 // Mock rating
+      },
+      message: data.message
+    }
+  } catch (error) {
+    console.error('Error booking ride:', error)
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to book ride'
+    }
+  }
+}
+
+// Get all rides
+export const getAllRides = async (): Promise<{
+  success: boolean
+  data?: any[]
+  message?: string
+}> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/rides`)
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to fetch rides')
+    }
+
+    return {
+      success: true,
+      data: data.data
+    }
+  } catch (error) {
+    console.error('Error fetching rides:', error)
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to fetch rides'
+    }
   }
 }
 
 // Get ride history
 export const getRideHistory = async (userId: string): Promise<any[]> => {
-  // Mock ride history
-  return [
-    {
-      id: 'ride_1',
-      date: '2025-01-20',
-      from: 'Times Square, NY',
-      to: 'Central Park, NY',
-      fare: 15.50,
-      status: 'completed'
-    },
-    {
-      id: 'ride_2',
-      date: '2025-01-19',
-      from: 'Brooklyn Bridge, NY',
-      to: 'Wall Street, NY',
-      fare: 12.25,
-      status: 'completed'
+  try {
+    const response = await getAllRides()
+    if (response.success && response.data) {
+      // Filter by userId if provided
+      return response.data.filter(ride => !userId || ride.userId === userId)
     }
-  ]
+    return []
+  } catch (error) {
+    console.error('Error fetching ride history:', error)
+    return []
+  }
 }
 
-// Cancel ride
-export const cancelRide = async (rideId: string): Promise<{ success: boolean; message: string }> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
-  return {
-    success: true,
-    message: 'Ride cancelled successfully'
+// Update payment status
+export const updatePaymentStatus = async (rideId: string, isPaymentDone: boolean): Promise<{
+  success: boolean
+  message?: string
+}> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/rides/${rideId}/payment`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isPaymentDone })
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to update payment status')
+    }
+
+    return {
+      success: true,
+      message: data.message
+    }
+  } catch (error) {
+    console.error('Error updating payment status:', error)
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to update payment status'
+    }
   }
+}
+
+// Update ride active status
+export const updateRideStatus = async (rideId: string, isActive: boolean): Promise<{
+  success: boolean
+  message?: string
+}> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/rides/${rideId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isActive })
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to update ride status')
+    }
+
+    return {
+      success: true,
+      message: data.message
+    }
+  } catch (error) {
+    console.error('Error updating ride status:', error)
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to update ride status'
+    }
+  }
+}
+
+// Cancel ride (sets isActive to false)
+export const cancelRide = async (rideId: string): Promise<{ success: boolean; message: string }> => {
+  return updateRideStatus(rideId, false)
 }
 
 // Get estimated fare without booking

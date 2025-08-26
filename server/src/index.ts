@@ -7,12 +7,13 @@ import { connectDB } from './config/database'
 import { errorHandler } from './middleware/errorHandler'
 import { notFound } from './middleware/notFound'
 import authRoutes from './routes/auth'
+import rideRoutes from './routes/rides'
 
 // Load environment variables
 dotenv.config()
 
 const app = express()
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 5001
 
 // Connect to MongoDB
 connectDB()
@@ -45,13 +46,17 @@ app.get('/api', (req, res) => {
     endpoints: {
       health: '/health',
       api: '/api',
-      auth: '/api/auth'
+      auth: '/api/auth',
+      rides: '/api/rides'
     }
   })
 })
 
 // Auth routes
 app.use('/api/auth', authRoutes)
+
+// Ride routes
+app.use('/api/rides', rideRoutes)
 
 // Error handling middleware
 app.use(notFound)
