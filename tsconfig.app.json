@@ -7,6 +7,7 @@
       "DOM",
       "DOM.Iterable"
     ],
+    "types": ["google.maps"],
     "module": "ESNext",
     "skipLibCheck": true,
     /* Bundler mode */
@@ -23,6 +24,7 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src"
+    "src",
+    "src/types/global.d.ts"
   ]
 }
