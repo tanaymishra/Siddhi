@@ -4,12 +4,15 @@ import { Navigation, Clock, DollarSign, Car, Loader2 } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { useRideStore } from '../store/rideStore'
 import { bookRide } from '../services/rideService'
+import { initiatePayment } from '../services/paymentService'
+import { useNavigate } from 'react-router-dom'
 
 interface RouteInfoSectionProps {
   className?: string
 }
 
 const RouteInfoSection: React.FC<RouteInfoSectionProps> = ({ className = "" }) => {
+  const navigate = useNavigate()
   const {
     fromLocation,
     toLocation,
@@ -24,27 +27,38 @@ const RouteInfoSection: React.FC<RouteInfoSectionProps> = ({ className = "" }) =
 
     try {
       setCalculatingRoute(true)
+      
+      // First create the ride in database
       const response = await bookRide({
         fromLocation,
         toLocation,
         routeInfo
       })
 
-      if (response.success) {
-        // Handle successful booking - could show a success modal or redirect
-        console.log('Ride booked successfully:', response)
-        alert(`Ride booked successfully! 
-Driver: ${response.driverInfo?.name}
-Phone: ${response.driverInfo?.phone}
-Vehicle: ${response.driverInfo?.vehicle}
-ETA: ${response.estimatedArrival}
-Fare: $${routeInfo.fare}`)
+      if (response.success && response.rideId) {
+        // Initiate Razorpay payment
+        await initiatePayment(
+          response.rideId,
+          // Payment success callback
+          (paymentData) => {
+            console.log('Payment successful:', paymentData)
+            // Redirect to confirmation page
+            navigate(`/confirmed/${response.rideId}`)
+          },
+          // Payment error callback
+          (error) => {
+            console.error('Payment failed:', error)
+            setError(error.message || 'Payment failed. Please try again.')
+            setCalculatingRoute(false)
+          }
+        )
       } else {
         setError(response.message || 'Failed to book ride. Please try again.')
+        setCalculatingRoute(false)
       }
     } catch (error) {
+      console.error('Error booking ride:', error)
       setError('Failed to book ride. Please try again.')
-    } finally {
       setCalculatingRoute(false)
     }
   }
@@ -81,7 +95,7 @@ Fare: $${routeInfo.fare}`)
               <DollarSign className="w-5 h-5 text-green-600" />
             </div>
             <p className="text-xs text-neutral-600">Fare</p>
-            <p className="font-semibold text-neutral-900">${routeInfo.fare}</p>
+            <p className="font-semibold text-neutral-900">₹{routeInfo.fare}</p>
           </div>
         </div>
 
@@ -99,7 +113,7 @@ Fare: $${routeInfo.fare}`)
           ) : (
             <>
               <Car className="w-5 h-5 mr-2" />
-              Book Ride - ${routeInfo.fare}
+              Book Ride - ₹{routeInfo.fare}
             </>
           )}
         </Button>

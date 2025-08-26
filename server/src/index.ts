@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/errorHandler'
 import { notFound } from './middleware/notFound'
 import authRoutes from './routes/auth'
 import rideRoutes from './routes/rides'
+import paymentRoutes from './routes/payment'
 
 // Load environment variables
 dotenv.config()
@@ -47,7 +48,8 @@ app.get('/api', (req, res) => {
       health: '/health',
       api: '/api',
       auth: '/api/auth',
-      rides: '/api/rides'
+      rides: '/api/rides',
+      payment: '/api/payment'
     }
   })
 })
@@ -57,6 +59,9 @@ app.use('/api/auth', authRoutes)
 
 // Ride routes
 app.use('/api/rides', rideRoutes)
+
+// Payment routes
+app.use('/api/payment', paymentRoutes)
 
 // Error handling middleware
 app.use(notFound)

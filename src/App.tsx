@@ -14,6 +14,7 @@ import DriverRegistration from './pages/DriverRegistration'
 import DriverLogin from './pages/DriverLogin'
 import DriverForgotPassword from './pages/DriverForgotPassword'
 import MapTest from './pages/MapTest'
+import Confirmed from './pages/Confirmed'
 
 function App() {
   return (
@@ -31,6 +32,8 @@ function App() {
           </Route>
           {/* Ride page without layout (full screen map) */}
           <Route path="/ride" element={<Ride />} />
+          {/* Confirmed page without layout */}
+          <Route path="/confirmed/:id" element={<Confirmed />} />
           {/* Map test page for debugging */}
           <Route path="/maptest" element={<MapTest />} />
           {/* Driver routes without layout */}

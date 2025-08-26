@@ -28,6 +28,12 @@ export interface IRide extends Document {
   }
   isPaymentDone: boolean
   isActive: boolean
+  paymentDetails?: {
+    razorpay_order_id: string
+    razorpay_payment_id: string
+    razorpay_signature: string
+    paidAt: Date
+  }
   createdAt: Date
   updatedAt: Date
 }
@@ -60,7 +66,13 @@ const RideSchema: Schema = new Schema(
       vehicleNumber: { type: String, required: false }
     },
     isPaymentDone: { type: Boolean, default: false },
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
+    paymentDetails: {
+      razorpay_order_id: { type: String, required: false },
+      razorpay_payment_id: { type: String, required: false },
+      razorpay_signature: { type: String, required: false },
+      paidAt: { type: Date, required: false }
+    }
   },
   {
     timestamps: true
