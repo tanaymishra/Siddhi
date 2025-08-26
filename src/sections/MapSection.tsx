@@ -1,6 +1,7 @@
 /// <reference types="google.maps" />
 import React, { useEffect, useRef } from 'react'
 import { Wrapper } from '@googlemaps/react-wrapper'
+import { generateMockCars, createCarMarker, type MockCar } from '../utils/mapUtils'
 interface MapSectionProps {
   className?: string
 }
@@ -33,6 +34,22 @@ const MapSection: React.FC<MapSectionProps> = ({ className = "" }) => {
         try {
           // Default to India center if geolocation fails
           const defaultCenter = { lat: 20.5937, lng: 78.9629 } // India center
+          let mockCarsMarkers: google.maps.Marker[] = []
+
+          const addMockCars = (center: { lat: number; lng: number }) => {
+            // Clear existing car markers
+            mockCarsMarkers.forEach(marker => marker.setMap(null))
+            mockCarsMarkers = []
+
+            // Generate and add mock cars
+            const mockCars = generateMockCars(center.lat, center.lng, 8)
+            console.log('MapSection - Generated mock cars:', mockCars.length)
+            
+            mockCars.forEach(car => {
+              const marker = createCarMarker(map, car)
+              mockCarsMarkers.push(marker)
+            })
+          }
 
           const customMapStyle = [
             {
@@ -219,10 +236,16 @@ const MapSection: React.FC<MapSectionProps> = ({ className = "" }) => {
                 console.log('MapSection - Got user location:', userLocation)
                 map.setCenter(userLocation)
                 map.setZoom(15)
+                
+                // Add mock cars around user location
+                addMockCars(userLocation)
               },
               (error) => {
                 console.log('MapSection - Geolocation error:', error.message)
                 console.log('MapSection - Using default India center')
+                
+                // Add mock cars around default location
+                addMockCars(defaultCenter)
               },
               {
                 enableHighAccuracy: true,
@@ -232,6 +255,8 @@ const MapSection: React.FC<MapSectionProps> = ({ className = "" }) => {
             )
           } else {
             console.log('MapSection - Geolocation not supported, using default India center')
+            // Add mock cars around default location
+            addMockCars(defaultCenter)
           }
 
           console.log('MapSection - Simple map created successfully!')

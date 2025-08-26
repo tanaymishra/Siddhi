@@ -121,3 +121,93 @@ export const centerMapOnLocation = (
     map.setCenter(location)
     map.setZoom(zoom)
 }
+
+// Mock car data interface
+export interface MockCar {
+    id: string
+    lat: number
+    lng: number
+    type: 'sedan' | 'suv' | 'hatchback'
+    driver: string
+    rating: number
+    eta: string
+    price: number
+}
+
+// Generate mock cars around a location
+export const generateMockCars = (
+    centerLat: number,
+    centerLng: number,
+    count: number = 8
+): MockCar[] => {
+    const cars: MockCar[] = []
+    const carTypes: MockCar['type'][] = ['sedan', 'suv', 'hatchback']
+    const drivers = ['John D.', 'Sarah M.', 'Mike R.', 'Lisa K.', 'David P.', 'Emma W.', 'Alex T.', 'Nina S.']
+    
+    for (let i = 0; i < count; i++) {
+        // Generate random position within ~2km radius
+        const radius = 0.02 // roughly 2km in degrees
+        const angle = Math.random() * 2 * Math.PI
+        const distance = Math.random() * radius
+        
+        const lat = centerLat + (distance * Math.cos(angle))
+        const lng = centerLng + (distance * Math.sin(angle))
+        
+        cars.push({
+            id: `car-${i + 1}`,
+            lat,
+            lng,
+            type: carTypes[Math.floor(Math.random() * carTypes.length)],
+            driver: drivers[i % drivers.length],
+            rating: 4.0 + Math.random() * 1.0, // 4.0 to 5.0
+            eta: `${Math.floor(Math.random() * 8) + 2} min`, // 2-10 min
+            price: Math.floor(Math.random() * 15) + 10 // $10-25
+        })
+    }
+    
+    return cars
+}
+
+// Create car marker on map
+export const createCarMarker = (
+    map: google.maps.Map,
+    car: MockCar
+): google.maps.Marker => {
+    // Use the cab.png image for all car markers
+    const carIcon = {
+        url: '/cab.png',
+        scaledSize: new google.maps.Size(18, 32), // 16:9 ratio scaled 2x (9*2=18, 16*2=32)
+        anchor: new google.maps.Point(9, 16), // Center the icon (width/2, height/2)
+        origin: new google.maps.Point(0, 0)
+    }
+
+    const marker = new google.maps.Marker({
+        position: { lat: car.lat, lng: car.lng },
+        map: map,
+        icon: carIcon,
+        title: `${car.driver} - ${car.type} - ${car.eta}`,
+        zIndex: 1000
+    })
+
+    // Add info window
+    const infoWindow = new google.maps.InfoWindow({
+        content: `
+            <div class="p-2 min-w-[200px]">
+                <div class="font-semibold text-gray-800">${car.driver}</div>
+                <div class="text-sm text-gray-600 capitalize">${car.type}</div>
+                <div class="flex items-center gap-1 text-sm">
+                    <span class="text-yellow-500">★</span>
+                    <span>${car.rating.toFixed(1)}</span>
+                </div>
+                <div class="text-sm text-gray-600">ETA: ${car.eta}</div>
+                <div class="text-sm font-medium text-green-600">$${car.price}</div>
+            </div>
+        `
+    })
+
+    marker.addListener('click', () => {
+        infoWindow.open(map, marker)
+    })
+
+    return marker
+}
