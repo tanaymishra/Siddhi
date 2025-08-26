@@ -38,13 +38,63 @@ export const initializeDirectionsRenderer = (): google.maps.DirectionsRenderer =
     })
 }
 
-// Calculate fare based on distance
-export const calculateFare = (distanceInMeters: number): number => {
+// Calculate distance between two coordinates using Haversine formula
+export const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+    const R = 6371 // Earth's radius in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180
+    const dLng = (lng2 - lng1) * Math.PI / 180
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLng/2) * Math.sin(dLng/2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+    return R * c // Distance in kilometers
+}
+
+// Calculate fare based on distance (₹12 per km)
+export const calculateFare = (distanceInKm: number): number => {
+    const perKmRate = 12 // ₹12 per km
+    return Math.round(distanceInKm * perKmRate)
+}
+
+// Calculate estimated time (60 km/h average speed)
+export const calculateTime = (distanceInKm: number): string => {
+    const avgSpeed = 60 // 60 km/h
+    const timeInHours = distanceInKm / avgSpeed
+    const timeInMinutes = Math.round(timeInHours * 60)
+    
+    if (timeInMinutes < 60) {
+        return `${timeInMinutes} min`
+    } else {
+        const hours = Math.floor(timeInMinutes / 60)
+        const minutes = timeInMinutes % 60
+        return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`
+    }
+}
+
+// Calculate route info from coordinates (static calculation)
+export const calculateRouteFromCoordinates = (
+    fromLat: number, 
+    fromLng: number, 
+    toLat: number, 
+    toLng: number
+) => {
+    const distanceInKm = calculateDistance(fromLat, fromLng, toLat, toLng)
+    const fare = calculateFare(distanceInKm)
+    const duration = calculateTime(distanceInKm)
+    const distance = `${distanceInKm.toFixed(1)} km`
+    
+    return {
+        distance,
+        duration,
+        fare
+    }
+}
+
+// Old calculateFare for compatibility
+export const calculateFareOld = (distanceInMeters: number): number => {
     const distanceInKm = distanceInMeters / 1000
-    const baseFare = 3.50
-    const perKmRate = 1.20
-    const calculatedFare = baseFare + (distanceInKm * perKmRate)
-    return Math.round(calculatedFare * 100) / 100
+    return calculateFare(distanceInKm)
 }
 
 // Calculate route between two locations

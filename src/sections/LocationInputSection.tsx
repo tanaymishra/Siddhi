@@ -5,6 +5,7 @@ import { useRideStore } from '../store/rideStore'
 import SimpleAutocomplete from '../components/SimpleAutocomplete'
 import { Button } from '../components/ui/Button'
 import { bookRide } from '../services/rideService'
+import { calculateRouteFromCoordinates } from '../utils/mapUtils'
 
 interface LocationInputSectionProps {
   className?: string
@@ -23,9 +24,23 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
     setError
   } = useRideStore()
 
+  // Calculate static route info when both locations are available
+  const staticRouteInfo = React.useMemo(() => {
+    if (fromLocation.coordinates && toLocation.coordinates) {
+      return calculateRouteFromCoordinates(
+        fromLocation.coordinates.lat,
+        fromLocation.coordinates.lng,
+        toLocation.coordinates.lat,
+        toLocation.coordinates.lng
+      )
+    }
+    return null
+  }, [fromLocation.coordinates, toLocation.coordinates])
+
   const handleBookRide = async () => {
-    if (!routeInfo) {
-      alert('Route information not available yet. Please wait for route calculation.')
+    const routeToUse = staticRouteInfo || routeInfo
+    if (!routeToUse) {
+      alert('Route information not available yet.')
       return
     }
 
@@ -34,7 +49,7 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
       const response = await bookRide({
         fromLocation,
         toLocation,
-        routeInfo
+        routeInfo: routeToUse
       })
 
       if (response.success) {
@@ -133,21 +148,21 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
                 <Clock className="w-4 h-4 text-blue-600" />
               </div>
               <p className="text-xs text-neutral-600">Time</p>
-              <p className="text-sm font-semibold text-neutral-900">{routeInfo?.duration || 'Calculating...'}</p>
+              <p className="text-sm font-semibold text-neutral-900">{staticRouteInfo?.duration || routeInfo?.duration || 'Calculating...'}</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mx-auto mb-1">
                 <Navigation className="w-4 h-4 text-green-600" />
               </div>
               <p className="text-xs text-neutral-600">Distance</p>
-              <p className="text-sm font-semibold text-neutral-900">{routeInfo?.distance || 'Calculating...'}</p>
+              <p className="text-sm font-semibold text-neutral-900">{staticRouteInfo?.distance || routeInfo?.distance || 'Calculating...'}</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center w-8 h-8 bg-orange-100 rounded-full mx-auto mb-1">
                 <span className="text-sm font-bold text-orange-600">₹</span>
               </div>
               <p className="text-xs text-neutral-600">Fare</p>
-              <p className="text-sm font-semibold text-neutral-900">₹{routeInfo?.fare || '0'}</p>
+              <p className="text-sm font-semibold text-neutral-900">₹{staticRouteInfo?.fare || routeInfo?.fare || '0'}</p>
             </div>
           </div>
 
@@ -166,7 +181,7 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
             ) : (
               <>
                 <Car className="w-5 h-5 mr-2" />
-                Book Now - ₹{routeInfo?.fare || '0'}
+                Book Now - ₹{staticRouteInfo?.fare || routeInfo?.fare || '0'}
               </>
             )}
           </Button>
