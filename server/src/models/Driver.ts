@@ -109,8 +109,9 @@ const driverSchema = new Schema<IDriver>({
   },
   zipCode: {
     type: String,
-    required: [true, 'ZIP code is required'],
-    trim: true
+    required: [true, 'PIN code is required'],
+    trim: true,
+    match: [/^\d{6}$/, 'PIN code must be exactly 6 digits']
   },
   
   // Vehicle Information
@@ -168,8 +169,9 @@ const driverSchema = new Schema<IDriver>({
   },
   routingNumber: {
     type: String,
-    required: [true, 'Routing number is required'],
-    trim: true
+    required: [true, 'IFSC code is required'],
+    trim: true,
+    uppercase: true
   },
   
   // Status and approval

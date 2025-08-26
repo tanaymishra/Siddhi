@@ -308,17 +308,48 @@ const DriverRegistration: React.FC = () => {
                   required
                 >
                   <option value="">Select State</option>
-                  <option value="CA">California</option>
-                  <option value="NY">New York</option>
-                  <option value="TX">Texas</option>
-                  <option value="FL">Florida</option>
-                  {/* Add more states as needed */}
+                  <option value="Andhra Pradesh">Andhra Pradesh</option>
+                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                  <option value="Assam">Assam</option>
+                  <option value="Bihar">Bihar</option>
+                  <option value="Chhattisgarh">Chhattisgarh</option>
+                  <option value="Goa">Goa</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Haryana">Haryana</option>
+                  <option value="Himachal Pradesh">Himachal Pradesh</option>
+                  <option value="Jharkhand">Jharkhand</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Kerala">Kerala</option>
+                  <option value="Madhya Pradesh">Madhya Pradesh</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Manipur">Manipur</option>
+                  <option value="Meghalaya">Meghalaya</option>
+                  <option value="Mizoram">Mizoram</option>
+                  <option value="Nagaland">Nagaland</option>
+                  <option value="Odisha">Odisha</option>
+                  <option value="Punjab">Punjab</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="Sikkim">Sikkim</option>
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                  <option value="Telangana">Telangana</option>
+                  <option value="Tripura">Tripura</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Uttarakhand">Uttarakhand</option>
+                  <option value="West Bengal">West Bengal</option>
+                  <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                  <option value="Chandigarh">Chandigarh</option>
+                  <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                  <option value="Ladakh">Ladakh</option>
+                  <option value="Lakshadweep">Lakshadweep</option>
+                  <option value="Puducherry">Puducherry</option>
                 </select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  ZIP Code *
+                  PIN Code *
                 </label>
                 <input
                   type="text"
@@ -326,7 +357,8 @@ const DriverRegistration: React.FC = () => {
                   value={formData.zipCode}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                  placeholder="ZIP Code"
+                  placeholder="PIN Code (6 digits)"
+                  maxLength={6}
                   required
                 />
               </div>
@@ -594,7 +626,7 @@ const DriverRegistration: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Routing Number *
+                IFSC Code *
               </label>
               <input
                 type="text"
@@ -602,7 +634,7 @@ const DriverRegistration: React.FC = () => {
                 value={formData.routingNumber}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                placeholder="Enter your routing number"
+                placeholder="Enter your bank IFSC code (e.g., SBIN0001234)"
                 required
               />
             </div>
@@ -635,7 +667,7 @@ const DriverRegistration: React.FC = () => {
                     {formData.firstName} {formData.lastName} • {formData.email} • {formData.phone}
                   </p>
                   <p className="text-sm text-neutral-600">
-                    {formData.address}, {formData.city}, {formData.state} {formData.zipCode}
+                    {formData.address}, {formData.city}, {formData.state} - {formData.zipCode}
                   </p>
                 </div>
                 

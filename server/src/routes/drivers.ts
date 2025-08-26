@@ -52,8 +52,9 @@ const registerValidation = [
     .withMessage('State must be at least 2 characters'),
   body('zipCode')
     .trim()
-    .isLength({ min: 5 })
-    .withMessage('ZIP code must be at least 5 characters'),
+    .isNumeric()
+    .isLength({ min: 6, max: 6 })
+    .withMessage('PIN code must be exactly 6 digits'),
   body('vehicleMake')
     .trim()
     .isLength({ min: 2 })
@@ -83,8 +84,9 @@ const registerValidation = [
     .withMessage('Account number must be at least 8 characters'),
   body('routingNumber')
     .trim()
-    .isLength({ min: 9, max: 9 })
-    .withMessage('Routing number must be 9 digits')
+    .isLength({ min: 11, max: 11 })
+    .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/)
+    .withMessage('IFSC code must be 11 characters in format: ABCD0123456')
 ]
 
 // Driver login validation
