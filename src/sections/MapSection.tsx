@@ -34,6 +34,165 @@ const MapSection: React.FC<MapSectionProps> = ({ className = "" }) => {
           // Default to India center if geolocation fails
           const defaultCenter = { lat: 20.5937, lng: 78.9629 } // India center
 
+          const customMapStyle = [
+            {
+              "featureType": "all",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#fafafa" // neutral-50
+                }
+              ]
+            },
+            {
+              "featureType": "all",
+              "elementType": "labels.icon",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "all",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#525252" // neutral-600
+                }
+              ]
+            },
+            {
+              "featureType": "all",
+              "elementType": "labels.text.stroke",
+              "stylers": [
+                {
+                  "color": "#fafafa" // neutral-50
+                }
+              ]
+            },
+            {
+              "featureType": "administrative",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#f0f4f8" // primary-50
+                }
+              ]
+            },
+            {
+              "featureType": "administrative",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#334e68" // primary-700
+                }
+              ]
+            },
+            {
+              "featureType": "landscape",
+              "elementType": "all",
+              "stylers": [
+                {
+                  "color": "#f5f5f5" // neutral-100
+                }
+              ]
+            },
+            {
+              "featureType": "poi",
+              "elementType": "all",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "poi.business",
+              "elementType": "all",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "road",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#e5e5e5" // neutral-200
+                }
+              ]
+            },
+            {
+              "featureType": "road",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#737373" // neutral-500
+                }
+              ]
+            },
+            {
+              "featureType": "road.highway",
+              "elementType": "all",
+              "stylers": [
+                {
+                  "visibility": "simplified"
+                }
+              ]
+            },
+            {
+              "featureType": "road.highway",
+              "elementType": "geometry.fill",
+              "stylers": [
+                {
+                  "color": "#bcccdc" // primary-200
+                }
+              ]
+            },
+            {
+              "featureType": "road.highway",
+              "elementType": "geometry.stroke",
+              "stylers": [
+                {
+                  "color": "#9fb3c8" // primary-300
+                }
+              ]
+            },
+            {
+              "featureType": "road.arterial",
+              "elementType": "labels.icon",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "transit",
+              "elementType": "all",
+              "stylers": [
+                {
+                  "visibility": "off"
+                }
+              ]
+            },
+            {
+              "featureType": "water",
+              "elementType": "all",
+              "stylers": [
+                {
+                  "color": "#627d98" // primary-500
+                },
+                {
+                  "visibility": "on"
+                }
+              ]
+            }
+          ]
+
           const map = new google.maps.Map(mapRef.current, {
             center: defaultCenter,
             zoom: 6,
@@ -44,7 +203,8 @@ const MapSection: React.FC<MapSectionProps> = ({ className = "" }) => {
             scaleControl: false,
             streetViewControl: false,
             rotateControl: false,
-            fullscreenControl: false
+            fullscreenControl: false,
+            styles: customMapStyle
           })
 
           // Try to get user's current location
