@@ -1,8 +1,10 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Clock, Navigation, Car } from 'lucide-react'
 import { useRideStore } from '../store/rideStore'
 import SimpleAutocomplete from '../components/SimpleAutocomplete'
+import { Button } from '../components/ui/Button'
+import { bookRide } from '../services/rideService'
 
 interface LocationInputSectionProps {
   className?: string
@@ -10,11 +12,41 @@ interface LocationInputSectionProps {
 
 const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className = "" }) => {
   const {
+    fromLocation,
+    toLocation,
+    routeInfo,
     error,
     isCalculatingRoute,
     setFromLocation,
-    setToLocation
+    setToLocation,
+    setCalculatingRoute,
+    setError
   } = useRideStore()
+
+  const handleBookRide = async () => {
+    if (!routeInfo) {
+      alert('Route information not available yet. Please wait for route calculation.')
+      return
+    }
+
+    try {
+      setCalculatingRoute(true)
+      const response = await bookRide({
+        fromLocation,
+        toLocation,
+        routeInfo
+      })
+
+      if (response.success) {
+        console.log('Ride booked successfully:', response)
+        alert(`Ride booked! Driver: ${response.driverInfo?.name}, ETA: ${response.estimatedArrival}`)
+      }
+    } catch (error) {
+      setError('Failed to book ride. Please try again.')
+    } finally {
+      setCalculatingRoute(false)
+    }
+  }
 
   return (
     <motion.div
@@ -78,6 +110,66 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
             <Loader2 className="w-5 h-5 animate-spin text-primary-600" />
             <p className="text-sm text-neutral-600">Calculating route...</p>
           </div>
+        </div>
+      )}
+
+      {/* Debug Info - Remove this later */}
+      {fromLocation.coordinates && toLocation.coordinates && (
+        <div className="p-4 bg-yellow-50 border-t border-yellow-100 text-xs">
+          <p>Debug: From: {fromLocation.address}</p>
+          <p>Debug: To: {toLocation.address}</p>
+          <p>Debug: RouteInfo: {routeInfo ? 'Available' : 'Not available'}</p>
+          <p>Debug: Calculating: {isCalculatingRoute ? 'Yes' : 'No'}</p>
+        </div>
+      )}
+
+      {/* Fare Estimate and Book Button */}
+      {fromLocation.coordinates && toLocation.coordinates && !isCalculatingRoute && (
+        <div className="p-6 bg-neutral-50 border-t border-neutral-100">
+          {/* Route Info */}
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="text-center">
+              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mx-auto mb-1">
+                <Clock className="w-4 h-4 text-blue-600" />
+              </div>
+              <p className="text-xs text-neutral-600">Time</p>
+              <p className="text-sm font-semibold text-neutral-900">{routeInfo?.duration || 'Calculating...'}</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mx-auto mb-1">
+                <Navigation className="w-4 h-4 text-green-600" />
+              </div>
+              <p className="text-xs text-neutral-600">Distance</p>
+              <p className="text-sm font-semibold text-neutral-900">{routeInfo?.distance || 'Calculating...'}</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center w-8 h-8 bg-orange-100 rounded-full mx-auto mb-1">
+                <span className="text-sm font-bold text-orange-600">₹</span>
+              </div>
+              <p className="text-xs text-neutral-600">Fare</p>
+              <p className="text-sm font-semibold text-neutral-900">₹{routeInfo?.fare || '0'}</p>
+            </div>
+          </div>
+
+          {/* Book Button */}
+          <Button
+            className="w-full bg-green-600 hover:bg-green-700"
+            size="lg"
+            onClick={handleBookRide}
+            disabled={isCalculatingRoute}
+          >
+            {isCalculatingRoute ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Booking...
+              </>
+            ) : (
+              <>
+                <Car className="w-5 h-5 mr-2" />
+                Book Now - ₹{routeInfo?.fare || '0'}
+              </>
+            )}
+          </Button>
         </div>
       )}
     </motion.div>
