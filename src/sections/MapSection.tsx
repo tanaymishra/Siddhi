@@ -31,9 +31,12 @@ const MapSection: React.FC<MapSectionProps> = ({ className = "" }) => {
         console.log('MapSection - Creating simple map...')
 
         try {
-          new google.maps.Map(mapRef.current, {
-            center: { lat: 40.7128, lng: -74.0060 },
-            zoom: 13,
+          // Default to India center if geolocation fails
+          const defaultCenter = { lat: 20.5937, lng: 78.9629 } // India center
+
+          const map = new google.maps.Map(mapRef.current, {
+            center: defaultCenter,
+            zoom: 6,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             disableDefaultUI: true,
             zoomControl: false,
@@ -43,6 +46,33 @@ const MapSection: React.FC<MapSectionProps> = ({ className = "" }) => {
             rotateControl: false,
             fullscreenControl: false
           })
+
+          // Try to get user's current location
+          if (navigator.geolocation) {
+            console.log('MapSection - Getting current location...')
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const userLocation = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude
+                }
+                console.log('MapSection - Got user location:', userLocation)
+                map.setCenter(userLocation)
+                map.setZoom(15)
+              },
+              (error) => {
+                console.log('MapSection - Geolocation error:', error.message)
+                console.log('MapSection - Using default India center')
+              },
+              {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000
+              }
+            )
+          } else {
+            console.log('MapSection - Geolocation not supported, using default India center')
+          }
 
           console.log('MapSection - Simple map created successfully!')
         } catch (error) {
