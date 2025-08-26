@@ -5,6 +5,8 @@ import { useRideStore } from '../store/rideStore'
 import SimpleAutocomplete from '../components/SimpleAutocomplete'
 import { Button } from '../components/ui/Button'
 import { calculateRouteFromCoordinates } from '../utils/mapUtils'
+import { bookRide } from '../services/rideService'
+import { createPaymentOrder, verifyPayment } from '../services/paymentService'
 
 // Razorpay type declaration
 declare global {
@@ -52,34 +54,46 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
 
     try {
       setCalculatingRoute(true)
+      setError('')
       console.log('Starting ride booking process...')
 
-      // For testing, let's directly open payment gateway with mock data
-      const mockRideId = `test_ride_${Date.now()}`
-      console.log('Opening payment gateway for test ride:', mockRideId)
-
-      // Create a mock payment order directly
-      const mockPaymentData = {
-        orderId: `order_${Date.now()}`,
-        amount: routeToUse.fare * 100, // Convert to paise
-        currency: 'INR',
-        keyId: 'rzp_test_R9vdXcskR15ETJ', // Your test key
-        rideId: mockRideId,
-        fare: routeToUse.fare
+      // Step 1: Create ride booking
+      const bookingData = {
+        fromLocation: fromLocation,
+        toLocation: toLocation,
+        routeInfo: routeToUse,
+        userId: 'test_user_123' // In real app, get from auth
       }
 
-      // Load Razorpay script and open payment
+      const rideResponse = await bookRide(bookingData)
+      if (!rideResponse.success) {
+        throw new Error(rideResponse.message || 'Failed to book ride')
+      }
+
+      const rideId = rideResponse.rideId!
+      console.log('Ride created successfully:', rideId)
+
+      // Step 2: Create payment order from server
+      const orderResponse = await createPaymentOrder(rideId)
+      if (!orderResponse.success || !orderResponse.data) {
+        throw new Error(orderResponse.message || 'Failed to create payment order')
+      }
+
+      const paymentData = orderResponse.data
+      console.log('Payment order created:', paymentData.orderId)
+
+      // Step 3: Load Razorpay script and open payment
       if (!window.Razorpay) {
         const script = document.createElement('script')
         script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-        script.onload = () => openRazorpay(mockPaymentData)
+        script.onload = () => openRazorpay(paymentData)
         script.onerror = () => {
           setError('Failed to load payment gateway')
           setCalculatingRoute(false)
         }
         document.body.appendChild(script)
       } else {
-        openRazorpay(mockPaymentData)
+        openRazorpay(paymentData)
       }
 
       function openRazorpay(paymentData: any) {
@@ -90,10 +104,30 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
           name: 'HoppOn',
           description: `Ride Payment - ₹${paymentData.fare}`,
           order_id: paymentData.orderId,
-          handler: (response: any) => {
+          handler: async (response: any) => {
             console.log('Payment successful:', response)
-            setCalculatingRoute(false)
-            alert('Payment successful! Your driver will arrive in 5-8 minutes.')
+
+            // Step 4: Verify payment with server
+            try {
+              const verificationData = {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                rideId: paymentData.rideId
+              }
+
+              const verifyResponse = await verifyPayment(verificationData)
+              if (verifyResponse.success) {
+                setCalculatingRoute(false)
+                alert(`Payment successful! Your driver will arrive in ${verifyResponse.data?.estimatedArrival || '5-8 minutes'}.`)
+              } else {
+                throw new Error(verifyResponse.message || 'Payment verification failed')
+              }
+            } catch (verifyError) {
+              console.error('Payment verification error:', verifyError)
+              setError('Payment completed but verification failed. Please contact support.')
+              setCalculatingRoute(false)
+            }
           },
           prefill: {
             name: 'Test User',
@@ -109,7 +143,7 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
 
         rzp.on('payment.failed', (response: any) => {
           console.error('Payment failed:', response)
-          setError('Payment failed. Please try again.')
+          setError(`Payment failed: ${response.error?.description || 'Please try again.'}`)
           setCalculatingRoute(false)
         })
 
@@ -119,7 +153,7 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
 
     } catch (error) {
       console.error('Error booking ride:', error)
-      setError('Failed to book ride. Please try again.')
+      setError(error instanceof Error ? error.message : 'Failed to book ride. Please try again.')
       setCalculatingRoute(false)
     }
   }
