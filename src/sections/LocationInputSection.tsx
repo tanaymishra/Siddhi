@@ -7,6 +7,7 @@ import { Button } from '../components/ui/Button'
 import { calculateRouteFromCoordinates } from '../utils/mapUtils'
 import { bookRide } from '../services/rideService'
 import { createPaymentOrder, verifyPayment } from '../services/paymentService'
+import BookingSuccessPopup from '../components/ui/BookingSuccessPopup'
 
 // Razorpay type declaration
 declare global {
@@ -31,6 +32,13 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
     setCalculatingRoute,
     setError
   } = useRideStore()
+
+  // State for booking success popup
+  const [showSuccessPopup, setShowSuccessPopup] = React.useState(false)
+  const [bookingData, setBookingData] = React.useState<{
+    estimatedArrival?: string
+    driverInfo?: any
+  }>({})
 
   // Calculate static route info when both locations are available
   const staticRouteInfo = React.useMemo(() => {
@@ -119,7 +127,12 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
               const verifyResponse = await verifyPayment(verificationData)
               if (verifyResponse.success) {
                 setCalculatingRoute(false)
-                alert(`Payment successful! Your driver will arrive in ${verifyResponse.data?.estimatedArrival || '5-8 minutes'}.`)
+                // Show success popup instead of alert
+                setBookingData({
+                  estimatedArrival: verifyResponse.data?.estimatedArrival || '5-8 minutes',
+                  driverInfo: verifyResponse.data?.driverInfo
+                })
+                setShowSuccessPopup(true)
               } else {
                 throw new Error(verifyResponse.message || 'Payment verification failed')
               }
@@ -274,6 +287,13 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
           </Button>
         </div>
       )}
+
+      {/* Booking Success Popup */}
+      <BookingSuccessPopup
+        isOpen={showSuccessPopup}
+        onClose={() => setShowSuccessPopup(false)}
+        estimatedArrival={bookingData.estimatedArrival}
+      />
     </motion.div>
   )
 }
