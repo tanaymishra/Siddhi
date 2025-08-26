@@ -46,38 +46,7 @@ const Ride: React.FC = () => {
         return <></>
     }
 
-    // Initialize map
-    useEffect(() => {
-        const initializeMapAndAutocomplete = async () => {
-            if (mapRef.current && !map) {
-                console.log('Initializing map...')
-                console.log('Google Maps available:', !!window.google)
-                console.log('Places API available:', !!window.google?.maps?.places)
-
-                // Wait a bit more for Google Maps to be fully ready
-                await new Promise(resolve => setTimeout(resolve, 1000))
-
-                if (!window.google || !window.google.maps) {
-                    console.error('Google Maps not loaded')
-                    return
-                }
-
-                const newMap = initializeMap(mapRef.current)
-                const newDirectionsService = new google.maps.DirectionsService()
-                const newDirectionsRenderer = initializeDirectionsRenderer()
-
-                newDirectionsRenderer.setMap(newMap)
-
-                setMap(newMap)
-                setDirectionsService(newDirectionsService)
-                setDirectionsRenderer(newDirectionsRenderer)
-
-                console.log('Map initialized successfully')
-            }
-        }
-
-        initializeMapAndAutocomplete()
-    }, [map, setMap, setDirectionsService, setDirectionsRenderer])
+    // Remove duplicate initialization - MapComponent handles it
 
     // Autocomplete is now handled by SimpleAutocomplete components
 
@@ -141,7 +110,67 @@ const Ride: React.FC = () => {
     }
 
     const MapComponent = () => {
-        return <div ref={mapRef} className="w-full h-full" />
+        useEffect(() => {
+            console.log('MapComponent useEffect triggered')
+            console.log('mapRef.current:', !!mapRef.current)
+            console.log('window.google:', !!window.google)
+            console.log('window.google.maps:', !!window.google?.maps)
+            console.log('existing map:', !!map)
+
+            if (mapRef.current && window.google && window.google.maps && !map) {
+                console.log('Creating new map...')
+
+                // Create map with explicit styling
+                const mapInstance = new google.maps.Map(mapRef.current, {
+                    center: { lat: 40.7128, lng: -74.0060 },
+                    zoom: 13,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    disableDefaultUI: false,
+                    zoomControl: true,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    fullscreenControl: false
+                })
+
+                // Add a marker to verify map is working
+                new google.maps.Marker({
+                    position: { lat: 40.7128, lng: -74.0060 },
+                    map: mapInstance,
+                    title: 'Test Marker'
+                })
+
+                const directionsService = new google.maps.DirectionsService()
+                const directionsRenderer = new google.maps.DirectionsRenderer()
+                directionsRenderer.setMap(mapInstance)
+
+                setMap(mapInstance)
+                setDirectionsService(directionsService)
+                setDirectionsRenderer(directionsRenderer)
+
+                // Force map to resize and render
+                setTimeout(() => {
+                    google.maps.event.trigger(mapInstance, 'resize')
+                    mapInstance.setCenter({ lat: 40.7128, lng: -74.0060 })
+                }, 100)
+
+                console.log('Map created successfully!')
+            }
+        })
+
+        return (
+            <div
+                ref={mapRef}
+                className="w-full h-full"
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: '#f0f0f0'
+                }}
+            />
+        )
     }
 
     return (
@@ -149,15 +178,27 @@ const Ride: React.FC = () => {
             <Header />
 
             <div className="flex-1 relative">
+                {/* Debug Info */}
+                <div className="absolute top-0 right-0 bg-black text-white p-2 text-xs z-50">
+                    <div>API Key: {import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 'Set' : 'Missing'}</div>
+                    <div>Google: {window.google ? 'Loaded' : 'Not loaded'}</div>
+                    <div>Maps: {window.google?.maps ? 'Ready' : 'Not ready'}</div>
+                    <div>Map Instance: {map ? 'Created' : 'None'}</div>
+                </div>
+
                 {/* Google Maps Background */}
-                <Wrapper
-                    apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-                    render={render}
-                    libraries={['places']}
-                    version="weekly"
-                >
-                    <MapComponent />
-                </Wrapper>
+                <div className="absolute inset-0 w-full h-full">
+                    <Wrapper
+                        apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+                        render={render}
+                        libraries={['places']}
+                        version="weekly"
+                    >
+                        <div className="w-full h-full">
+                            <MapComponent />
+                        </div>
+                    </Wrapper>
+                </div>
 
                 {/* Location Input Panel */}
                 <motion.div
