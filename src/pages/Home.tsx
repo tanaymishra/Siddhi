@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card'
 import { ArrowRight, Zap, Shield, Smartphone, Star, Users, Rocket, Globe } from 'lucide-react'
@@ -10,6 +10,7 @@ import { useAuthenticated } from '../hooks/useAuthenticated'
 const Home: React.FC = () => {
   const { openAuthModal } = useAuthStore()
   const { isAuthenticated } = useAuthenticated()
+  const navigate = useNavigate()
   const features = [
     {
       icon: <Zap className="w-8 h-8" />,
@@ -122,7 +123,7 @@ const Home: React.FC = () => {
                 <Button 
                   size="lg" 
                   className="group shadow-lg"
-                  onClick={() => isAuthenticated ? null : openAuthModal('signup')}
+                  onClick={() => isAuthenticated ? navigate('/ride') : openAuthModal('signup')}
                 >
                   {isAuthenticated ? 'Book a Ride Now' : 'Get Started'}
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />

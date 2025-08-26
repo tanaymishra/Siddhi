@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Button } from '../ui/Button'
 import { Menu, X } from 'lucide-react'
@@ -10,6 +10,7 @@ import UserDropdown from '../auth/UserDropdown'
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
   const { openAuthModal } = useAuthStore()
   const { isAuthenticated } = useAuthenticated()
 
@@ -62,7 +63,7 @@ const Header: React.FC = () => {
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <>
-                <Button size="sm">
+                <Button size="sm" onClick={() => navigate('/ride')}>
                   Book a Ride
                 </Button>
                 <UserDropdown />
@@ -123,7 +124,10 @@ const Header: React.FC = () => {
               <div className="flex flex-col space-y-2 pt-4">
                 {isAuthenticated ? (
                   <>
-                    <Button size="sm">
+                    <Button size="sm" onClick={() => {
+                      navigate('/ride')
+                      setIsMenuOpen(false)
+                    }}>
                       Book a Ride
                     </Button>
                     <UserDropdown />
