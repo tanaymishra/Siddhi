@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import AppInitializer from './components/AppInitializer'
 import Layout from './components/layout/Layout'
 import Home from './pages/Home'
+import Ride from './pages/Ride'
 import About from './pages/About'
 import Services from './pages/Services'
 import Contact from './pages/Contact'
@@ -27,6 +28,8 @@ function App() {
             <Route path="privacy" element={<PrivacyPolicy />} />
             <Route path="cookies" element={<CookiesPolicy />} />
           </Route>
+          {/* Ride page without layout (full screen map) */}
+          <Route path="/ride" element={<Ride />} />
           {/* Driver routes without layout */}
           <Route path="/driver/register" element={<DriverRegistration />} />
           <Route path="/driver/login" element={<DriverLogin />} />
