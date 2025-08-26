@@ -1,0 +1,59 @@
+/* Google Places Autocomplete Styles */
+.pac-container {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+  margin-top: 4px;
+  z-index: 9999 !important;
+  font-family: inherit;
+}
+
+.pac-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.pac-item:last-child {
+  border-bottom: none;
+}
+
+.pac-item:hover {
+  background-color: #f9fafb;
+}
+
+.pac-item-selected {
+  background-color: #eff6ff !important;
+}
+
+.pac-matched {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.pac-item-query {
+  color: #374151;
+}
+
+.pac-icon {
+  margin-right: 8px;
+}
+
+/* Hide the Google logo in autocomplete */
+.pac-logo:after {
+  display: none;
+}
+
+/* Ensure dropdown appears above other elements */
+.pac-container {
+  position: absolute !important;
+  z-index: 10000 !important;
+}
+
+/* Style the input when focused */
+input:focus + .pac-container {
+  display: block;
+}

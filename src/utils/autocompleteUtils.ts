@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 import type { LocationInput } from '../types/ride'
 
 // Store autocomplete instances to prevent duplicates
@@ -10,14 +11,6 @@ const cleanupAutocomplete = (input: HTMLInputElement): void => {
     google.maps.event.clearInstanceListeners(existingInstance)
     autocompleteInstances.delete(input)
   }
-  
-  // Remove any existing pac-container elements
-  const pacContainers = document.querySelectorAll('.pac-container')
-  pacContainers.forEach(container => {
-    if (container.parentNode) {
-      container.parentNode.removeChild(container)
-    }
-  })
 }
 
 // Initialize autocomplete for an input element
@@ -25,39 +18,55 @@ export const initializeAutocomplete = (
   input: HTMLInputElement,
   onPlaceChanged: (location: LocationInput) => void,
   options?: google.maps.places.AutocompleteOptions
-): google.maps.places.Autocomplete => {
+): google.maps.places.Autocomplete | null => {
+  // Check if Google Maps and Places API are loaded
+  if (!window.google || !window.google.maps || !window.google.maps.places) {
+    console.error('Google Maps Places API not loaded')
+    return null
+  }
+
   // Clean up any existing instance first
   cleanupAutocomplete(input)
 
   const defaultOptions: google.maps.places.AutocompleteOptions = {
-    types: ['establishment', 'geocode'],
-    componentRestrictions: { country: 'us' }, // Adjust as needed
-    fields: ['formatted_address', 'geometry', 'name', 'place_id'],
+    types: ['geocode'], // Focus on addresses for better suggestions
+    fields: ['formatted_address', 'geometry', 'name', 'place_id', 'address_components'],
     ...options
   }
 
-  const autocomplete = new google.maps.places.Autocomplete(input, defaultOptions)
-  
-  // Store the instance
-  autocompleteInstances.set(input, autocomplete)
-
-  // Add place changed listener
-  const listener = autocomplete.addListener('place_changed', () => {
-    const place = autocomplete.getPlace()
+  try {
+    const autocomplete = new google.maps.places.Autocomplete(input, defaultOptions)
     
-    if (place.geometry?.location) {
-      const location: LocationInput = {
-        address: place.formatted_address || place.name || input.value,
-        coordinates: {
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng()
-        }
-      }
-      onPlaceChanged(location)
-    }
-  })
+    // Store the instance
+    autocompleteInstances.set(input, autocomplete)
 
-  return autocomplete
+    // Add place changed listener
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace()
+      
+      console.log('Place selected:', place) // Debug log
+      
+      if (place.geometry?.location) {
+        const location: LocationInput = {
+          address: place.formatted_address || place.name || input.value,
+          coordinates: {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng()
+          }
+        }
+        console.log('Location set:', location) // Debug log
+        onPlaceChanged(location)
+      } else {
+        console.warn('No geometry found for selected place:', place)
+      }
+    })
+
+    console.log('Autocomplete initialized for input:', input.placeholder) // Debug log
+    return autocomplete
+  } catch (error) {
+    console.error('Failed to initialize autocomplete:', error)
+    return null
+  }
 }
 
 // Cleanup all autocomplete instances

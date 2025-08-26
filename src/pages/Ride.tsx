@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Navigation, Clock, DollarSign, Car, Loader2 } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import Header from '../components/layout/Header'
+import '../styles/maps.css'
 import { useRideStore } from '../store/rideStore'
 import {
     initializeMap,
@@ -13,12 +14,8 @@ import {
     getCurrentLocation,
     centerMapOnLocation
 } from '../utils/mapUtils'
-import {
-    initializeAutocomplete,
-    cleanupAllAutocomplete,
-    cleanupAutocompleteForInput
-} from '../utils/autocompleteUtils'
 import { bookRide } from '../services/rideService'
+import SimpleAutocomplete from '../components/SimpleAutocomplete'
 
 const Ride: React.FC = () => {
     const {
@@ -41,47 +38,48 @@ const Ride: React.FC = () => {
     } = useRideStore()
 
     const mapRef = useRef<HTMLDivElement>(null)
-    const fromInputRef = useRef<HTMLInputElement>(null)
-    const toInputRef = useRef<HTMLInputElement>(null)
 
     const render = (status: string) => {
-        if (status === 'LOADING') return <div className="h-screen flex items-center justify-center">Loading...</div>
-        if (status === 'FAILURE') return <div className="h-screen flex items-center justify-center">Error loading maps</div>
+        console.log('Google Maps Wrapper Status:', status)
+        if (status === 'LOADING') return <div className="h-screen flex items-center justify-center">Loading Google Maps...</div>
+        if (status === 'FAILURE') return <div className="h-screen flex items-center justify-center">Error loading Google Maps. Please check your API key.</div>
         return <></>
     }
 
     // Initialize map
     useEffect(() => {
-        if (mapRef.current && !map) {
-            const newMap = initializeMap(mapRef.current)
-            const newDirectionsService = new google.maps.DirectionsService()
-            const newDirectionsRenderer = initializeDirectionsRenderer()
+        const initializeMapAndAutocomplete = async () => {
+            if (mapRef.current && !map) {
+                console.log('Initializing map...')
+                console.log('Google Maps available:', !!window.google)
+                console.log('Places API available:', !!window.google?.maps?.places)
 
-            newDirectionsRenderer.setMap(newMap)
+                // Wait a bit more for Google Maps to be fully ready
+                await new Promise(resolve => setTimeout(resolve, 1000))
 
-            setMap(newMap)
-            setDirectionsService(newDirectionsService)
-            setDirectionsRenderer(newDirectionsRenderer)
+                if (!window.google || !window.google.maps) {
+                    console.error('Google Maps not loaded')
+                    return
+                }
+
+                const newMap = initializeMap(mapRef.current)
+                const newDirectionsService = new google.maps.DirectionsService()
+                const newDirectionsRenderer = initializeDirectionsRenderer()
+
+                newDirectionsRenderer.setMap(newMap)
+
+                setMap(newMap)
+                setDirectionsService(newDirectionsService)
+                setDirectionsRenderer(newDirectionsRenderer)
+
+                console.log('Map initialized successfully')
+            }
         }
+
+        initializeMapAndAutocomplete()
     }, [map, setMap, setDirectionsService, setDirectionsRenderer])
 
-    // Setup autocomplete for location inputs
-    useEffect(() => {
-        if (!map || !fromInputRef.current || !toInputRef.current) return
-
-        // Cleanup existing autocomplete instances
-        cleanupAutocompleteForInput(fromInputRef.current)
-        cleanupAutocompleteForInput(toInputRef.current)
-
-        // Initialize new autocomplete instances
-        initializeAutocomplete(fromInputRef.current, setFromLocation)
-        initializeAutocomplete(toInputRef.current, setToLocation)
-
-        // Cleanup on unmount
-        return () => {
-            cleanupAllAutocomplete()
-        }
-    }, [map, setFromLocation, setToLocation])
+    // Autocomplete is now handled by SimpleAutocomplete components
 
     // Calculate route when both locations are set
     useEffect(() => {
@@ -156,6 +154,7 @@ const Ride: React.FC = () => {
                     apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
                     render={render}
                     libraries={['places']}
+                    version="weekly"
                 >
                     <MapComponent />
                 </Wrapper>
@@ -177,31 +176,33 @@ const Ride: React.FC = () => {
                     <div className="p-6 space-y-4">
                         {/* From Location */}
                         <div className="relative">
-                            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
                                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                             </div>
-                            <input
-                                ref={fromInputRef}
-                                type="text"
+                            <SimpleAutocomplete
                                 placeholder="Pickup location"
-                                value={fromLocation.address}
-                                onChange={(e) => setFromLocation({ address: e.target.value })}
-                                className="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                onPlaceSelect={(place) => {
+                                    setFromLocation({
+                                        address: place.address,
+                                        coordinates: { lat: place.lat, lng: place.lng }
+                                    })
+                                }}
                             />
                         </div>
 
                         {/* To Location */}
                         <div className="relative">
-                            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
                                 <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                             </div>
-                            <input
-                                ref={toInputRef}
-                                type="text"
+                            <SimpleAutocomplete
                                 placeholder="Where to?"
-                                value={toLocation.address}
-                                onChange={(e) => setToLocation({ address: e.target.value })}
-                                className="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                onPlaceSelect={(place) => {
+                                    setToLocation({
+                                        address: place.address,
+                                        coordinates: { lat: place.lat, lng: place.lng }
+                                    })
+                                }}
                             />
                         </div>
                     </div>
