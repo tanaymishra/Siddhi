@@ -4,8 +4,12 @@ import {
   verifyPayment,
   getPaymentStatus
 } from '../controllers/paymentController'
+import { authenticate } from '../middleware/auth'
 
 const router = express.Router()
+
+// All payment routes require authentication
+router.use(authenticate)
 
 // POST /api/payment/create-order - Create Razorpay order
 router.post('/create-order', createPaymentOrder)

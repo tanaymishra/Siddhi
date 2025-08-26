@@ -6,8 +6,12 @@ import {
   updatePaymentStatus,
   updateActiveStatus
 } from '../controllers/rideController'
+import { authenticate } from '../middleware/auth'
 
 const router = express.Router()
+
+// All ride routes require authentication
+router.use(authenticate)
 
 // POST /api/rides - Create a new ride
 router.post('/', createRide)

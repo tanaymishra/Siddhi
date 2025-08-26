@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { Ride } from '../models/Ride'
+import { AuthRequest } from '../middleware/auth'
 
 // Mock driver data
 const mockDrivers = [
@@ -15,9 +16,9 @@ const getRandomDriver = () => {
 }
 
 // Create a new ride
-export const createRide = async (req: Request, res: Response): Promise<void> => {
+export const createRide = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { fromLocation, toLocation, routeInfo, userId } = req.body
+    const { fromLocation, toLocation, routeInfo } = req.body
 
     // Validate required fields
     if (!fromLocation || !toLocation || !routeInfo) {
@@ -27,6 +28,9 @@ export const createRide = async (req: Request, res: Response): Promise<void> => 
       })
       return
     }
+
+    // Get userId from authenticated user (JWT token)
+    const userId = req.user._id
 
     // Generate mock driver info
     const driverInfo = getRandomDriver()
@@ -65,10 +69,12 @@ export const createRide = async (req: Request, res: Response): Promise<void> => 
   }
 }
 
-// Get all rides
-export const getAllRides = async (req: Request, res: Response): Promise<void> => {
+// Get all rides for authenticated user
+export const getAllRides = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const rides = await Ride.find().sort({ createdAt: -1 })
+    // Only get rides for the authenticated user
+    const userId = req.user._id
+    const rides = await Ride.find({ userId }).sort({ createdAt: -1 })
     
     res.status(200).json({
       success: true,
@@ -83,11 +89,14 @@ export const getAllRides = async (req: Request, res: Response): Promise<void> =>
   }
 }
 
-// Get ride by ID
-export const getRideById = async (req: Request, res: Response): Promise<void> => {
+// Get ride by ID (only if it belongs to authenticated user)
+export const getRideById = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params
-    const ride = await Ride.findById(id)
+    const userId = req.user._id
+    
+    // Only allow user to access their own rides
+    const ride = await Ride.findOne({ _id: id, userId })
     
     if (!ride) {
       res.status(404).json({

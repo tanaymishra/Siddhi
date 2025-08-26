@@ -69,8 +69,8 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
       const bookingData = {
         fromLocation: fromLocation,
         toLocation: toLocation,
-        routeInfo: routeToUse,
-        userId: 'test_user_123' // In real app, get from auth
+        routeInfo: routeToUse
+        // userId will be extracted from JWT token on the server
       }
 
       const rideResponse = await bookRide(bookingData)

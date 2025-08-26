@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import AppInitializer from './components/AppInitializer'
 import Layout from './components/layout/Layout'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 import Home from './pages/Home'
 import Ride from './pages/Ride'
 import About from './pages/About'
@@ -29,8 +30,12 @@ function App() {
             <Route path="privacy" element={<PrivacyPolicy />} />
             <Route path="cookies" element={<CookiesPolicy />} />
           </Route>
-          {/* Ride page without layout (full screen map) */}
-          <Route path="/ride" element={<Ride />} />
+          {/* Ride page without layout (full screen map) - Protected */}
+          <Route path="/ride" element={
+            <ProtectedRoute>
+              <Ride />
+            </ProtectedRoute>
+          } />
           {/* Map test page for debugging */}
           <Route path="/maptest" element={<MapTest />} />
           {/* Driver routes without layout */}

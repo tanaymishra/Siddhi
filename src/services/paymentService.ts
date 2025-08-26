@@ -1,5 +1,5 @@
 // Payment service for Razorpay integration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api'
+import { apiService } from './api'
 
 export interface PaymentOrderData {
   orderId: string
@@ -24,19 +24,8 @@ export const createPaymentOrder = async (rideId: string): Promise<{
   message?: string
 }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/payment/create-order`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ rideId })
-    })
-
-    const result = await response.json()
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Failed to create payment order')
-    }
+    const response = await apiService.post('/payment/create-order', { rideId })
+    const result = response.data
 
     return {
       success: true,
@@ -58,19 +47,8 @@ export const verifyPayment = async (verificationData: PaymentVerificationData): 
   message?: string
 }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/payment/verify`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(verificationData)
-    })
-
-    const result = await response.json()
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Payment verification failed')
-    }
+    const response = await apiService.post('/payment/verify', verificationData)
+    const result = response.data
 
     return {
       success: true,
@@ -93,12 +71,8 @@ export const getPaymentStatus = async (rideId: string): Promise<{
   message?: string
 }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/payment/status/${rideId}`)
-    const result = await response.json()
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Failed to get payment status')
-    }
+    const response = await apiService.get(`/payment/status/${rideId}`)
+    const result = response.data
 
     return {
       success: true,

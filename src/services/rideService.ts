@@ -1,27 +1,11 @@
 import type { LocationInput, RouteInfo, RideBookingData, RideBookingResponse } from '../types/ride'
-
-// API base URL - using environment variable
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api'
-
-// Debug log to verify the API URL
-console.log('API_BASE_URL:', API_BASE_URL)
+import { apiService } from './api'
 
 // Book ride service - integrates with backend API
 export const bookRide = async (bookingData: RideBookingData): Promise<RideBookingResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/rides`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(bookingData)
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Failed to book ride')
-    }
+    const response = await apiService.post('/rides', bookingData)
+    const data = response.data
 
     return {
       success: true,
@@ -51,12 +35,8 @@ export const getAllRides = async (): Promise<{
   message?: string
 }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/rides`)
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Failed to fetch rides')
-    }
+    const response = await apiService.get('/rides')
+    const data = response.data
 
     return {
       success: true,
@@ -92,19 +72,8 @@ export const updatePaymentStatus = async (rideId: string, isPaymentDone: boolean
   message?: string
 }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/rides/${rideId}/payment`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ isPaymentDone })
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Failed to update payment status')
-    }
+    const response = await apiService.put(`/rides/${rideId}/payment`, { isPaymentDone })
+    const data = response.data
 
     return {
       success: true,
@@ -125,19 +94,8 @@ export const updateRideStatus = async (rideId: string, isActive: boolean): Promi
   message?: string
 }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/rides/${rideId}/status`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ isActive })
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Failed to update ride status')
-    }
+    const response = await apiService.put(`/rides/${rideId}/status`, { isActive })
+    const data = response.data
 
     return {
       success: true,
