@@ -11,12 +11,12 @@ export const bookRide = async (bookingData: RideBookingData): Promise<RideBookin
       success: true,
       rideId: data.data.rideId,
       estimatedArrival: data.data.estimatedArrival,
-      driverInfo: {
+      driverInfo: data.data.driverInfo ? {
         name: data.data.driverInfo.name,
         phone: data.data.driverInfo.phone,
         vehicle: data.data.driverInfo.vehicleNumber,
         rating: 4.8 // Mock rating
-      },
+      } : undefined,
       message: data.message
     }
   } catch (error) {
