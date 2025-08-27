@@ -22,10 +22,15 @@ export interface IRide extends Document {
   }
   userId?: string
   driverInfo?: {
-    name: string
-    phone: string
-    vehicleNumber: string
+    driverId?: string
+    name?: string
+    phone?: string
+    vehicleInfo?: string
+    licensePlate?: string
+    rating?: number
   }
+  status: 'pending' | 'accepted' | 'in-progress' | 'completed' | 'cancelled'
+  acceptedAt?: Date
   isPaymentDone: boolean
   isActive: boolean
   paymentDetails?: {
@@ -61,10 +66,19 @@ const RideSchema: Schema = new Schema(
     },
     userId: { type: String, required: false },
     driverInfo: {
+      driverId: { type: String, required: false },
       name: { type: String, required: false },
       phone: { type: String, required: false },
-      vehicleNumber: { type: String, required: false }
+      vehicleInfo: { type: String, required: false },
+      licensePlate: { type: String, required: false },
+      rating: { type: Number, required: false }
     },
+    status: { 
+      type: String, 
+      enum: ['pending', 'accepted', 'in-progress', 'completed', 'cancelled'],
+      default: 'pending'
+    },
+    acceptedAt: { type: Date, required: false },
     isPaymentDone: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     paymentDetails: {

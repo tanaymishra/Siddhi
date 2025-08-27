@@ -42,6 +42,7 @@ export interface IDriver extends Document {
   totalRides: number
   isOnline: boolean
   isActive: boolean
+  lastSeen?: Date
   
   // Location for ride matching
   location?: {
@@ -215,6 +216,10 @@ const driverSchema = new Schema<IDriver>({
   isActive: {
     type: Boolean,
     default: true
+  },
+  lastSeen: {
+    type: Date,
+    default: null
   },
   
   // Location for ride matching

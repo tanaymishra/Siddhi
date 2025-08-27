@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
@@ -13,13 +13,31 @@ import {
   Star,
   Activity,
   Calendar,
-  Settings
+  Settings,
+  Wifi,
+  WifiOff,
+  Navigation,
+  Phone,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react'
 import { useDriverAuth } from '../hooks/useDriverAuth'
+import { useDriverSocket } from '../hooks/useDriverSocket'
 
 const DriverDashboard: React.FC = () => {
   const navigate = useNavigate()
   const { driver, isAuthenticated, isLoading, logout, checkAuth } = useDriverAuth()
+  const { 
+    isConnected, 
+    isOnline, 
+    availableRides, 
+    connectionError, 
+    statusMessage,
+    toggleOnlineStatus,
+    acceptRide
+  } = useDriverSocket()
+  
+  const [showStatusMessage, setShowStatusMessage] = useState(false)
 
   useEffect(() => {
     checkAuth()
@@ -30,6 +48,14 @@ const DriverDashboard: React.FC = () => {
       navigate('/driver/login')
     }
   }, [isAuthenticated, isLoading, navigate])
+
+  useEffect(() => {
+    if (statusMessage) {
+      setShowStatusMessage(true)
+      const timer = setTimeout(() => setShowStatusMessage(false), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [statusMessage])
 
   const handleLogout = () => {
     logout()
@@ -168,11 +194,26 @@ const DriverDashboard: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-neutral-600">Online Status</p>
-                      <p className="text-2xl font-bold text-neutral-900">
-                        {driver.isOnline ? 'Online' : 'Offline'}
-                      </p>
+                      <div className="flex items-center space-x-2">
+                        <p className="text-2xl font-bold text-neutral-900">
+                          {isOnline ? 'Online' : 'Offline'}
+                        </p>
+                        {!isConnected && (
+                          <AlertCircle className="w-5 h-5 text-warning-500" title="Not connected to server" />
+                        )}
+                      </div>
                     </div>
-                    <div className={`w-8 h-8 rounded-full ${driver.isOnline ? 'bg-success-600' : 'bg-neutral-400'}`} />
+                    <Button
+                      onClick={toggleOnlineStatus}
+                      disabled={!isConnected}
+                      className={`${
+                        isOnline 
+                          ? 'bg-success-600 hover:bg-success-700' 
+                          : 'bg-neutral-400 hover:bg-neutral-500'
+                      } text-white`}
+                    >
+                      {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -248,22 +289,146 @@ const DriverDashboard: React.FC = () => {
             </Card>
           </motion.div>
 
-          {/* Coming Soon */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-          >
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Calendar className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-neutral-900 mb-2">More Features Coming Soon</h3>
-                <p className="text-neutral-600">
-                  We're working on adding ride management, earnings tracking, and more features to help you succeed as a driver.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
+          {/* Status Messages */}
+          {showStatusMessage && statusMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="bg-primary-50 border border-primary-200 rounded-lg p-4"
+            >
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-5 h-5 text-primary-600" />
+                <p className="text-primary-800">{statusMessage}</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Connection Error */}
+          {connectionError && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-error-50 border border-error-200 rounded-lg p-4"
+            >
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="w-5 h-5 text-error-600" />
+                <p className="text-error-800">{connectionError}</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Available Rides */}
+          {isOnline && isConnected && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Navigation className="w-5 h-5" />
+                      <span>Available Rides</span>
+                    </div>
+                    <span className="text-sm font-normal text-neutral-600">
+                      {availableRides.length} rides available
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {availableRides.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Car className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-neutral-900 mb-2">No rides available</h3>
+                      <p className="text-neutral-600">
+                        Stay online and we'll notify you when new rides become available.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {availableRides.map((ride) => (
+                        <div
+                          key={ride._id}
+                          className="border border-neutral-200 rounded-lg p-4 hover:border-primary-300 transition-colors"
+                        >
+                          <div className="flex justify-between items-start mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <MapPin className="w-4 h-4 text-primary-600" />
+                                <span className="font-medium text-neutral-900">
+                                  {ride.pickupLocation.address}
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-2 mb-2">
+                                <Navigation className="w-4 h-4 text-success-600" />
+                                <span className="text-neutral-700">
+                                  {ride.dropoffLocation.address}
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-4 text-sm text-neutral-600">
+                                <span className="flex items-center space-x-1">
+                                  <Clock className="w-3 h-3" />
+                                  <span>{Math.round(ride.duration)} min</span>
+                                </span>
+                                <span className="flex items-center space-x-1">
+                                  <MapPin className="w-3 h-3" />
+                                  <span>{ride.distance.toFixed(1)} km</span>
+                                </span>
+                                <span className="flex items-center space-x-1">
+                                  <Phone className="w-3 h-3" />
+                                  <span>{ride.customerInfo.name}</span>
+                                </span>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-2xl font-bold text-success-600 mb-2">
+                                ₹{ride.fare}
+                              </div>
+                              <Button
+                                onClick={() => acceptRide(ride._id)}
+                                className="bg-primary-600 hover:bg-primary-700 text-white"
+                                size="sm"
+                              >
+                                Accept Ride
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* Offline Message */}
+          {!isOnline && isConnected && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <WifiOff className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-neutral-900 mb-2">You're Currently Offline</h3>
+                  <p className="text-neutral-600 mb-4">
+                    Go online to start receiving ride requests and earning money.
+                  </p>
+                  <Button
+                    onClick={toggleOnlineStatus}
+                    className="bg-primary-600 hover:bg-primary-700 text-white"
+                  >
+                    <Wifi className="w-4 h-4 mr-2" />
+                    Go Online
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
         </div>
       </main>
     </div>
