@@ -423,19 +423,9 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
 
     const generatedPassword = generatePassword()
 
-    const driver = await Driver.findByIdAndUpdate(
-      driverId,
-      {
-        status: 'approved',
-        isApproved: true,
-        approvedAt: new Date(),
-        rejectionReason: null,
-        rejectedAt: null,
-        password: generatedPassword // This will be hashed by the pre-save middleware
-      },
-      { new: true }
-    ).select('+password') // Include password in the response
-
+    // Find the driver first
+    const driver = await Driver.findById(driverId)
+    
     if (!driver) {
       res.status(404).json({
         success: false,
@@ -443,6 +433,16 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
       })
       return
     }
+
+    // Update driver fields and save (this will trigger pre-save middleware for password hashing)
+    driver.status = 'approved'
+    driver.isApproved = true
+    driver.approvedAt = new Date()
+    driver.rejectionReason = undefined
+    driver.rejectedAt = undefined
+    driver.password = generatedPassword // This will be hashed by the pre-save middleware
+
+    await driver.save()
 
     // Create driver object with password for admin
     const driverObj = driver.toObject()

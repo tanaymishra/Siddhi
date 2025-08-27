@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { Eye, EyeOff, Mail, Lock, Car, AlertCircle } from 'lucide-react'
-import { apiService } from '../services/api'
+import { useDriverAuth } from '../hooks/useDriverAuth'
 
 const DriverLogin: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -12,9 +12,8 @@ const DriverLogin: React.FC = () => {
     password: ''
   })
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { login, isLoading, error, clearError } = useDriverAuth()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -22,33 +21,19 @@ const DriverLogin: React.FC = () => {
       ...prev,
       [name]: value
     }))
-    if (error) setError('')
+    if (error) clearError()
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    setError('')
 
     try {
-      const response = await apiService.loginDriver(formData.email, formData.password)
-      
-      if (response.data.success) {
-        // Store token and driver data
-        localStorage.setItem('driverToken', response.data.data.token)
-        localStorage.setItem('driverData', JSON.stringify(response.data.data.driver))
-        
-        // Redirect to driver dashboard
-        navigate('/driver/dashboard')
-      }
-    } catch (error: any) {
-      console.error('Driver login error:', error)
-      setError(
-        error.response?.data?.message || 
-        'Login failed. Please check your credentials and try again.'
-      )
-    } finally {
-      setLoading(false)
+      await login(formData.email, formData.password)
+      // Redirect to driver dashboard on successful login
+      navigate('/driver/dashboard')
+    } catch (error) {
+      // Error is handled by the hook
+      console.error('Driver login failed:', error)
     }
   }
 
@@ -134,9 +119,9 @@ const DriverLogin: React.FC = () => {
               <Button
                 type="submit"
                 className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium"
-                disabled={loading}
+                disabled={isLoading}
               >
-                {loading ? (
+                {isLoading ? (
                   <div className="flex items-center justify-center space-x-2">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                     <span>Signing in...</span>

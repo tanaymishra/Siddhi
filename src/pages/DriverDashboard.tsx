@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
@@ -15,58 +15,28 @@ import {
   Calendar,
   Settings
 } from 'lucide-react'
-
-interface DriverData {
-  _id: string
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  vehicleMake: string
-  vehicleModel: string
-  vehicleYear: string
-  vehicleColor: string
-  licensePlate: string
-  rating: number
-  totalRides: number
-  isOnline: boolean
-  status: string
-}
+import { useDriverAuth } from '../hooks/useDriverAuth'
 
 const DriverDashboard: React.FC = () => {
-  const [driverData, setDriverData] = useState<DriverData | null>(null)
-  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const { driver, isAuthenticated, isLoading, logout, checkAuth } = useDriverAuth()
 
   useEffect(() => {
-    // Check if driver is logged in
-    const token = localStorage.getItem('driverToken')
-    const storedDriverData = localStorage.getItem('driverData')
+    checkAuth()
+  }, [checkAuth])
 
-    if (!token || !storedDriverData) {
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
       navigate('/driver/login')
-      return
     }
-
-    try {
-      const parsedDriverData = JSON.parse(storedDriverData)
-      setDriverData(parsedDriverData)
-    } catch (error) {
-      console.error('Error parsing driver data:', error)
-      navigate('/driver/login')
-      return
-    }
-
-    setLoading(false)
-  }, [navigate])
+  }, [isAuthenticated, isLoading, navigate])
 
   const handleLogout = () => {
-    localStorage.removeItem('driverToken')
-    localStorage.removeItem('driverData')
+    logout()
     navigate('/driver/login')
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
@@ -77,7 +47,7 @@ const DriverDashboard: React.FC = () => {
     )
   }
 
-  if (!driverData) {
+  if (!driver) {
     return null
   }
 
@@ -98,7 +68,7 @@ const DriverDashboard: React.FC = () => {
               <div className="hidden sm:flex items-center space-x-2">
                 <User className="w-4 h-4 text-neutral-400" />
                 <span className="text-sm text-neutral-700">
-                  {driverData.firstName} {driverData.lastName}
+                  {driver.firstName} {driver.lastName}
                 </span>
               </div>
               <Button
@@ -125,7 +95,7 @@ const DriverDashboard: React.FC = () => {
             className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-6 text-white"
           >
             <h2 className="text-2xl font-bold mb-2">
-              Welcome back, {driverData.firstName}!
+              Welcome back, {driver.firstName}!
             </h2>
             <p className="text-primary-100">
               Ready to start earning? Your dashboard is here to help you manage your rides.
@@ -144,7 +114,7 @@ const DriverDashboard: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-neutral-600">Total Rides</p>
-                      <p className="text-2xl font-bold text-neutral-900">{driverData.totalRides}</p>
+                      <p className="text-2xl font-bold text-neutral-900">{driver.totalRides}</p>
                     </div>
                     <Car className="w-8 h-8 text-primary-600" />
                   </div>
@@ -162,7 +132,7 @@ const DriverDashboard: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-neutral-600">Rating</p>
-                      <p className="text-2xl font-bold text-neutral-900">{driverData.rating.toFixed(1)}</p>
+                      <p className="text-2xl font-bold text-neutral-900">{driver.rating.toFixed(1)}</p>
                     </div>
                     <Star className="w-8 h-8 text-warning-500" />
                   </div>
@@ -180,9 +150,9 @@ const DriverDashboard: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-neutral-600">Status</p>
-                      <p className="text-2xl font-bold text-neutral-900 capitalize">{driverData.status}</p>
+                      <p className="text-2xl font-bold text-neutral-900 capitalize">{driver.status}</p>
                     </div>
-                    <Activity className={`w-8 h-8 ${driverData.status === 'approved' ? 'text-success-600' : 'text-warning-600'}`} />
+                    <Activity className={`w-8 h-8 ${driver.status === 'approved' ? 'text-success-600' : 'text-warning-600'}`} />
                   </div>
                 </CardContent>
               </Card>
@@ -199,10 +169,10 @@ const DriverDashboard: React.FC = () => {
                     <div>
                       <p className="text-sm font-medium text-neutral-600">Online Status</p>
                       <p className="text-2xl font-bold text-neutral-900">
-                        {driverData.isOnline ? 'Online' : 'Offline'}
+                        {driver.isOnline ? 'Online' : 'Offline'}
                       </p>
                     </div>
-                    <div className={`w-8 h-8 rounded-full ${driverData.isOnline ? 'bg-success-600' : 'bg-neutral-400'}`} />
+                    <div className={`w-8 h-8 rounded-full ${driver.isOnline ? 'bg-success-600' : 'bg-neutral-400'}`} />
                   </div>
                 </CardContent>
               </Card>
@@ -226,19 +196,19 @@ const DriverDashboard: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
                     <p className="text-sm text-neutral-600">Make & Model</p>
-                    <p className="font-medium">{driverData.vehicleMake} {driverData.vehicleModel}</p>
+                    <p className="font-medium">{driver.vehicleMake} {driver.vehicleModel}</p>
                   </div>
                   <div>
                     <p className="text-sm text-neutral-600">Year</p>
-                    <p className="font-medium">{driverData.vehicleYear}</p>
+                    <p className="font-medium">{driver.vehicleYear}</p>
                   </div>
                   <div>
                     <p className="text-sm text-neutral-600">Color</p>
-                    <p className="font-medium">{driverData.vehicleColor}</p>
+                    <p className="font-medium">{driver.vehicleColor}</p>
                   </div>
                   <div>
                     <p className="text-sm text-neutral-600">License Plate</p>
-                    <p className="font-medium">{driverData.licensePlate}</p>
+                    <p className="font-medium">{driver.licensePlate}</p>
                   </div>
                 </div>
               </CardContent>
