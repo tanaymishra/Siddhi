@@ -429,8 +429,8 @@ const AdminDrivers: React.FC = () => {
             className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           >
             <div className="p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-neutral-900">Driver Details</h2>
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-neutral-900">Driver Details</h2>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -440,26 +440,26 @@ const AdminDrivers: React.FC = () => {
                 </Button>
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {/* Personal Info */}
                 <div>
                   <h3 className="font-medium text-neutral-900 mb-3">Personal Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm text-neutral-600">Name</label>
-                      <p className="font-medium">{selectedDriver.name}</p>
+                      <label className="text-xs sm:text-sm text-neutral-600">Name</label>
+                      <p className="font-medium text-sm sm:text-base break-words">{selectedDriver.name}</p>
                     </div>
                     <div>
-                      <label className="text-sm text-neutral-600">Email</label>
-                      <p className="font-medium">{selectedDriver.email}</p>
+                      <label className="text-xs sm:text-sm text-neutral-600">Email</label>
+                      <p className="font-medium text-sm sm:text-base break-words">{selectedDriver.email}</p>
                     </div>
                     <div>
-                      <label className="text-sm text-neutral-600">Phone</label>
-                      <p className="font-medium">{selectedDriver.phone}</p>
+                      <label className="text-xs sm:text-sm text-neutral-600">Phone</label>
+                      <p className="font-medium text-sm sm:text-base">{selectedDriver.phone}</p>
                     </div>
                     <div>
-                      <label className="text-sm text-neutral-600">License Number</label>
-                      <p className="font-medium">{selectedDriver.licenseNumber}</p>
+                      <label className="text-xs sm:text-sm text-neutral-600">License Number</label>
+                      <p className="font-medium text-sm sm:text-base">{selectedDriver.licenseNumber}</p>
                     </div>
                   </div>
                 </div>
@@ -467,22 +467,22 @@ const AdminDrivers: React.FC = () => {
                 {/* Vehicle Info */}
                 <div>
                   <h3 className="font-medium text-neutral-900 mb-3">Vehicle Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm text-neutral-600">Make & Model</label>
-                      <p className="font-medium">{selectedDriver.vehicleInfo.make} {selectedDriver.vehicleInfo.model}</p>
+                      <label className="text-xs sm:text-sm text-neutral-600">Make & Model</label>
+                      <p className="font-medium text-sm sm:text-base">{selectedDriver.vehicleInfo.make} {selectedDriver.vehicleInfo.model}</p>
                     </div>
                     <div>
-                      <label className="text-sm text-neutral-600">Year</label>
-                      <p className="font-medium">{selectedDriver.vehicleInfo.year}</p>
+                      <label className="text-xs sm:text-sm text-neutral-600">Year</label>
+                      <p className="font-medium text-sm sm:text-base">{selectedDriver.vehicleInfo.year}</p>
                     </div>
                     <div>
-                      <label className="text-sm text-neutral-600">Plate Number</label>
-                      <p className="font-medium">{selectedDriver.vehicleInfo.plateNumber}</p>
+                      <label className="text-xs sm:text-sm text-neutral-600">Plate Number</label>
+                      <p className="font-medium text-sm sm:text-base">{selectedDriver.vehicleInfo.plateNumber}</p>
                     </div>
                     <div>
-                      <label className="text-sm text-neutral-600">Color</label>
-                      <p className="font-medium">{selectedDriver.vehicleInfo.color}</p>
+                      <label className="text-xs sm:text-sm text-neutral-600">Color</label>
+                      <p className="font-medium text-sm sm:text-base">{selectedDriver.vehicleInfo.color}</p>
                     </div>
                   </div>
                 </div>
@@ -490,21 +490,21 @@ const AdminDrivers: React.FC = () => {
                 {/* Status */}
                 <div>
                   <h3 className="font-medium text-neutral-900 mb-3">Status</h3>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                     <div className="flex items-center space-x-2">
                       {selectedDriver.isApproved ? (
                         <CheckCircle className="w-5 h-5 text-success-600" />
                       ) : (
                         <Clock className="w-5 h-5 text-warning-600" />
                       )}
-                      <span className={selectedDriver.isApproved ? 'text-success-600' : 'text-warning-600'}>
+                      <span className={`text-sm sm:text-base ${selectedDriver.isApproved ? 'text-success-600' : 'text-warning-600'}`}>
                         {selectedDriver.isApproved ? 'Approved' : 'Pending Approval'}
                       </span>
                     </div>
                     
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4 text-neutral-400" />
-                      <span className="text-sm text-neutral-600">
+                      <span className="text-xs sm:text-sm text-neutral-600">
                         Registered {new Date(selectedDriver.createdAt).toLocaleDateString()}
                       </span>
                     </div>
@@ -520,7 +520,7 @@ const AdminDrivers: React.FC = () => {
                         setSelectedDriver(null)
                       }}
                       disabled={approving === selectedDriver._id}
-                      className="bg-success-600 hover:bg-success-700"
+                      className="w-full sm:w-auto bg-success-600 hover:bg-success-700"
                     >
                       <UserCheck className="w-4 h-4 mr-2" />
                       Approve Driver

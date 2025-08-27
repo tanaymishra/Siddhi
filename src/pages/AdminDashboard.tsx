@@ -95,12 +95,12 @@ const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">
             Welcome back, {user?.name}!
           </h1>
-          <p className="text-neutral-600">
+          <p className="text-sm sm:text-base text-neutral-600">
             Here's what's happening with your platform today.
           </p>
         </motion.div>
@@ -110,26 +110,26 @@ const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
         >
           {stats.map((stat, index) => (
             <Card key={index} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-neutral-600 mb-1">
+                    <p className="text-xs sm:text-sm font-medium text-neutral-600 mb-1">
                       {stat.title}
                     </p>
-                    <p className="text-2xl font-bold text-neutral-900">
+                    <p className="text-xl sm:text-2xl font-bold text-neutral-900">
                       {stat.value}
                     </p>
-                    <p className="text-sm text-success-600 mt-1">
+                    <p className="text-xs sm:text-sm text-success-600 mt-1">
                       {stat.change} from last month
                     </p>
                   </div>
-                  <div className={`p-3 rounded-full ${stat.bgColor}`}>
+                  <div className={`p-2 sm:p-3 rounded-full ${stat.bgColor}`}>
                     <div className={stat.color}>
-                      {stat.icon}
+                      {React.cloneElement(stat.icon, { className: "w-5 h-5 sm:w-6 sm:h-6" })}
                     </div>
                   </div>
                 </div>
@@ -144,26 +144,26 @@ const AdminDashboard: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h2 className="text-xl font-semibold text-neutral-900 mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-4 sm:mb-6">
             Quick Actions
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {quickActions.map((action, index) => (
               <Card 
                 key={index} 
                 className="hover:shadow-md transition-all cursor-pointer group"
                 onClick={action.action}
               >
-                <CardContent className="p-6 text-center">
-                  <div className={`inline-flex p-4 rounded-full ${action.bgColor} mb-4 group-hover:scale-110 transition-transform`}>
+                <CardContent className="p-4 sm:p-6 text-center">
+                  <div className={`inline-flex p-3 sm:p-4 rounded-full ${action.bgColor} mb-3 sm:mb-4 group-hover:scale-110 transition-transform`}>
                     <div className={action.color}>
-                      {action.icon}
+                      {React.cloneElement(action.icon, { className: "w-6 h-6 sm:w-8 sm:h-8" })}
                     </div>
                   </div>
-                  <h3 className="font-semibold text-neutral-900 mb-2">
+                  <h3 className="text-sm sm:text-base font-semibold text-neutral-900 mb-2">
                     {action.title}
                   </h3>
-                  <p className="text-sm text-neutral-600">
+                  <p className="text-xs sm:text-sm text-neutral-600">
                     {action.description}
                   </p>
                 </CardContent>
