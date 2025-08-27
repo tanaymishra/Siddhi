@@ -46,28 +46,8 @@ export const createRide = async (req: AuthRequest, res: Response): Promise<void>
 
     const savedRide = await newRide.save()
 
-    // Notify online drivers of new ride
-    try {
-      if ((global as any).notifyDriversOfNewRide) {
-        const rideForDrivers = {
-          _id: savedRide._id,
-          pickupLocation: savedRide.fromLocation,
-          dropoffLocation: savedRide.toLocation,
-          fare: savedRide.routeInfo.fare,
-          distance: parseFloat(savedRide.routeInfo.distance.toString()) || 0,
-          duration: parseFloat(savedRide.routeInfo.duration.toString()) || 0,
-          status: 'pending',
-          createdAt: savedRide.createdAt,
-          customerInfo: {
-            name: (req.user as any).name || 'Customer',
-            phone: (req.user as any).phone || 'N/A'
-          }
-        }
-        ;(global as any).notifyDriversOfNewRide(rideForDrivers)
-      }
-    } catch (error) {
-      console.error('Error notifying drivers:', error)
-    }
+    // Note: Drivers will be notified only after payment is completed
+    // See updatePaymentStatus function for driver notification logic
 
     res.status(201).json({
       success: true,
@@ -158,6 +138,16 @@ export const updatePaymentStatus = async (req: Request, res: Response): Promise<
         message: 'Ride not found'
       })
       return
+    }
+
+    // If payment is completed, refresh available rides for all online drivers
+    if (isPaymentDone && (global as any).refreshAvailableRidesForAllDrivers) {
+      try {
+        ;(global as any).refreshAvailableRidesForAllDrivers()
+        console.log('Refreshed available rides for all online drivers after payment completion:', ride._id)
+      } catch (error) {
+        console.error('Error refreshing available rides for drivers:', error)
+      }
     }
     
     res.status(200).json({

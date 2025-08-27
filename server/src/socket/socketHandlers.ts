@@ -145,9 +145,9 @@ export const setupSocketHandlers = (io: Server) => {
         
         // Find the ride and check if it's still available
         const ride = await Ride.findById(rideId)
-        if (!ride || ride.status !== 'pending' || (ride.driverInfo && ride.driverInfo.driverId)) {
+        if (!ride || ride.status !== 'pending' || !ride.isPaymentDone || (ride.driverInfo && ride.driverInfo.driverId)) {
           socket.emit('ride:acceptError', { 
-            message: 'Ride is no longer available' 
+            message: 'Ride is no longer available or payment not completed' 
           })
           return
         }
@@ -188,11 +188,8 @@ export const setupSocketHandlers = (io: Server) => {
           message: 'Ride accepted successfully' 
         })
 
-        // Notify other online drivers that this ride is no longer available
-        socket.broadcast.emit('ride:unavailable', { rideId })
-
-        // Send updated available rides to the driver
-        await sendAvailableRides(socket)
+        // Refresh available rides for all online drivers (including this one)
+        await refreshAvailableRidesForAllDrivers()
 
       } catch (error) {
         console.error('Error accepting ride:', error)
@@ -249,16 +246,70 @@ export const setupSocketHandlers = (io: Server) => {
     }
   }
 
-  // Export function to be used by ride controller
+  // Function to refresh available rides for all online drivers
+  const refreshAvailableRidesForAllDrivers = async () => {
+    try {
+      // Get all online drivers
+      const onlineDriverIds = Array.from(onlineDrivers.keys())
+      
+      if (onlineDriverIds.length === 0) {
+        console.log('No online drivers to refresh')
+        return
+      }
+
+      // Get all available rides
+      const rides = await Ride.find({
+        status: 'pending',
+        isPaymentDone: true,
+        $or: [
+          { 'driverInfo.driverId': { $exists: false } },
+          { 'driverInfo.driverId': null },
+          { driverInfo: null }
+        ]
+      }).sort({ createdAt: -1 }).limit(10)
+
+      // Transform rides to match frontend expectations
+      const availableRides = rides.map(ride => ({
+        _id: ride._id,
+        pickupLocation: ride.fromLocation,
+        dropoffLocation: ride.toLocation,
+        fare: ride.routeInfo.fare,
+        distance: parseFloat(ride.routeInfo.distance.toString()) || 0,
+        duration: parseFloat(ride.routeInfo.duration.toString()) || 0,
+        status: ride.status,
+        createdAt: ride.createdAt,
+        customerInfo: {
+          name: 'Customer',
+          phone: 'N/A'
+        }
+      }))
+
+      // Send updated rides list to all online drivers
+      onlineDriverIds.forEach(driverId => {
+        const socketId = onlineDrivers.get(driverId)
+        if (socketId) {
+          io.to(socketId).emit('rides:available', availableRides)
+        }
+      })
+
+      console.log(`Refreshed available rides for ${onlineDriverIds.length} online drivers`)
+    } catch (error) {
+      console.error('Error refreshing available rides for all drivers:', error)
+    }
+  }
+
+  // Export functions to be used by ride controller
   ;(global as any).notifyDriversOfNewRide = notifyDriversOfNewRide
+  ;(global as any).refreshAvailableRidesForAllDrivers = refreshAvailableRidesForAllDrivers
 }
 
 // Helper function to send available rides to a driver
 async function sendAvailableRides(socket: AuthenticatedSocket) {
   try {
-    // Get all pending rides without assigned drivers
+    // Get all pending rides without assigned drivers and payment completed
     const rides = await Ride.find({
       status: 'pending',
+      isPaymentDone: true,
       $or: [
         { 'driverInfo.driverId': { $exists: false } },
         { 'driverInfo.driverId': null },
