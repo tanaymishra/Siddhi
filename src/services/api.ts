@@ -67,6 +67,36 @@ class ApiService {
     return this.api.post('/auth/admin/login', credentials)
   }
 
+  async loginDriver(email: string, password: string) {
+    // Use a separate request for driver login to avoid token conflicts
+    const driverApi = axios.create({
+      baseURL: API_BASE_URL,
+      timeout: 10000,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return driverApi.post('/drivers/login', { email, password })
+  }
+
+  async getDriverProfile() {
+    // Create a separate request with driver token
+    const driverApi = axios.create({
+      baseURL: API_BASE_URL,
+      timeout: 10000,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    const driverToken = localStorage.getItem('driverToken')
+    if (driverToken) {
+      driverApi.defaults.headers.Authorization = `Bearer ${driverToken}`
+    }
+    
+    return driverApi.get('/drivers/profile')
+  }
+
   async getProfile() {
     return this.api.get('/auth/profile')
   }
