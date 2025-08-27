@@ -23,6 +23,7 @@ interface AuthState {
 
   // Actions
   login: (email: string, password: string) => Promise<void>
+  adminLogin: (email: string, password: string) => Promise<void>
   register: (userData: {
     name: string
     email: string
@@ -66,6 +67,42 @@ export const useAuthenticated = create<AuthState>()(
           })
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || 'Login failed'
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: errorMessage
+          })
+          throw new Error(errorMessage)
+        }
+      },
+
+      // Admin login action
+      adminLogin: async (email: string, password: string) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const response = await apiService.adminLogin({ email, password })
+          const { accessToken, user } = response.data.data
+
+          // Verify admin role
+          if (user.role !== 'admin') {
+            throw new Error('Access denied. Admin privileges required.')
+          }
+
+          // Store token in localStorage for API interceptor
+          localStorage.setItem('hoppon_token', accessToken)
+
+          set({
+            user,
+            token: accessToken,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null
+          })
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || 'Admin login failed'
           set({
             user: null,
             token: null,

@@ -31,8 +31,20 @@ export const auth = async (
       
       let user: any = null
       
+      // Check if it's an admin token (static admin)
+      if (decoded.role === 'admin' && decoded.userId === 'admin-001') {
+        user = {
+          _id: 'admin-001',
+          name: 'System Administrator',
+          email: 'admin@hoopon.com',
+          role: 'admin',
+          isEmailVerified: true,
+          isActive: true,
+          userId: 'admin-001'
+        }
+      }
       // Check if it's a driver token
-      if (decoded.role === 'driver' && decoded.driverId) {
+      else if (decoded.role === 'driver' && decoded.driverId) {
         const driver = await Driver.findById(decoded.driverId).select('-password')
         if (driver) {
           user = {
@@ -53,7 +65,7 @@ export const auth = async (
         }
       }
       
-      if (!user || (user.isActive === false)) {
+      if (!user || (user.isActive === false && user.role !== 'admin')) {
         res.status(401).json({
           success: false,
           message: 'Invalid token or user not found'

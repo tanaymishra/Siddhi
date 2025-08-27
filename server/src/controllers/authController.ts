@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
 import { validationResult } from 'express-validator'
+import jwt from 'jsonwebtoken'
 import { User } from '../models/User'
-import { generateTokens } from '../utils/jwt'
+import { generateTokens, generateToken } from '../utils/jwt'
 import { AuthRequest } from '../middleware/auth'
 
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -196,6 +197,70 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
     res.status(500).json({
       success: false,
       message: 'Failed to update profile'
+    })
+  }
+}
+
+export const adminLogin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      })
+      return
+    }
+
+    const { email, password } = req.body
+
+    // Static admin credentials for demo
+    const ADMIN_EMAIL = 'admin@hoopon.com'
+    const ADMIN_PASSWORD = '12345678'
+
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+      res.status(401).json({
+        success: false,
+        message: 'Invalid admin credentials'
+      })
+      return
+    }
+
+    // Create admin user object for token generation
+    const adminUser = {
+      _id: 'admin-001',
+      name: 'System Administrator',
+      email: ADMIN_EMAIL,
+      role: 'admin' as const
+    }
+
+    // Generate JWT token using the utility function
+    const accessToken = generateToken(adminUser as any)
+
+    // Create admin user response
+    const adminUserResponse = {
+      id: 'admin-001',
+      name: 'System Administrator',
+      email: ADMIN_EMAIL,
+      role: 'admin',
+      isEmailVerified: true
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Admin login successful',
+      data: {
+        accessToken,
+        user: adminUserResponse
+      }
+    })
+  } catch (error) {
+    console.error('Admin login error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Admin login failed'
     })
   }
 }

@@ -60,6 +60,13 @@ class ApiService {
     return this.api.post('/auth/login', credentials)
   }
 
+  async adminLogin(credentials: {
+    email: string
+    password: string
+  }) {
+    return this.api.post('/auth/admin/login', credentials)
+  }
+
   async getProfile() {
     return this.api.get('/auth/profile')
   }

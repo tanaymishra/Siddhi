@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import AppInitializer from './components/AppInitializer'
 import Layout from './components/layout/Layout'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import AdminProtectedRoute from './components/auth/AdminProtectedRoute'
 import Home from './pages/Home'
 import Ride from './pages/Ride'
 import About from './pages/About'
@@ -14,6 +15,8 @@ import CookiesPolicy from './pages/CookiesPolicy'
 import DriverRegistration from './pages/DriverRegistration'
 import DriverLogin from './pages/DriverLogin'
 import DriverForgotPassword from './pages/DriverForgotPassword'
+import AdminLogin from './pages/AdminLogin'
+import AdminDashboard from './pages/AdminDashboard'
 import MapTest from './pages/MapTest'
 
 function App() {
@@ -42,6 +45,14 @@ function App() {
           <Route path="/driver/register" element={<DriverRegistration />} />
           <Route path="/driver/login" element={<DriverLogin />} />
           <Route path="/driver/forgot-password" element={<DriverForgotPassword />} />
+          
+          {/* Admin routes without layout */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          } />
         </Routes>
       </Router>
     </AppInitializer>
