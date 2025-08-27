@@ -20,7 +20,15 @@ interface AdminLayoutProps {
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const [sidebarExpanded, setSidebarExpanded] = useState(false) // Default collapsed on mobile
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024)
+  const [sidebarExpanded, setSidebarExpanded] = useState(() => {
+    // Initialize from localStorage or default based on screen size
+    const saved = localStorage.getItem('admin-sidebar-expanded')
+    if (saved !== null) {
+      return JSON.parse(saved)
+    }
+    return window.innerWidth >= 1024
+  })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { user, logout } = useAuthenticated()
   const navigate = useNavigate()
@@ -29,11 +37,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setSidebarExpanded(true)
+      const desktop = window.innerWidth >= 1024
+      setIsDesktop(desktop)
+      
+      // Close mobile menu on resize
+      if (desktop) {
         setMobileMenuOpen(false)
-      } else {
-        setSidebarExpanded(false)
       }
     }
 
@@ -41,6 +50,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  // Save sidebar state to localStorage
+  useEffect(() => {
+    localStorage.setItem('admin-sidebar-expanded', JSON.stringify(sidebarExpanded))
+  }, [sidebarExpanded])
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -50,6 +64,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const handleLogout = () => {
     logout()
     navigate('/')
+  }
+
+  const toggleSidebar = () => {
+    setSidebarExpanded(prev => !prev)
   }
 
   const menuItems = [
@@ -91,44 +109,31 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           ${mobileMenuOpen ? 'w-80' : ''}
         `}
         animate={{ 
-          width: window.innerWidth >= 1024 ? (sidebarExpanded ? 280 : 80) : mobileMenuOpen ? 320 : 0
+          width: isDesktop ? (sidebarExpanded ? 280 : 80) : mobileMenuOpen ? 320 : 0
         }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
         {/* Header */}
         <div className="p-4 border-b border-neutral-200">
           <div className="flex items-center justify-between">
-            <AnimatePresence mode="wait">
-              {(sidebarExpanded || mobileMenuOpen) ? (
-                <motion.div
-                  key="expanded"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center space-x-3"
-                >
-                  <div className="p-2 bg-primary-100 rounded-lg">
-                    <Shield className="w-6 h-6 text-primary-600" />
-                  </div>
-                  <div>
-                    <h1 className="font-semibold text-neutral-900">Admin Portal</h1>
-                    <p className="text-xs text-neutral-500">HoppOn Management</p>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="collapsed"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="p-2 bg-primary-100 rounded-lg mx-auto"
-                >
-                  <Shield className="w-6 h-6 text-primary-600" />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-primary-100 rounded-lg">
+                <Shield className="w-6 h-6 text-primary-600" />
+              </div>
+              <AnimatePresence>
+                {(sidebarExpanded || mobileMenuOpen) && (
+                  <motion.div
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: 'auto' }}
+                    exit={{ opacity: 0, width: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <h1 className="font-semibold text-neutral-900 whitespace-nowrap">Admin Portal</h1>
+                    <p className="text-xs text-neutral-500 whitespace-nowrap">HoppOn Management</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             
             <div className="flex items-center space-x-2">
               {/* Mobile close button */}
@@ -145,7 +150,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setSidebarExpanded(!sidebarExpanded)}
+                onClick={toggleSidebar}
                 className="p-1.5 hidden lg:flex"
               >
                 {sidebarExpanded ? (
