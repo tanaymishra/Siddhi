@@ -257,7 +257,7 @@ export const setupSocketHandlers = (io: Server) => {
 async function sendAvailableRides(socket: AuthenticatedSocket) {
   try {
     // Get all pending rides without assigned drivers
-    const availableRides = await Ride.find({
+    const rides = await Ride.find({
       status: 'pending',
       $or: [
         { 'driverInfo.driverId': { $exists: false } },
@@ -266,6 +266,24 @@ async function sendAvailableRides(socket: AuthenticatedSocket) {
       ]
     }).sort({ createdAt: -1 }).limit(10)
 
+    // Transform rides to match frontend expectations
+    const availableRides = rides.map(ride => ({
+      _id: ride._id,
+      pickupLocation: ride.fromLocation,
+      dropoffLocation: ride.toLocation,
+      fare: ride.routeInfo.fare,
+      distance: parseFloat(ride.routeInfo.distance.toString()) || 0,
+      duration: parseFloat(ride.routeInfo.duration.toString()) || 0,
+      status: ride.status,
+      createdAt: ride.createdAt,
+      customerInfo: {
+        name: 'Customer', // We don't have customer info in the ride model yet
+        phone: 'N/A'
+      }
+    }))
+
+    console.log('Sending available rides to driver:', availableRides.length)
+    console.log('Sample ride data:', availableRides[0])
     socket.emit('rides:available', availableRides)
   } catch (error) {
     console.error('Error sending available rides:', error)

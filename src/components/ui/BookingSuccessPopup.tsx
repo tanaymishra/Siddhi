@@ -25,7 +25,7 @@ const BookingSuccessPopup: React.FC<BookingSuccessPopupProps> = ({
             exit={{ opacity: 0 }}
             onClick={onClose}
           />
-          
+
           {/* Popup */}
           <motion.div
             className="fixed inset-0 flex items-center justify-center z-50 p-4"
@@ -53,7 +53,7 @@ const BookingSuccessPopup: React.FC<BookingSuccessPopupProps> = ({
                 >
                   <CheckCircle className="w-8 h-8 text-green-600" />
                 </motion.div>
-                
+
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   Booking Confirmed!
                 </h2>

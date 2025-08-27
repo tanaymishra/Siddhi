@@ -76,11 +76,14 @@ export const useDriverSocket = () => {
 
     // Available rides
     socketService.onAvailableRides((rides) => {
+      console.log('Received available rides:', rides)
+      console.log('Sample ride:', rides[0])
       setAvailableRides(rides)
     })
 
     // New ride notifications
     socketService.onNewRide((ride) => {
+      console.log('Received new ride:', ride)
       setAvailableRides(prev => [ride, ...prev])
       // You can add notification sound/toast here
     })
