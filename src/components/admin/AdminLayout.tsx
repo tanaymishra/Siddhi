@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '../ui/Button'
-import { 
-  Shield, 
-  LayoutDashboard, 
-  Users, 
-  ChevronLeft, 
-  ChevronRight, 
+import {
+  Shield,
+  LayoutDashboard,
+  Users,
+  ChevronLeft,
+  ChevronRight,
   LogOut,
   Bell,
   Menu,
@@ -39,7 +39,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     const handleResize = () => {
       const desktop = window.innerWidth >= 1024
       setIsDesktop(desktop)
-      
+
       // Close mobile menu on resize
       if (desktop) {
         setMobileMenuOpen(false)
@@ -108,7 +108,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           ${mobileMenuOpen ? 'inset-y-0 left-0 z-50' : ''}
           ${mobileMenuOpen ? 'w-80' : ''}
         `}
-        animate={{ 
+        animate={{
           width: isDesktop ? (sidebarExpanded ? 280 : 80) : mobileMenuOpen ? 320 : 0
         }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
@@ -134,7 +134,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 )}
               </AnimatePresence>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               {/* Mobile close button */}
               <Button
@@ -145,7 +145,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               >
                 <X className="w-4 h-4" />
               </Button>
-              
+
               {/* Desktop toggle button */}
               <Button
                 variant="ghost"
@@ -170,11 +170,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-colors ${
-                  item.active
-                    ? 'bg-primary-100 text-primary-700 font-medium'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                }`}
+                className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-colors ${item.active
+                  ? 'bg-primary-100 text-primary-700 font-medium'
+                  : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                  }`}
               >
                 <div className="flex-shrink-0">
                   {item.icon}
@@ -224,7 +223,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               )}
             </AnimatePresence>
           </div>
-          
+
           <AnimatePresence>
             {(sidebarExpanded || mobileMenuOpen) && (
               <motion.div
@@ -246,7 +245,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </motion.div>
             )}
           </AnimatePresence>
-          
+
           {!sidebarExpanded && !mobileMenuOpen && (
             <div className="mt-3 flex justify-center">
               <Button
@@ -277,7 +276,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               >
                 <Menu className="w-5 h-5" />
               </Button>
-              
+
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold text-neutral-900">
                   {menuItems.find(item => item.active)?.name || 'Admin Panel'}
@@ -287,12 +286,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2 sm:space-x-4">
               <Button variant="ghost" size="sm">
                 <Bell className="w-4 h-4" />
               </Button>
-              
+
               {/* Mobile user info */}
               <div className="lg:hidden flex items-center space-x-2">
                 <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">

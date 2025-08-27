@@ -367,16 +367,27 @@ export const getAllDrivers = async (req: Request, res: Response): Promise<void> 
     }
 
     const drivers = await Driver.find(filter)
+      .select('+password') // Include password field for admin
       .sort({ createdAt: -1 })
       .limit(Number(limit))
       .skip((Number(page) - 1) * Number(limit))
 
     const total = await Driver.countDocuments(filter)
 
+    // Transform drivers to include password for admin view
+    const driversWithPasswords = drivers.map(driver => {
+      const driverObj = driver.toObject()
+      // Include password for admin (override the toJSON method behavior)
+      if (driver.password) {
+        driverObj.password = driver.password
+      }
+      return driverObj
+    })
+
     res.json({
       success: true,
       data: {
-        drivers,
+        drivers: driversWithPasswords,
         pagination: {
           page: Number(page),
           limit: Number(limit),
@@ -423,7 +434,7 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
         password: generatedPassword // This will be hashed by the pre-save middleware
       },
       { new: true }
-    )
+    ).select('+password') // Include password in the response
 
     if (!driver) {
       res.status(404).json({
@@ -433,13 +444,17 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
       return
     }
 
+    // Create driver object with password for admin
+    const driverObj = driver.toObject()
+    driverObj.password = generatedPassword // Include the plain password for admin
+
     // TODO: Send approval email to driver with password
 
     res.json({
       success: true,
       message: 'Driver approved successfully',
       data: {
-        driver,
+        driver: driverObj,
         password: generatedPassword // Return the plain password for admin to see
       }
     })

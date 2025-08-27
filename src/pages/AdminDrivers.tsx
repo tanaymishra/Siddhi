@@ -63,29 +63,33 @@ const AdminDrivers: React.FC = () => {
       const driversData = response.data.data?.drivers || response.data.data || []
       
       // Transform the data to match our interface
-      const transformedDrivers = driversData.map((driver: any) => ({
-        _id: driver._id,
-        name: `${driver.firstName} ${driver.lastName}`,
-        email: driver.email,
-        phone: driver.phone,
-        licenseNumber: driver.licensePlate,
-        vehicleInfo: {
-          make: driver.vehicleMake,
-          model: driver.vehicleModel,
-          year: driver.vehicleYear,
-          plateNumber: driver.licensePlate,
-          color: driver.vehicleColor
-        },
-        documents: {
-          license: driver.driversLicenseUrl,
-          insurance: driver.insuranceUrl,
-          registration: driver.vehicleRegistrationUrl
-        },
-        isApproved: driver.isApproved,
-        isActive: driver.isActive,
-        createdAt: driver.createdAt,
-        password: driver.password
-      }))
+      const transformedDrivers = driversData.map((driver: any) => {
+        console.log('Driver data from API:', driver) // Debug log
+        console.log('Driver password:', driver.password) // Debug log
+        return {
+          _id: driver._id,
+          name: `${driver.firstName} ${driver.lastName}`,
+          email: driver.email,
+          phone: driver.phone,
+          licenseNumber: driver.licensePlate,
+          vehicleInfo: {
+            make: driver.vehicleMake,
+            model: driver.vehicleModel,
+            year: driver.vehicleYear,
+            plateNumber: driver.licensePlate,
+            color: driver.vehicleColor
+          },
+          documents: {
+            license: driver.driversLicenseUrl,
+            insurance: driver.insuranceUrl,
+            registration: driver.vehicleRegistrationUrl
+          },
+          isApproved: driver.isApproved,
+          isActive: driver.isActive,
+          createdAt: driver.createdAt,
+          password: driver.password
+        }
+      })
       
       setDrivers(transformedDrivers)
     } catch (error) {
@@ -362,6 +366,8 @@ const AdminDrivers: React.FC = () => {
                             </div>
                           </div>
                         )}
+                        {/* Debug: Show if password exists */}
+                        {console.log(`Driver ${driver.name} password:`, driver.password)}
                       </div>
                     </div>
                     
