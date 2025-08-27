@@ -3,27 +3,20 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
+import AdminLayout from '../components/admin/AdminLayout'
 import { 
   Users, 
   Car, 
   DollarSign, 
-  TrendingUp, 
-  LogOut,
-  Shield,
+  TrendingUp,
   BarChart3,
-  Settings,
-  Bell
+  Settings
 } from 'lucide-react'
 import { useAuthenticated } from '../hooks/useAuthenticated'
 
 const AdminDashboard: React.FC = () => {
-  const { user, logout } = useAuthenticated()
+  const { user } = useAuthenticated()
   const navigate = useNavigate()
-
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
 
   const stats = [
     {
@@ -96,45 +89,7 @@ const AdminDashboard: React.FC = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <header className="bg-white border-b border-neutral-200">
-        <div className="container">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <img src="/logo.png" alt="HoppOn Logo" className="w-24 h-12 object-contain" />
-              <div className="flex items-center space-x-2">
-                <Shield className="w-5 h-5 text-primary-600" />
-                <span className="text-lg font-semibold text-neutral-900">Admin Portal</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm">
-                <Bell className="w-4 h-4" />
-              </Button>
-              <div className="flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-neutral-900">{user?.name}</p>
-                  <p className="text-xs text-neutral-500 capitalize">{user?.role}</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container py-8">
+    <AdminLayout>
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -248,8 +203,7 @@ const AdminDashboard: React.FC = () => {
             </CardContent>
           </Card>
         </motion.div>
-      </main>
-    </div>
+    </AdminLayout>
   )
 }
 

@@ -17,6 +17,7 @@ import DriverLogin from './pages/DriverLogin'
 import DriverForgotPassword from './pages/DriverForgotPassword'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
+import AdminDrivers from './pages/AdminDrivers'
 import MapTest from './pages/MapTest'
 
 function App() {
@@ -51,6 +52,11 @@ function App() {
           <Route path="/admin/dashboard" element={
             <AdminProtectedRoute>
               <AdminDashboard />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/drivers" element={
+            <AdminProtectedRoute>
+              <AdminDrivers />
             </AdminProtectedRoute>
           } />
         </Routes>

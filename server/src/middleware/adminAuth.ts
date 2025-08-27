@@ -27,15 +27,30 @@ export const adminAuth = async (
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any
       
-      // Get user from database
-      const user = await User.findById(decoded.userId).select('-password')
+      let user: any = null
       
-      if (!user || !user.isActive) {
-        res.status(401).json({
-          success: false,
-          message: 'Invalid token or user not found'
-        })
-        return
+      // Check if it's the static admin user
+      if (decoded.role === 'admin' && decoded.userId === 'admin-001') {
+        user = {
+          _id: 'admin-001',
+          name: 'System Administrator',
+          email: 'admin@hoopon.com',
+          role: 'admin',
+          isEmailVerified: true,
+          isActive: true,
+          userId: 'admin-001'
+        }
+      } else {
+        // Get user from database for regular admin users
+        user = await User.findById(decoded.userId).select('-password')
+        
+        if (!user || !user.isActive) {
+          res.status(401).json({
+            success: false,
+            message: 'Invalid token or user not found'
+          })
+          return
+        }
       }
 
       // Check if user is admin

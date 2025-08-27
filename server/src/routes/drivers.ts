@@ -131,8 +131,8 @@ router.post('/upload-document',
 )
 
 // Admin routes (require admin authentication)
-router.get('/', adminAuth, getAllDrivers)
-router.put('/:driverId/approve', adminAuth, approveDriver)
-router.put('/:driverId/reject', adminAuth, rejectDriver)
+router.get('/admin/all', adminAuth, getAllDrivers)
+router.post('/admin/approve/:driverId', adminAuth, approveDriver)
+router.put('/admin/reject/:driverId', adminAuth, rejectDriver)
 
 export default router

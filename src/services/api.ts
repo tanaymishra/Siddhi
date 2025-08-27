@@ -78,6 +78,19 @@ class ApiService {
     return this.api.put('/auth/profile', userData)
   }
 
+  // Admin endpoints
+  async getAllDrivers() {
+    return this.api.get('/drivers/admin/all')
+  }
+
+  async approveDriver(driverId: string) {
+    return this.api.post(`/drivers/admin/approve/${driverId}`, {})
+  }
+
+  async rejectDriver(driverId: string, reason: string) {
+    return this.api.put(`/drivers/admin/reject/${driverId}`, { reason })
+  }
+
   // Generic methods
   async get(endpoint: string) {
     return this.api.get(endpoint)

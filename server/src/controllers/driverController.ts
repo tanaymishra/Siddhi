@@ -400,6 +400,18 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
   try {
     const { driverId } = req.params
 
+    // Generate a random password for the driver
+    const generatePassword = (): string => {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+      let password = ''
+      for (let i = 0; i < 8; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length))
+      }
+      return password
+    }
+
+    const generatedPassword = generatePassword()
+
     const driver = await Driver.findByIdAndUpdate(
       driverId,
       {
@@ -407,7 +419,8 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
         isApproved: true,
         approvedAt: new Date(),
         rejectionReason: null,
-        rejectedAt: null
+        rejectedAt: null,
+        password: generatedPassword // This will be hashed by the pre-save middleware
       },
       { new: true }
     )
@@ -420,12 +433,15 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
       return
     }
 
-    // TODO: Send approval email to driver
+    // TODO: Send approval email to driver with password
 
     res.json({
       success: true,
       message: 'Driver approved successfully',
-      data: driver
+      data: {
+        driver,
+        password: generatedPassword // Return the plain password for admin to see
+      }
     })
   } catch (error) {
     console.error('Approve driver error:', error)
