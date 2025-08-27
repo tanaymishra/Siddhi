@@ -24,8 +24,11 @@ const io = new Server(server, {
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
     methods: ['GET', 'POST'],
-    credentials: true
-  }
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
+  },
+  allowEIO3: true,
+  transports: ['websocket', 'polling']
 })
 
 const PORT = process.env.PORT || 5001
@@ -85,6 +88,15 @@ app.use('/api/drivers', driverRoutes)
 app.use(handleMulterError)
 app.use(notFound)
 app.use(errorHandler)
+
+// Socket.IO test endpoint
+app.get('/api/socket-test', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Socket.IO server is running',
+    connectedClients: io.engine.clientsCount
+  })
+})
 
 // Setup socket handlers
 setupSocketHandlers(io)

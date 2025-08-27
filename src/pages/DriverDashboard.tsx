@@ -304,6 +304,33 @@ const DriverDashboard: React.FC = () => {
             </motion.div>
           )}
 
+          {/* Connection Status */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`border rounded-lg p-4 ${
+              isConnected 
+                ? 'bg-success-50 border-success-200' 
+                : 'bg-warning-50 border-warning-200'
+            }`}
+          >
+            <div className="flex items-center space-x-2">
+              {isConnected ? (
+                <>
+                  <CheckCircle className="w-5 h-5 text-success-600" />
+                  <p className="text-success-800">Connected to server</p>
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="w-5 h-5 text-warning-600" />
+                  <p className="text-warning-800">
+                    {connectionError || 'Connecting to server...'}
+                  </p>
+                </>
+              )}
+            </div>
+          </motion.div>
+
           {/* Connection Error */}
           {connectionError && (
             <motion.div

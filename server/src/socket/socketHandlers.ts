@@ -10,8 +10,9 @@ interface AuthenticatedSocket extends Socket {
 }
 
 interface JWTPayload {
-  id: string
+  driverId: string
   email: string
+  role: string
   iat: number
   exp: number
 }
@@ -20,25 +21,46 @@ interface JWTPayload {
 const onlineDrivers = new Map<string, string>() // driverId -> socketId
 
 export const setupSocketHandlers = (io: Server) => {
+  console.log('Setting up socket handlers...')
+  
   // Middleware to authenticate driver connections
   io.use(async (socket: AuthenticatedSocket, next) => {
     try {
+      console.log('Socket authentication attempt:', socket.id)
       const token = socket.handshake.auth.token
       
       if (!token) {
+        console.log('No token provided')
         return next(new Error('Authentication error: No token provided'))
       }
 
+      console.log('Token received, verifying...')
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload
+      console.log('Token decoded:', decoded.driverId)
       
       // Verify driver exists and is approved
-      const driver = await Driver.findById(decoded.id)
-      if (!driver || driver.status !== 'approved') {
-        return next(new Error('Authentication error: Driver not found or not approved'))
+      const driver = await Driver.findById(decoded.driverId)
+      console.log('Driver lookup result:', {
+        found: !!driver,
+        id: driver?._id,
+        email: driver?.email,
+        status: driver?.status,
+        isApproved: driver?.isApproved
+      })
+      
+      if (!driver) {
+        console.log('Driver not found in database')
+        return next(new Error('Authentication error: Driver not found'))
+      }
+      
+      if (driver.status !== 'approved') {
+        console.log('Driver status is not approved:', driver.status)
+        return next(new Error('Authentication error: Driver not approved'))
       }
 
       socket.driverId = (driver._id as mongoose.Types.ObjectId).toString()
       socket.driverData = driver
+      console.log('Driver authenticated successfully:', socket.driverId)
       next()
     } catch (error) {
       console.error('Socket authentication error:', error)

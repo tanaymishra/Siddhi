@@ -11,13 +11,22 @@ class SocketService {
         return
       }
 
-      const serverUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001'
+      // Remove /api from the URL for socket connection
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api'
+      const serverUrl = apiUrl.replace('/api', '')
+      
+      console.log('Connecting to socket server:', serverUrl)
+      console.log('Using token:', token ? 'Token provided' : 'No token')
       
       this.socket = io(serverUrl, {
         auth: {
           token
         },
-        transports: ['websocket', 'polling']
+        transports: ['websocket', 'polling'],
+        forceNew: true,
+        reconnection: true,
+        timeout: 5000,
+        autoConnect: true
       })
 
       this.socket.on('connect', () => {
@@ -28,6 +37,12 @@ class SocketService {
 
       this.socket.on('connect_error', (error) => {
         console.error('Connection error:', error)
+        console.error('Error details:', {
+          message: error.message,
+          description: error.description,
+          context: error.context,
+          type: error.type
+        })
         this.isConnected = false
         reject(error)
       })
