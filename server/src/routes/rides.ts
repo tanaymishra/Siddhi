@@ -4,7 +4,8 @@ import {
   getAllRides,
   getRideById,
   updatePaymentStatus,
-  updateActiveStatus
+  updateActiveStatus,
+  assignDriverToRide
 } from '../controllers/rideController'
 import { authenticate } from '../middleware/auth'
 
@@ -27,5 +28,8 @@ router.patch('/:id/payment', updatePaymentStatus)
 
 // PATCH /api/rides/:id/status - Update active status
 router.patch('/:id/status', updateActiveStatus)
+
+// POST /api/rides/:id/assign-driver - Assign driver to ride
+router.post('/:id/assign-driver', assignDriverToRide)
 
 export default router

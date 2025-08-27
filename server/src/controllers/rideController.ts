@@ -32,16 +32,13 @@ export const createRide = async (req: AuthRequest, res: Response): Promise<void>
     // Get userId from authenticated user (JWT token)
     const userId = req.user._id
 
-    // Generate mock driver info
-    const driverInfo = getRandomDriver()
-
-    // Create new ride
+    // Create new ride with no driver assigned initially
     const newRide = new Ride({
       fromLocation,
       toLocation,
       routeInfo,
       userId,
-      driverInfo,
+      driverInfo: null, // No driver assigned initially
       isPaymentDone: false,
       isActive: true
     })
@@ -50,11 +47,11 @@ export const createRide = async (req: AuthRequest, res: Response): Promise<void>
 
     res.status(201).json({
       success: true,
-      message: 'Ride booked successfully!',
+      message: 'Ride booked successfully! Looking for available drivers...',
       data: {
         rideId: savedRide._id,
-        driverInfo: savedRide.driverInfo,
-        estimatedArrival: '5-8 minutes',
+        driverInfo: savedRide.driverInfo, // Will be null initially
+        estimatedArrival: 'Searching for driver...',
         fare: savedRide.routeInfo.fare,
         isPaymentDone: savedRide.isPaymentDone,
         isActive: savedRide.isActive
@@ -183,6 +180,52 @@ export const updateActiveStatus = async (req: Request, res: Response): Promise<v
     res.status(500).json({
       success: false,
       message: 'Failed to update ride status'
+    })
+  }
+}
+
+// Assign driver to ride (for future use)
+export const assignDriverToRide = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params
+    const { driverId } = req.body
+    
+    // Here you would typically:
+    // 1. Find the driver by ID
+    // 2. Check if driver is available
+    // 3. Assign driver to ride
+    
+    // For now, using mock driver assignment
+    const driverInfo = getRandomDriver()
+    
+    const ride = await Ride.findByIdAndUpdate(
+      id,
+      { driverInfo },
+      { new: true }
+    )
+    
+    if (!ride) {
+      res.status(404).json({
+        success: false,
+        message: 'Ride not found'
+      })
+      return
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Driver assigned successfully',
+      data: {
+        rideId: ride._id,
+        driverInfo: ride.driverInfo,
+        estimatedArrival: '5-8 minutes'
+      }
+    })
+  } catch (error) {
+    console.error('Error assigning driver:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to assign driver'
     })
   }
 }
