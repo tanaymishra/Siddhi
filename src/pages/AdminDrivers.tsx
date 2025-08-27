@@ -207,51 +207,51 @@ const AdminDrivers: React.FC = () => {
     <AdminLayout>
       <div className="space-y-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-neutral-600">Total Drivers</p>
-                  <p className="text-2xl font-bold text-neutral-900">{stats.total}</p>
+                  <p className="text-xs sm:text-sm font-medium text-neutral-600">Total Drivers</p>
+                  <p className="text-xl sm:text-2xl font-bold text-neutral-900">{stats.total}</p>
                 </div>
-                <Users className="w-8 h-8 text-primary-600" />
+                <Users className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-neutral-600">Pending Approval</p>
-                  <p className="text-2xl font-bold text-warning-600">{stats.pending}</p>
+                  <p className="text-xs sm:text-sm font-medium text-neutral-600">Pending Approval</p>
+                  <p className="text-xl sm:text-2xl font-bold text-warning-600">{stats.pending}</p>
                 </div>
-                <Clock className="w-8 h-8 text-warning-600" />
+                <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-warning-600" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-neutral-600">Approved</p>
-                  <p className="text-2xl font-bold text-success-600">{stats.approved}</p>
+                  <p className="text-xs sm:text-sm font-medium text-neutral-600">Approved</p>
+                  <p className="text-xl sm:text-2xl font-bold text-success-600">{stats.approved}</p>
                 </div>
-                <CheckCircle className="w-8 h-8 text-success-600" />
+                <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-success-600" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-neutral-600">Active</p>
-                  <p className="text-2xl font-bold text-primary-600">{stats.active}</p>
+                  <p className="text-xs sm:text-sm font-medium text-neutral-600">Active</p>
+                  <p className="text-xl sm:text-2xl font-bold text-primary-600">{stats.active}</p>
                 </div>
-                <UserCheck className="w-8 h-8 text-primary-600" />
+                <UserCheck className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
               </div>
             </CardContent>
           </Card>
@@ -259,30 +259,30 @@ const AdminDrivers: React.FC = () => {
 
         {/* Filters and Search */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
                   <input
                     type="text"
-                    placeholder="Search drivers by name, email, or phone..."
+                    placeholder="Search drivers..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 text-sm border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
               </div>
               
               <div className="flex items-center space-x-2">
-                <Filter className="w-4 h-4 text-neutral-400" />
+                <Filter className="w-4 h-4 text-neutral-400 hidden sm:block" />
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value as any)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   <option value="all">All Drivers</option>
-                  <option value="pending">Pending Approval</option>
+                  <option value="pending">Pending</option>
                   <option value="approved">Approved</option>
                 </select>
               </div>
@@ -304,25 +304,25 @@ const AdminDrivers: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="border border-neutral-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                        <span className="text-lg font-semibold text-primary-600">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
+                    <div className="flex items-start sm:items-center space-x-4 flex-1">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm sm:text-lg font-semibold text-primary-600">
                           {driver.name.charAt(0)}
                         </span>
                       </div>
                       
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <h3 className="font-semibold text-neutral-900">{driver.name}</h3>
-                          <div className="flex items-center space-x-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                          <h3 className="font-semibold text-neutral-900 truncate">{driver.name}</h3>
+                          <div className="flex items-center">
                             {driver.isApproved ? (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success-100 text-success-800">
                                 <CheckCircle className="w-3 h-3 mr-1" />
                                 Approved
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-100 text-warning-800">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-warning-100 text-warning-800">
                                 <Clock className="w-3 h-3 mr-1" />
                                 Pending
                               </span>
@@ -330,42 +330,51 @@ const AdminDrivers: React.FC = () => {
                           </div>
                         </div>
                         
-                        <div className="mt-1 flex items-center space-x-4 text-sm text-neutral-600">
-                          <div className="flex items-center space-x-1">
-                            <Mail className="w-4 h-4" />
-                            <span>{driver.email}</span>
+                        <div className="mt-2 space-y-1">
+                          <div className="flex items-center space-x-1 text-xs sm:text-sm text-neutral-600">
+                            <Mail className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                            <span className="truncate">{driver.email}</span>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <Phone className="w-4 h-4" />
-                            <span>{driver.phone}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Car className="w-4 h-4" />
-                            <span>{driver.vehicleInfo.make} {driver.vehicleInfo.model}</span>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-1 sm:space-y-0">
+                            <div className="flex items-center space-x-1 text-xs sm:text-sm text-neutral-600">
+                              <Phone className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                              <span>{driver.phone}</span>
+                            </div>
+                            <div className="flex items-center space-x-1 text-xs sm:text-sm text-neutral-600">
+                              <Car className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                              <span className="truncate">{driver.vehicleInfo.make} {driver.vehicleInfo.model}</span>
+                            </div>
                           </div>
                         </div>
                         
                         {driver.password && (
-                          <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-sm">
-                            <div className="flex items-center space-x-2">
-                              <AlertCircle className="w-4 h-4 text-amber-600" />
-                              <span className="text-amber-800">
-                                Generated Password: <code className="font-mono bg-amber-100 px-1 rounded">{driver.password}</code>
-                              </span>
+                          <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-xs sm:text-sm">
+                            <div className="flex items-start space-x-2">
+                              <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                              <div className="min-w-0">
+                                <span className="text-amber-800 block sm:inline">
+                                  Generated Password: 
+                                </span>
+                                <code className="font-mono bg-amber-100 px-1 rounded break-all">
+                                  {driver.password}
+                                </code>
+                              </div>
                             </div>
                           </div>
                         )}
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:flex-shrink-0">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setSelectedDriver(driver)}
+                        className="text-xs sm:text-sm"
                       >
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Details
+                        <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">View Details</span>
+                        <span className="sm:hidden">Details</span>
                       </Button>
                       
                       {!driver.isApproved && (
@@ -373,16 +382,17 @@ const AdminDrivers: React.FC = () => {
                           size="sm"
                           onClick={() => handleApproveDriver(driver._id)}
                           disabled={approving === driver._id}
-                          className="bg-success-600 hover:bg-success-700"
+                          className="bg-success-600 hover:bg-success-700 text-xs sm:text-sm"
                         >
                           {approving === driver._id ? (
                             <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Approving...
+                              <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-1 sm:mr-2"></div>
+                              <span className="hidden sm:inline">Approving...</span>
+                              <span className="sm:hidden">...</span>
                             </>
                           ) : (
                             <>
-                              <UserCheck className="w-4 h-4 mr-2" />
+                              <UserCheck className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                               Approve
                             </>
                           )}
@@ -418,7 +428,7 @@ const AdminDrivers: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           >
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-neutral-900">Driver Details</h2>
                 <Button

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '../ui/Button'
@@ -9,7 +9,9 @@ import {
   ChevronLeft, 
   ChevronRight, 
   LogOut,
-  Bell
+  Bell,
+  Menu,
+  X
 } from 'lucide-react'
 import { useAuthenticated } from '../../hooks/useAuthenticated'
 
@@ -18,10 +20,32 @@ interface AdminLayoutProps {
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true)
+  const [sidebarExpanded, setSidebarExpanded] = useState(false) // Default collapsed on mobile
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { user, logout } = useAuthenticated()
   const navigate = useNavigate()
   const location = useLocation()
+
+  // Handle responsive behavior
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSidebarExpanded(true)
+        setMobileMenuOpen(false)
+      } else {
+        setSidebarExpanded(false)
+      }
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname])
 
   const handleLogout = () => {
     logout()
@@ -45,17 +69,37 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-neutral-50 flex">
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <motion.div
-        className="bg-white border-r border-neutral-200 shadow-sm flex flex-col"
-        animate={{ width: sidebarExpanded ? 280 : 80 }}
+        className={`
+          bg-white border-r border-neutral-200 shadow-sm flex flex-col
+          ${mobileMenuOpen ? 'fixed' : 'hidden lg:flex'}
+          ${mobileMenuOpen ? 'inset-y-0 left-0 z-50' : ''}
+          ${mobileMenuOpen ? 'w-80' : ''}
+        `}
+        animate={{ 
+          width: window.innerWidth >= 1024 ? (sidebarExpanded ? 280 : 80) : mobileMenuOpen ? 320 : 0
+        }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
         {/* Header */}
         <div className="p-4 border-b border-neutral-200">
           <div className="flex items-center justify-between">
             <AnimatePresence mode="wait">
-              {sidebarExpanded ? (
+              {(sidebarExpanded || mobileMenuOpen) ? (
                 <motion.div
                   key="expanded"
                   initial={{ opacity: 0 }}
@@ -86,18 +130,31 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               )}
             </AnimatePresence>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSidebarExpanded(!sidebarExpanded)}
-              className="p-1.5"
-            >
-              {sidebarExpanded ? (
-                <ChevronLeft className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-            </Button>
+            <div className="flex items-center space-x-2">
+              {/* Mobile close button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-1.5 lg:hidden"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+              
+              {/* Desktop toggle button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarExpanded(!sidebarExpanded)}
+                className="p-1.5 hidden lg:flex"
+              >
+                {sidebarExpanded ? (
+                  <ChevronLeft className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -118,7 +175,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   {item.icon}
                 </div>
                 <AnimatePresence>
-                  {sidebarExpanded && (
+                  {(sidebarExpanded || mobileMenuOpen) && (
                     <motion.span
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: 'auto' }}
@@ -144,7 +201,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </span>
             </div>
             <AnimatePresence>
-              {sidebarExpanded && (
+              {(sidebarExpanded || mobileMenuOpen) && (
                 <motion.div
                   initial={{ opacity: 0, width: 0 }}
                   animate={{ opacity: 1, width: 'auto' }}
@@ -164,7 +221,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           </div>
           
           <AnimatePresence>
-            {sidebarExpanded && (
+            {(sidebarExpanded || mobileMenuOpen) && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
@@ -185,7 +242,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             )}
           </AnimatePresence>
           
-          {!sidebarExpanded && (
+          {!sidebarExpanded && !mobileMenuOpen && (
             <div className="mt-3 flex justify-center">
               <Button
                 variant="ghost"
@@ -203,27 +260,48 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="bg-white border-b border-neutral-200 px-6 py-4">
+        <header className="bg-white border-b border-neutral-200 px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-neutral-900">
-                {menuItems.find(item => item.active)?.name || 'Admin Panel'}
-              </h2>
-              <p className="text-sm text-neutral-500">
-                Manage your HoppOn platform
-              </p>
+            <div className="flex items-center space-x-4">
+              {/* Mobile menu button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileMenuOpen(true)}
+                className="lg:hidden"
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+              
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-neutral-900">
+                  {menuItems.find(item => item.active)?.name || 'Admin Panel'}
+                </h2>
+                <p className="text-xs sm:text-sm text-neutral-500 hidden sm:block">
+                  Manage your HoppOn platform
+                </p>
+              </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Button variant="ghost" size="sm">
                 <Bell className="w-4 h-4" />
               </Button>
+              
+              {/* Mobile user info */}
+              <div className="lg:hidden flex items-center space-x-2">
+                <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-primary-600">
+                    {user?.name?.charAt(0) || 'A'}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-4 sm:p-6 overflow-auto">
           {children}
         </main>
       </div>
