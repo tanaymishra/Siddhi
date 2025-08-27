@@ -253,11 +253,17 @@ driverSchema.pre('save', async function(next) {
   if (!this.isModified('password') || !this.password) return next()
 
   try {
+    console.log('Hashing password in pre-save middleware')
+    console.log('Original password:', this.password)
+    
     // Hash password with cost of 12
     const salt = await bcrypt.genSalt(12)
     this.password = await bcrypt.hash(this.password, salt)
+    
+    console.log('Password hashed successfully, length:', this.password.length)
     next()
   } catch (error) {
+    console.error('Error hashing password:', error)
     next(error as Error)
   }
 })
@@ -268,12 +274,24 @@ driverSchema.methods.comparePassword = async function(candidatePassword: string)
     console.log('No password set for driver')
     return false
   }
-  console.log('Comparing candidate password with stored hash')
+  
+  console.log('Comparing candidate password with stored password')
   console.log('Candidate password:', candidatePassword)
-  console.log('Stored hash length:', this.password.length)
-  const result = await bcrypt.compare(candidatePassword, this.password)
-  console.log('bcrypt.compare result:', result)
-  return result
+  console.log('Stored password:', this.password)
+  console.log('Stored password length:', this.password.length)
+  
+  // Check if password is hashed (bcrypt hashes are typically 60 characters long and start with $2)
+  if (this.password.length === 60 && this.password.startsWith('$2')) {
+    console.log('Password appears to be hashed, using bcrypt.compare')
+    const result = await bcrypt.compare(candidatePassword, this.password)
+    console.log('bcrypt.compare result:', result)
+    return result
+  } else {
+    console.log('Password appears to be plain text, doing direct comparison')
+    const result = candidatePassword === this.password
+    console.log('Direct comparison result:', result)
+    return result
+  }
 }
 
 // Remove sensitive information from JSON output
