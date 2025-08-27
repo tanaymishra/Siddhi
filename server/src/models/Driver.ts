@@ -264,8 +264,16 @@ driverSchema.pre('save', async function(next) {
 
 // Compare password method
 driverSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  if (!this.password) return false
-  return bcrypt.compare(candidatePassword, this.password)
+  if (!this.password) {
+    console.log('No password set for driver')
+    return false
+  }
+  console.log('Comparing candidate password with stored hash')
+  console.log('Candidate password:', candidatePassword)
+  console.log('Stored hash length:', this.password.length)
+  const result = await bcrypt.compare(candidatePassword, this.password)
+  console.log('bcrypt.compare result:', result)
+  return result
 }
 
 // Remove sensitive information from JSON output

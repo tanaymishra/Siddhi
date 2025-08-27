@@ -120,10 +120,13 @@ export const loginDriver = async (req: Request, res: Response): Promise<void> =>
   try {
     const { email, password } = req.body
 
+    console.log('Driver login attempt:', { email, password: '***' })
+
     // Find driver by email and include password
     const driver = await Driver.findOne({ email }).select('+password')
 
     if (!driver) {
+      console.log('Driver not found:', email)
       res.status(401).json({
         success: false,
         message: 'Invalid email or password'
@@ -131,8 +134,17 @@ export const loginDriver = async (req: Request, res: Response): Promise<void> =>
       return
     }
 
+    console.log('Driver found:', {
+      id: driver._id,
+      email: driver.email,
+      isApproved: driver.isApproved,
+      status: driver.status,
+      hasPassword: !!driver.password
+    })
+
     // Check if driver is approved
     if (!driver.isApproved || driver.status !== 'approved') {
+      console.log('Driver not approved:', { isApproved: driver.isApproved, status: driver.status })
       res.status(403).json({
         success: false,
         message: 'Your driver account is not yet approved. Please wait for approval or contact support.'
@@ -142,6 +154,7 @@ export const loginDriver = async (req: Request, res: Response): Promise<void> =>
 
     // Check password (if driver has password set)
     if (!driver.password) {
+      console.log('Driver has no password set')
       res.status(400).json({
         success: false,
         message: 'Please set up your password first. Contact support for assistance.'
@@ -149,8 +162,12 @@ export const loginDriver = async (req: Request, res: Response): Promise<void> =>
       return
     }
 
+    console.log('Comparing passwords...')
     const isPasswordValid = await driver.comparePassword!(password)
+    console.log('Password comparison result:', isPasswordValid)
+    
     if (!isPasswordValid) {
+      console.log('Password comparison failed')
       res.status(401).json({
         success: false,
         message: 'Invalid email or password'
@@ -172,6 +189,7 @@ export const loginDriver = async (req: Request, res: Response): Promise<void> =>
     // Remove sensitive information
     const driverData = driver.toJSON()
 
+    console.log('Driver login successful')
     res.json({
       success: true,
       message: 'Login successful',
@@ -440,9 +458,12 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
     driver.approvedAt = new Date()
     driver.rejectionReason = undefined
     driver.rejectedAt = undefined
+    
+    console.log('Setting password for driver:', generatedPassword)
     driver.password = generatedPassword // This will be hashed by the pre-save middleware
 
     await driver.save()
+    console.log('Driver saved with password hash')
 
     // Create driver object with password for admin
     const driverObj = driver.toObject()
