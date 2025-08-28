@@ -17,9 +17,19 @@ class ApiService {
     // Request interceptor to add auth token
     this.api.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('hoppon_token')
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`
+        // Check if this is a driver endpoint
+        const isDriverEndpoint = config.url?.includes('/drivers/')
+        
+        if (isDriverEndpoint) {
+          const driverToken = localStorage.getItem('driverToken')
+          if (driverToken) {
+            config.headers.Authorization = `Bearer ${driverToken}`
+          }
+        } else {
+          const token = localStorage.getItem('hoppon_token')
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`
+          }
         }
         return config
       },
@@ -33,10 +43,20 @@ class ApiService {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          // Token expired or invalid
-          localStorage.removeItem('hoppon_token')
-          localStorage.removeItem('hoppon_user')
-          window.location.href = '/'
+          // Check if this was a driver endpoint
+          const isDriverEndpoint = error.config?.url?.includes('/drivers/')
+          
+          if (isDriverEndpoint) {
+            // Driver token expired or invalid
+            localStorage.removeItem('driverToken')
+            localStorage.removeItem('driverData')
+            window.location.href = '/driver/login'
+          } else {
+            // Regular user token expired or invalid
+            localStorage.removeItem('hoppon_token')
+            localStorage.removeItem('hoppon_user')
+            window.location.href = '/'
+          }
         }
         return Promise.reject(error)
       }
@@ -80,21 +100,7 @@ class ApiService {
   }
 
   async getDriverProfile() {
-    // Create a separate request with driver token
-    const driverApi = axios.create({
-      baseURL: API_BASE_URL,
-      timeout: 10000,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    
-    const driverToken = localStorage.getItem('driverToken')
-    if (driverToken) {
-      driverApi.defaults.headers.Authorization = `Bearer ${driverToken}`
-    }
-    
-    return driverApi.get('/drivers/profile')
+    return this.api.get('/drivers/profile')
   }
 
   async getProfile() {

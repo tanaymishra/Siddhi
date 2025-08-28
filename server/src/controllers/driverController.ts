@@ -489,6 +489,213 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
   }
 }
 
+// Get driver's completed rides for earnings
+export const getDriverCompletedRides = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const driverId = (req as any).user?.driverId || (req as any).user?.userId
+
+    if (!driverId) {
+      res.status(401).json({
+        success: false,
+        message: 'Driver not authenticated'
+      })
+      return
+    }
+
+    // Import Ride model here to avoid circular dependency
+    const { Ride } = require('../models/Ride')
+
+    // Find all completed rides for this driver
+    const completedRides = await Ride.find({
+      'driverInfo.driverId': driverId,
+      status: { $in: ['completed', 'accepted'] } // Include both completed and accepted rides
+    }).sort({ createdAt: -1 })
+
+    // Calculate total earnings
+    const totalEarnings = completedRides.reduce((sum: number, ride: any) => {
+      return sum + (ride.routeInfo?.fare || 0)
+    }, 0)
+
+    res.json({
+      success: true,
+      data: completedRides,
+      summary: {
+        totalRides: completedRides.length,
+        totalEarnings,
+        averageFare: completedRides.length > 0 ? totalEarnings / completedRides.length : 0
+      }
+    })
+  } catch (error) {
+    console.error('Get driver completed rides error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch completed rides'
+    })
+    return
+  }
+}
+
+// Create mock completed rides for testing (development only)
+export const createMockCompletedRides = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const driverId = (req as any).user?.driverId || (req as any).user?.userId
+
+    if (!driverId) {
+      res.status(401).json({
+        success: false,
+        message: 'Driver not authenticated'
+      })
+      return
+    }
+
+    // Get driver data
+    const driver = await Driver.findById(driverId)
+    if (!driver) {
+      res.status(404).json({
+        success: false,
+        message: 'Driver not found'
+      })
+      return
+    }
+
+    // Import Ride model
+    const { Ride } = require('../models/Ride')
+
+    // Mock ride data
+    const mockRides = [
+      {
+        fromLocation: {
+          address: "Connaught Place, New Delhi, Delhi, India",
+          coordinates: { lat: 28.6315, lng: 77.2167 }
+        },
+        toLocation: {
+          address: "India Gate, New Delhi, Delhi, India",
+          coordinates: { lat: 28.6129, lng: 77.2295 }
+        },
+        routeInfo: {
+          distance: "3.2",
+          duration: "12",
+          fare: 85
+        },
+        status: 'completed',
+        isPaymentDone: true,
+        isActive: false
+      },
+      {
+        fromLocation: {
+          address: "Karol Bagh, New Delhi, Delhi, India",
+          coordinates: { lat: 28.6519, lng: 77.1909 }
+        },
+        toLocation: {
+          address: "Rajouri Garden, New Delhi, Delhi, India",
+          coordinates: { lat: 28.6469, lng: 77.1200 }
+        },
+        routeInfo: {
+          distance: "5.8",
+          duration: "18",
+          fare: 125
+        },
+        status: 'completed',
+        isPaymentDone: true,
+        isActive: false
+      },
+      {
+        fromLocation: {
+          address: "Lajpat Nagar, New Delhi, Delhi, India",
+          coordinates: { lat: 28.5677, lng: 77.2436 }
+        },
+        toLocation: {
+          address: "Greater Kailash, New Delhi, Delhi, India",
+          coordinates: { lat: 28.5494, lng: 77.2425 }
+        },
+        routeInfo: {
+          distance: "2.1",
+          duration: "8",
+          fare: 65
+        },
+        status: 'completed',
+        isPaymentDone: true,
+        isActive: false
+      },
+      {
+        fromLocation: {
+          address: "Chandni Chowk, New Delhi, Delhi, India",
+          coordinates: { lat: 28.6506, lng: 77.2303 }
+        },
+        toLocation: {
+          address: "Red Fort, New Delhi, Delhi, India",
+          coordinates: { lat: 28.6562, lng: 77.2410 }
+        },
+        routeInfo: {
+          distance: "1.5",
+          duration: "6",
+          fare: 45
+        },
+        status: 'completed',
+        isPaymentDone: true,
+        isActive: false
+      },
+      {
+        fromLocation: {
+          address: "Nehru Place, New Delhi, Delhi, India",
+          coordinates: { lat: 28.5494, lng: 77.2519 }
+        },
+        toLocation: {
+          address: "Saket, New Delhi, Delhi, India",
+          coordinates: { lat: 28.5245, lng: 77.2066 }
+        },
+        routeInfo: {
+          distance: "7.3",
+          duration: "22",
+          fare: 155
+        },
+        status: 'completed',
+        isPaymentDone: true,
+        isActive: false
+      }
+    ]
+
+    // Create rides with driver info
+    const createdRides = []
+    for (const rideData of mockRides) {
+      const ride = new Ride({
+        ...rideData,
+        driverInfo: {
+          driverId: driverId,
+          name: `${driver.firstName} ${driver.lastName}`,
+          phone: driver.phone,
+          vehicleInfo: `${driver.vehicleColor} ${driver.vehicleMake} ${driver.vehicleModel}`,
+          licensePlate: driver.licensePlate,
+          rating: driver.rating
+        },
+        acceptedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Random date within last week
+        createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000)
+      })
+      
+      const savedRide = await ride.save()
+      createdRides.push(savedRide)
+    }
+
+    // Update driver's total rides
+    await Driver.findByIdAndUpdate(driverId, {
+      $inc: { totalRides: createdRides.length }
+    })
+
+    res.json({
+      success: true,
+      message: `Created ${createdRides.length} mock completed rides`,
+      data: createdRides
+    })
+  } catch (error) {
+    console.error('Create mock completed rides error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create mock rides'
+    })
+    return
+  }
+}
+
 // Admin: Reject driver
 export const rejectDriver = async (req: Request, res: Response): Promise<void> => {
   try {

@@ -16,6 +16,7 @@ import CookiesPolicy from './pages/CookiesPolicy'
 import DriverRegistration from './pages/DriverRegistration'
 import DriverLogin from './pages/DriverLogin'
 import DriverDashboard from './pages/DriverDashboard'
+import DriverEarnings from './pages/DriverEarnings'
 import DriverForgotPassword from './pages/DriverForgotPassword'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
@@ -50,6 +51,11 @@ function App() {
           <Route path="/driver/dashboard" element={
             <DriverProtectedRoute>
               <DriverDashboard />
+            </DriverProtectedRoute>
+          } />
+          <Route path="/driver/earnings" element={
+            <DriverProtectedRoute>
+              <DriverEarnings />
             </DriverProtectedRoute>
           } />
           <Route path="/driver/forgot-password" element={<DriverForgotPassword />} />

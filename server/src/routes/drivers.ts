@@ -9,7 +9,9 @@ import {
   uploadDocument,
   getAllDrivers,
   approveDriver,
-  rejectDriver
+  rejectDriver,
+  getDriverCompletedRides,
+  createMockCompletedRides
 } from '../controllers/driverController'
 import { auth } from '../middleware/auth'
 import { adminAuth } from '../middleware/adminAuth'
@@ -122,6 +124,8 @@ router.post('/login',
 router.get('/profile', auth, getDriverProfile)
 router.put('/profile', auth, updateDriverProfile)
 router.get('/status', auth, getDriverStatus)
+router.get('/rides/completed', auth, getDriverCompletedRides)
+router.post('/rides/mock', auth, createMockCompletedRides)
 
 // Document upload
 router.post('/upload-document',

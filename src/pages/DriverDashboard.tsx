@@ -276,7 +276,11 @@ const DriverDashboard: React.FC = () => {
                     <Clock className="w-6 h-6" />
                     <span>View Rides</span>
                   </Button>
-                  <Button variant="outline" className="h-20 flex-col space-y-2">
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex-col space-y-2"
+                    onClick={() => navigate('/driver/earnings')}
+                  >
                     <DollarSign className="w-6 h-6" />
                     <span>Earnings</span>
                   </Button>
