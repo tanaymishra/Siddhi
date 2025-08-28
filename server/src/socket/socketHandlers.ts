@@ -143,16 +143,7 @@ export const setupSocketHandlers = (io: Server) => {
 
         const { rideId } = data
         
-        // Find the ride and check if it's still available
-        const ride = await Ride.findById(rideId)
-        if (!ride || ride.status !== 'pending' || !ride.isPaymentDone || (ride.driverInfo && ride.driverInfo.driverId)) {
-          socket.emit('ride:acceptError', { 
-            message: 'Ride is no longer available or payment not completed' 
-          })
-          return
-        }
-
-        // Get driver data
+        // Get driver data first
         const driver = await Driver.findById(socket.driverId)
         if (!driver) {
           socket.emit('ride:acceptError', { 
@@ -161,34 +152,74 @@ export const setupSocketHandlers = (io: Server) => {
           return
         }
 
-        // Assign driver to ride
-        ride.driverInfo = {
-          driverId: (driver._id as mongoose.Types.ObjectId).toString(),
-          name: `${driver.firstName} ${driver.lastName}`,
-          phone: driver.phone,
-          vehicleInfo: `${driver.vehicleColor} ${driver.vehicleMake} ${driver.vehicleModel}`,
-          licensePlate: driver.licensePlate,
-          rating: driver.rating
-        }
-        ride.status = 'accepted'
-        ride.acceptedAt = new Date()
+        // Use atomic operation to prevent race conditions
+        // Only update if ride is still available (pending, paid, no driver assigned)
+        const updatedRide = await Ride.findOneAndUpdate(
+          {
+            _id: rideId,
+            status: 'pending',
+            isPaymentDone: true,
+            $or: [
+              { 'driverInfo.driverId': { $exists: false } },
+              { 'driverInfo.driverId': null },
+              { driverInfo: null }
+            ]
+          },
+          {
+            $set: {
+              driverInfo: {
+                driverId: (driver._id as mongoose.Types.ObjectId).toString(),
+                name: `${driver.firstName} ${driver.lastName}`,
+                phone: driver.phone,
+                vehicleInfo: `${driver.vehicleColor} ${driver.vehicleMake} ${driver.vehicleModel}`,
+                licensePlate: driver.licensePlate,
+                rating: driver.rating
+              },
+              status: 'accepted',
+              acceptedAt: new Date()
+            }
+          },
+          { new: true }
+        )
 
-        await ride.save()
+        // If no ride was updated, it means another driver already accepted it
+        if (!updatedRide) {
+          socket.emit('ride:acceptError', { 
+            message: 'Ride is no longer available - another driver may have accepted it' 
+          })
+          
+          // Refresh this driver's available rides to remove the accepted ride
+          await sendAvailableRides(socket)
+          return
+        }
 
         // Update driver's total rides
         await Driver.findByIdAndUpdate(socket.driverId, {
           $inc: { totalRides: 1 }
         })
 
-        console.log(`Driver ${socket.driverId} accepted ride ${rideId}`)
+        console.log(`Driver ${socket.driverId} successfully accepted ride ${rideId}`)
 
         // Notify driver of successful acceptance
         socket.emit('ride:accepted', { 
-          ride,
+          ride: updatedRide,
           message: 'Ride accepted successfully' 
         })
 
-        // Refresh available rides for all online drivers (including this one)
+        // Immediately notify all online drivers that this ride was accepted
+        // This provides instant feedback before the full refresh
+        const onlineDriverIds = Array.from(onlineDrivers.keys())
+        console.log(`Notifying ${onlineDriverIds.length} online drivers that ride ${rideId} was taken`)
+        
+        onlineDriverIds.forEach(driverId => {
+          const socketId = onlineDrivers.get(driverId)
+          if (socketId) {
+            io.to(socketId).emit('ride:takenByOther', { rideId })
+          }
+        })
+
+        // Then refresh available rides for ALL online drivers
+        // This ensures the accepted ride disappears from everyone's list
         await refreshAvailableRidesForAllDrivers()
 
       } catch (error) {
@@ -293,6 +324,7 @@ export const setupSocketHandlers = (io: Server) => {
       })
 
       console.log(`Refreshed available rides for ${onlineDriverIds.length} online drivers`)
+      console.log(`Available rides count: ${availableRides.length}`)
     } catch (error) {
       console.error('Error refreshing available rides for all drivers:', error)
     }

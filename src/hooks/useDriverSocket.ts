@@ -104,6 +104,12 @@ export const useDriverSocket = () => {
     socketService.onRideUnavailable((data) => {
       setAvailableRides(prev => prev.filter(ride => ride._id !== data.rideId))
     })
+
+    // Ride taken by another driver (instant notification)
+    socketService.onRideTakenByOther((data) => {
+      console.log('Ride taken by another driver:', data.rideId)
+      setAvailableRides(prev => prev.filter(ride => ride._id !== data.rideId))
+    })
   }, [])
 
   const goOnline = useCallback(() => {

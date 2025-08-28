@@ -123,6 +123,12 @@ class SocketService {
     }
   }
 
+  onRideTakenByOther(callback: (data: { rideId: string }) => void): void {
+    if (this.socket) {
+      this.socket.on('ride:takenByOther', callback)
+    }
+  }
+
   // Remove event listeners
   off(event: string, callback?: Function): void {
     if (this.socket) {
