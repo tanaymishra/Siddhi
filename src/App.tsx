@@ -21,6 +21,8 @@ import DriverForgotPassword from './pages/DriverForgotPassword'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminDrivers from './pages/AdminDrivers'
+import AdminUsers from './pages/AdminUsers'
+import AdminRides from './pages/AdminRides'
 import MapTest from './pages/MapTest'
 
 function App() {
@@ -67,9 +69,19 @@ function App() {
               <AdminDashboard />
             </AdminProtectedRoute>
           } />
+          <Route path="/admin/users" element={
+            <AdminProtectedRoute>
+              <AdminUsers />
+            </AdminProtectedRoute>
+          } />
           <Route path="/admin/drivers" element={
             <AdminProtectedRoute>
               <AdminDrivers />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/rides" element={
+            <AdminProtectedRoute>
+              <AdminRides />
             </AdminProtectedRoute>
           } />
         </Routes>

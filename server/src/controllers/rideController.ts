@@ -243,3 +243,39 @@ export const assignDriverToRide = async (req: Request, res: Response): Promise<v
     })
   }
 }
+
+// Admin: Get all rides
+export const getAllRidesAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { page = 1, limit = 10, status } = req.query
+
+    const filter: any = {}
+    if (status && status !== 'all') {
+      filter.status = status
+    }
+
+    const rides = await Ride.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit))
+
+    const total = await Ride.countDocuments(filter)
+
+    res.json({
+      success: true,
+      data: rides,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit))
+      }
+    })
+  } catch (error) {
+    console.error('Get all rides admin error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch rides'
+    })
+  }
+}

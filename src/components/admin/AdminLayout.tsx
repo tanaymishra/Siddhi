@@ -6,6 +6,8 @@ import {
   Shield,
   LayoutDashboard,
   Users,
+  Car,
+  UserCheck,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -78,10 +80,22 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       active: location.pathname === '/admin/dashboard'
     },
     {
+      name: 'Users',
+      href: '/admin/users',
+      icon: <UserCheck className="w-5 h-5" />,
+      active: location.pathname === '/admin/users'
+    },
+    {
       name: 'Drivers',
       href: '/admin/drivers',
       icon: <Users className="w-5 h-5" />,
       active: location.pathname === '/admin/drivers'
+    },
+    {
+      name: 'Rides',
+      href: '/admin/rides',
+      icon: <Car className="w-5 h-5" />,
+      active: location.pathname === '/admin/rides'
     }
   ]
 

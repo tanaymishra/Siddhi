@@ -5,13 +5,18 @@ import {
   getRideById,
   updatePaymentStatus,
   updateActiveStatus,
-  assignDriverToRide
+  assignDriverToRide,
+  getAllRidesAdmin
 } from '../controllers/rideController'
 import { authenticate } from '../middleware/auth'
+import { adminAuth } from '../middleware/adminAuth'
 
 const router = express.Router()
 
-// All ride routes require authentication
+// Admin routes (no authentication middleware here, applied individually)
+router.get('/admin/all', adminAuth, getAllRidesAdmin)
+
+// All other ride routes require authentication
 router.use(authenticate)
 
 // POST /api/rides - Create a new ride

@@ -264,3 +264,46 @@ export const adminLogin = async (req: Request, res: Response): Promise<void> => 
     })
   }
 }
+
+// Admin: Get all users
+export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { page = 1, limit = 10, status } = req.query
+
+    const filter: any = {}
+    if (status && status !== 'all') {
+      filter.isActive = status === 'active'
+    }
+
+    const users = await User.find(filter)
+      .select('-password') // Exclude password field
+      .sort({ createdAt: -1 })
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit))
+
+    const total = await User.countDocuments(filter)
+
+    // Add total rides count for each user (this would need to be implemented based on your ride model)
+    const usersWithStats = users.map(user => ({
+      ...user.toObject(),
+      totalRides: 0 // Placeholder - implement actual ride count logic
+    }))
+
+    res.json({
+      success: true,
+      data: usersWithStats,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit))
+      }
+    })
+  } catch (error) {
+    console.error('Get all users error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch users'
+    })
+  }
+}
