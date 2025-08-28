@@ -17,8 +17,8 @@ class ApiService {
     // Request interceptor to add auth token
     this.api.interceptors.request.use(
       (config) => {
-        // Check if this is a driver endpoint
-        const isDriverEndpoint = config.url?.includes('/drivers/')
+        // Check if this is a driver endpoint (but not admin endpoints)
+        const isDriverEndpoint = config.url?.includes('/drivers/') && !config.url?.includes('/drivers/admin/')
         
         if (isDriverEndpoint) {
           const driverToken = localStorage.getItem('driverToken')
@@ -43,8 +43,8 @@ class ApiService {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          // Check if this was a driver endpoint
-          const isDriverEndpoint = error.config?.url?.includes('/drivers/')
+          // Check if this was a driver endpoint (but not admin endpoints)
+          const isDriverEndpoint = error.config?.url?.includes('/drivers/') && !error.config?.url?.includes('/drivers/admin/')
           
           if (isDriverEndpoint) {
             // Driver token expired or invalid
