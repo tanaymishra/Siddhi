@@ -57,3 +57,24 @@
 input:focus + .pac-container {
   display: block;
 }
+
+/* Responsive styles for mobile */
+@media (max-width: 640px) {
+  .pac-container {
+    border-radius: 8px;
+    margin-top: 2px;
+    left: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+    max-width: calc(100vw - 32px);
+  }
+  
+  .pac-item {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .pac-icon {
+    margin-right: 6px;
+  }
+}

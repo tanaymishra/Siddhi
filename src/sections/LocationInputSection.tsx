@@ -39,6 +39,25 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
     estimatedArrival?: string
     driverInfo?: any
   }>({})
+  
+  // State for mobile collapsed view
+  const [isCollapsed, setIsCollapsed] = React.useState(false)
+  const [isMobile, setIsMobile] = React.useState(false)
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 640
+      setIsMobile(mobile)
+      if (!mobile) {
+        setIsCollapsed(false)
+      }
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Calculate static route info when both locations are available
   const staticRouteInfo = React.useMemo(() => {
@@ -173,23 +192,27 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
 
   return (
     <motion.div
-      className={`absolute top-6 left-6 w-96 bg-white rounded-2xl shadow-xl border border-neutral-200 overflow-hidden z-10 ${className}`}
+      className={`absolute top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-auto sm:w-96 bg-white rounded-2xl shadow-xl border border-neutral-200 overflow-hidden z-10 ${className}`}
       initial={{ opacity: 0, x: -50 }}
-      animate={{ opacity: 1, x: 0 }}
+      animate={{ 
+        opacity: 1, 
+        x: 0,
+        height: isMobile && isCollapsed ? 'auto' : 'auto'
+      }}
       transition={{ duration: 0.5 }}
     >
       {/* Header */}
-      <div className="p-6 border-b border-neutral-100">
-        <h2 className="text-xl font-bold text-neutral-900 mb-2">Book Your Ride</h2>
-        <p className="text-sm text-neutral-600">Enter your pickup and destination</p>
+      <div className="p-4 sm:p-6 border-b border-neutral-100">
+        <h2 className="text-lg sm:text-xl font-bold text-neutral-900 mb-1 sm:mb-2">Book Your Ride</h2>
+        <p className="text-xs sm:text-sm text-neutral-600">Enter your pickup and destination</p>
       </div>
 
       {/* Location Inputs */}
-      <div className="p-6 space-y-4">
+      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
         {/* From Location */}
         <div className="relative">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+          <div className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 z-10">
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full"></div>
           </div>
           <SimpleAutocomplete
             placeholder="Pickup location"
@@ -204,8 +227,8 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
 
         {/* To Location */}
         <div className="relative">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+          <div className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 z-10">
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
           </div>
           <SimpleAutocomplete
             placeholder="Where to?"
@@ -221,17 +244,17 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
 
       {/* Error Message */}
       {error && (
-        <div className="p-4 bg-red-50 border-t border-red-100">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="p-3 sm:p-4 bg-red-50 border-t border-red-100">
+          <p className="text-xs sm:text-sm text-red-600">{error}</p>
         </div>
       )}
 
       {/* Loading State */}
       {isCalculatingRoute && (
-        <div className="p-6 bg-neutral-50 border-t border-neutral-100">
+        <div className="p-4 sm:p-6 bg-neutral-50 border-t border-neutral-100">
           <div className="flex items-center justify-center space-x-2">
-            <Loader2 className="w-5 h-5 animate-spin text-primary-600" />
-            <p className="text-sm text-neutral-600">Calculating route...</p>
+            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-primary-600" />
+            <p className="text-xs sm:text-sm text-neutral-600">Calculating route...</p>
           </div>
         </div>
       )}
@@ -240,47 +263,47 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
 
       {/* Fare Estimate and Book Button */}
       {fromLocation.coordinates && toLocation.coordinates && !isCalculatingRoute && (
-        <div className="p-6 bg-neutral-50 border-t border-neutral-100">
+        <div className="p-4 sm:p-6 bg-neutral-50 border-t border-neutral-100">
           {/* Route Info */}
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-3 sm:mb-4">
             <div className="text-center">
-              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mx-auto mb-1">
-                <Clock className="w-4 h-4 text-blue-600" />
+              <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-full mx-auto mb-1">
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
               </div>
               <p className="text-xs text-neutral-600">Time</p>
-              <p className="text-sm font-semibold text-neutral-900">{staticRouteInfo?.duration || routeInfo?.duration || 'Calculating...'}</p>
+              <p className="text-xs sm:text-sm font-semibold text-neutral-900">{staticRouteInfo?.duration || routeInfo?.duration || 'Calculating...'}</p>
             </div>
             <div className="text-center">
-              <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mx-auto mb-1">
-                <Navigation className="w-4 h-4 text-green-600" />
+              <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full mx-auto mb-1">
+                <Navigation className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
               </div>
               <p className="text-xs text-neutral-600">Distance</p>
-              <p className="text-sm font-semibold text-neutral-900">{staticRouteInfo?.distance || routeInfo?.distance || 'Calculating...'}</p>
+              <p className="text-xs sm:text-sm font-semibold text-neutral-900">{staticRouteInfo?.distance || routeInfo?.distance || 'Calculating...'}</p>
             </div>
             <div className="text-center">
-              <div className="flex items-center justify-center w-8 h-8 bg-orange-100 rounded-full mx-auto mb-1">
-                <span className="text-sm font-bold text-orange-600">₹</span>
+              <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-orange-100 rounded-full mx-auto mb-1">
+                <span className="text-xs sm:text-sm font-bold text-orange-600">₹</span>
               </div>
               <p className="text-xs text-neutral-600">Fare</p>
-              <p className="text-sm font-semibold text-neutral-900">₹{staticRouteInfo?.fare || routeInfo?.fare || '0'}</p>
+              <p className="text-xs sm:text-sm font-semibold text-neutral-900">₹{staticRouteInfo?.fare || routeInfo?.fare || '0'}</p>
             </div>
           </div>
 
           {/* Book Button */}
           <Button
-            className="w-full bg-green-600 hover:bg-green-700"
-            size="lg"
+            className="w-full bg-green-600 hover:bg-green-700 text-sm sm:text-base"
+            size={window.innerWidth < 640 ? "default" : "lg"}
             onClick={handleBookRide}
             disabled={isCalculatingRoute}
           >
             {isCalculatingRoute ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
                 Booking...
               </>
             ) : (
               <>
-                <Car className="w-5 h-5 mr-2" />
+                <Car className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Book Now - ₹{staticRouteInfo?.fare || routeInfo?.fare || '0'}
               </>
             )}

@@ -57,7 +57,7 @@ const SimpleAutocomplete: React.FC<SimpleAutocompleteProps> = ({ placeholder, on
         ref={inputRef}
         type="text"
         placeholder={placeholder}
-        className="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        className="w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-neutral-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
         autoComplete="off"
       />
       {!isLoaded && (
