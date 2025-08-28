@@ -272,7 +272,11 @@ const DriverDashboard: React.FC = () => {
                     <MapPin className="w-6 h-6" />
                     <span>Go Online</span>
                   </Button>
-                  <Button variant="outline" className="h-20 flex-col space-y-2">
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex-col space-y-2"
+                    onClick={() => navigate('/driver/earnings')}
+                  >
                     <Clock className="w-6 h-6" />
                     <span>View Rides</span>
                   </Button>
