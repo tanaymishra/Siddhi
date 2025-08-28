@@ -67,9 +67,9 @@ class SocketService {
   }
 
   // Driver status methods
-  goOnline(): void {
+  goOnline(location?: { latitude: number; longitude: number; accuracy: number }): void {
     if (this.socket?.connected) {
-      this.socket.emit('driver:goOnline')
+      this.socket.emit('driver:goOnline', { location })
     }
   }
 

@@ -209,7 +209,7 @@ const DriverDashboard: React.FC = () => {
                       className={`${
                         isOnline 
                           ? 'bg-success-600 hover:bg-success-700' 
-                          : 'bg-neutral-400 hover:bg-neutral-500'
+                          : 'bg-primary-600 hover:bg-primary-700'
                       } text-white`}
                     >
                       {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
@@ -451,14 +451,22 @@ const DriverDashboard: React.FC = () => {
                   <WifiOff className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-neutral-900 mb-2">You're Currently Offline</h3>
                   <p className="text-neutral-600 mb-4">
-                    Go online to start receiving ride requests and earning money.
+                    Go online to start receiving ride requests and earning money. We'll need your location to match you with nearby rides.
                   </p>
+                  <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-center space-x-2 text-primary-800">
+                      <MapPin className="w-5 h-5" />
+                      <p className="text-sm">
+                        Location access is required to receive ride requests from nearby customers.
+                      </p>
+                    </div>
+                  </div>
                   <Button
                     onClick={toggleOnlineStatus}
                     className="bg-primary-600 hover:bg-primary-700 text-white"
                   >
                     <Wifi className="w-4 h-4 mr-2" />
-                    Go Online
+                    Go Online & Share Location
                   </Button>
                 </CardContent>
               </Card>

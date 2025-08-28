@@ -17,8 +17,18 @@ interface JWTPayload {
   exp: number
 }
 
-// Store online drivers
-const onlineDrivers = new Map<string, string>() // driverId -> socketId
+// Store online drivers with their socket info and location
+interface OnlineDriverInfo {
+  socketId: string
+  location?: {
+    latitude: number
+    longitude: number
+    accuracy: number
+    updatedAt: Date
+  }
+}
+
+const onlineDrivers = new Map<string, OnlineDriverInfo>() // driverId -> driver info
 
 export const setupSocketHandlers = (io: Server) => {
   console.log('Setting up socket handlers...')
@@ -72,28 +82,54 @@ export const setupSocketHandlers = (io: Server) => {
     console.log(`Driver connected: ${socket.driverId}`)
 
     // Handle driver going online
-    socket.on('driver:goOnline', async () => {
+    socket.on('driver:goOnline', async (data: { location?: { latitude: number; longitude: number; accuracy: number } }) => {
       try {
         if (!socket.driverId) return
 
-        // Update driver status in database
-        await Driver.findByIdAndUpdate(socket.driverId, { 
+        const updateData: any = { 
           isOnline: true,
           lastSeen: new Date()
-        })
+        }
 
-        // Store in online drivers map
-        onlineDrivers.set(socket.driverId, socket.id)
+        // If location is provided, update driver location
+        if (data?.location) {
+          updateData.location = {
+            type: 'Point',
+            coordinates: [data.location.longitude, data.location.latitude] // MongoDB uses [lng, lat]
+          }
+          console.log(`Driver ${socket.driverId} location updated:`, {
+            lat: data.location.latitude,
+            lng: data.location.longitude,
+            accuracy: data.location.accuracy
+          })
+        }
+
+        // Update driver status and location in database
+        await Driver.findByIdAndUpdate(socket.driverId, updateData)
+
+        // Store in online drivers map with location info
+        const driverInfo: OnlineDriverInfo = {
+          socketId: socket.id,
+          location: data?.location ? {
+            latitude: data.location.latitude,
+            longitude: data.location.longitude,
+            accuracy: data.location.accuracy,
+            updatedAt: new Date()
+          } : undefined
+        }
+        onlineDrivers.set(socket.driverId, driverInfo)
 
         // Join driver room for targeted messaging
         socket.join(`driver:${socket.driverId}`)
 
-        console.log(`Driver ${socket.driverId} is now online`)
+        console.log(`Driver ${socket.driverId} is now online${data?.location ? ' with location' : ''}`)
         
         // Send confirmation to driver
         socket.emit('driver:statusUpdated', { 
           isOnline: true,
-          message: 'You are now online and available for rides'
+          message: data?.location 
+            ? 'You are now online and available for rides with location tracking'
+            : 'You are now online and available for rides'
         })
 
         // Send available rides to the driver
@@ -212,9 +248,9 @@ export const setupSocketHandlers = (io: Server) => {
         console.log(`Notifying ${onlineDriverIds.length} online drivers that ride ${rideId} was taken`)
         
         onlineDriverIds.forEach(driverId => {
-          const socketId = onlineDrivers.get(driverId)
-          if (socketId) {
-            io.to(socketId).emit('ride:takenByOther', { rideId })
+          const driverInfo = onlineDrivers.get(driverId)
+          if (driverInfo?.socketId) {
+            io.to(driverInfo.socketId).emit('ride:takenByOther', { rideId })
           }
         })
 
@@ -265,9 +301,9 @@ export const setupSocketHandlers = (io: Server) => {
 
       // Emit to all online drivers
       onlineDriverIds.forEach(driverId => {
-        const socketId = onlineDrivers.get(driverId)
-        if (socketId) {
-          io.to(socketId).emit('ride:new', ride)
+        const driverInfo = onlineDrivers.get(driverId)
+        if (driverInfo?.socketId) {
+          io.to(driverInfo.socketId).emit('ride:new', ride)
         }
       })
 
@@ -317,9 +353,9 @@ export const setupSocketHandlers = (io: Server) => {
 
       // Send updated rides list to all online drivers
       onlineDriverIds.forEach(driverId => {
-        const socketId = onlineDrivers.get(driverId)
-        if (socketId) {
-          io.to(socketId).emit('rides:available', availableRides)
+        const driverInfo = onlineDrivers.get(driverId)
+        if (driverInfo?.socketId) {
+          io.to(driverInfo.socketId).emit('rides:available', availableRides)
         }
       })
 
@@ -373,4 +409,60 @@ async function sendAvailableRides(socket: AuthenticatedSocket) {
   }
 }
 
-export { onlineDrivers }
+// Function to get nearby online drivers
+const getNearbyDrivers = async (pickupLat: number, pickupLng: number, radiusKm: number = 10) => {
+  try {
+    // Get drivers from database within radius using geospatial query
+    const nearbyDrivers = await Driver.find({
+      isOnline: true,
+      status: 'approved',
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [pickupLng, pickupLat] // MongoDB uses [lng, lat]
+          },
+          $maxDistance: radiusKm * 1000 // Convert km to meters
+        }
+      }
+    }).limit(20) // Limit to 20 nearest drivers
+
+    // Filter to only include drivers that are actually online in our socket map
+    const onlineNearbyDrivers = nearbyDrivers.filter(driver => {
+      const driverId = (driver._id as mongoose.Types.ObjectId).toString()
+      return onlineDrivers.has(driverId)
+    })
+
+    console.log(`Found ${onlineNearbyDrivers.length} nearby online drivers within ${radiusKm}km`)
+    return onlineNearbyDrivers
+  } catch (error) {
+    console.error('Error getting nearby drivers:', error)
+    return []
+  }
+}
+
+// Function to get all online drivers with their locations
+const getOnlineDriversWithLocation = () => {
+  const driversWithLocation: Array<{
+    driverId: string
+    socketId: string
+    location?: {
+      latitude: number
+      longitude: number
+      accuracy: number
+      updatedAt: Date
+    }
+  }> = []
+
+  onlineDrivers.forEach((driverInfo, driverId) => {
+    driversWithLocation.push({
+      driverId,
+      socketId: driverInfo.socketId,
+      location: driverInfo.location
+    })
+  })
+
+  return driversWithLocation
+}
+
+export { onlineDrivers, getNearbyDrivers, getOnlineDriversWithLocation }

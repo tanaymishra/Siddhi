@@ -112,9 +112,58 @@ export const useDriverSocket = () => {
     })
   }, [])
 
-  const goOnline = useCallback(() => {
-    if (socketService.connected) {
-      socketService.goOnline()
+  const goOnline = useCallback(async () => {
+    if (!socketService.connected) return
+
+    try {
+      // Request location permission when going online
+      if (!navigator.geolocation) {
+        setStatusMessage('Geolocation is not supported by this browser')
+        return
+      }
+
+      // Get current location with high accuracy
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          resolve,
+          reject,
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000
+          }
+        )
+      })
+
+      const location = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy
+      }
+
+      console.log('Driver location obtained:', location)
+      
+      // Send location along with go online request
+      socketService.goOnline(location)
+      setStatusMessage('Going online with location...')
+      
+    } catch (error: any) {
+      console.error('Location error:', error)
+      
+      // Handle different geolocation errors
+      let errorMessage = 'Failed to get location'
+      if (error.code === 1) {
+        errorMessage = 'Location access denied. Please enable location permissions to go online.'
+      } else if (error.code === 2) {
+        errorMessage = 'Location unavailable. Please check your GPS settings.'
+      } else if (error.code === 3) {
+        errorMessage = 'Location request timed out. Please try again.'
+      }
+      
+      setStatusMessage(errorMessage)
+      
+      // Don't go online without location
+      return
     }
   }, [])
 

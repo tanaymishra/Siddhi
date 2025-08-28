@@ -11,7 +11,8 @@ import {
   approveDriver,
   rejectDriver,
   getDriverCompletedRides,
-  createMockCompletedRides
+  createMockCompletedRides,
+  getOnlineDrivers
 } from '../controllers/driverController'
 import { auth } from '../middleware/auth'
 import { adminAuth } from '../middleware/adminAuth'
@@ -136,6 +137,7 @@ router.post('/upload-document',
 
 // Admin routes (require admin authentication)
 router.get('/admin/all', adminAuth, getAllDrivers)
+router.get('/admin/online', adminAuth, getOnlineDrivers)
 router.post('/admin/approve/:driverId', adminAuth, approveDriver)
 router.put('/admin/reject/:driverId', adminAuth, rejectDriver)
 

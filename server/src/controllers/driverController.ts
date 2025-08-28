@@ -696,6 +696,49 @@ export const createMockCompletedRides = async (req: Request, res: Response): Pro
   }
 }
 
+// Get online drivers with locations (Admin only)
+export const getOnlineDrivers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Import the function from socket handlers
+    const { getOnlineDriversWithLocation } = require('../socket/socketHandlers')
+    
+    // Get online drivers from socket map
+    const onlineDriversData = getOnlineDriversWithLocation()
+    
+    // Get detailed driver info from database
+    const driverIds = onlineDriversData.map((d: any) => d.driverId)
+    const driversFromDB = await Driver.find({
+      _id: { $in: driverIds },
+      isOnline: true,
+      status: 'approved'
+    }).select('firstName lastName email phone vehicleMake vehicleModel vehicleColor licensePlate rating totalRides location lastSeen')
+
+    // Combine socket data with database data
+    const onlineDriversWithDetails = onlineDriversData.map((socketDriver: any) => {
+      const dbDriver = driversFromDB.find(d => (d._id as any).toString() === socketDriver.driverId)
+      return {
+        ...socketDriver,
+        driverDetails: dbDriver || null
+      }
+    }).filter((driver: any) => driver.driverDetails) // Only include drivers found in DB
+
+    res.json({
+      success: true,
+      data: {
+        onlineDrivers: onlineDriversWithDetails,
+        count: onlineDriversWithDetails.length
+      }
+    })
+  } catch (error) {
+    console.error('Get online drivers error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch online drivers'
+    })
+    return
+  }
+}
+
 // Admin: Reject driver
 export const rejectDriver = async (req: Request, res: Response): Promise<void> => {
   try {
