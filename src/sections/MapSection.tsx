@@ -35,6 +35,65 @@ const MapSection: React.FC<MapSectionProps> = ({ className = "" }) => {
           // Default to India center if geolocation fails
           const defaultCenter = { lat: 20.5937, lng: 78.9629 } // India center
           let mockCarsMarkers: google.maps.Marker[] = []
+          let currentLocationMarker: google.maps.Marker | null = null
+          let accuracyCircle: google.maps.Circle | null = null
+
+          const addCurrentLocationMarker = (position: { lat: number; lng: number }, accuracy?: number) => {
+            // Remove existing current location marker and circle
+            if (currentLocationMarker) {
+              currentLocationMarker.setMap(null)
+            }
+            if (accuracyCircle) {
+              accuracyCircle.setMap(null)
+            }
+
+            // Create current location marker with custom icon
+            currentLocationMarker = new google.maps.Marker({
+              position: position,
+              map: map,
+              title: 'Your Current Location',
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 8,
+                fillColor: '#3B82F6', // blue-500
+                fillOpacity: 1,
+                strokeColor: '#FFFFFF',
+                strokeWeight: 3,
+                strokeOpacity: 1
+              },
+              zIndex: 1000
+            })
+
+            // Add accuracy circle if accuracy is provided
+            if (accuracy) {
+              accuracyCircle = new google.maps.Circle({
+                strokeColor: '#3B82F6',
+                strokeOpacity: 0.3,
+                strokeWeight: 1,
+                fillColor: '#3B82F6',
+                fillOpacity: 0.1,
+                map: map,
+                center: position,
+                radius: accuracy
+              })
+            }
+
+            // Add info window for current location
+            const infoWindow = new google.maps.InfoWindow({
+              content: `
+                <div class="p-2">
+                  <h3 class="font-semibold text-blue-600">Your Location</h3>
+                  <p class="text-sm text-gray-600">Lat: ${position.lat.toFixed(6)}</p>
+                  <p class="text-sm text-gray-600">Lng: ${position.lng.toFixed(6)}</p>
+                  ${accuracy ? `<p class="text-xs text-gray-500">Accuracy: ±${Math.round(accuracy)}m</p>` : ''}
+                </div>
+              `
+            })
+
+            currentLocationMarker.addListener('click', () => {
+              infoWindow.open(map, currentLocationMarker)
+            })
+          }
 
           const addMockCars = (center: { lat: number; lng: number }) => {
             // Clear existing car markers
@@ -236,6 +295,9 @@ const MapSection: React.FC<MapSectionProps> = ({ className = "" }) => {
                 console.log('MapSection - Got user location:', userLocation)
                 map.setCenter(userLocation)
                 map.setZoom(15)
+                
+                // Add current location marker with accuracy
+                addCurrentLocationMarker(userLocation, position.coords.accuracy)
                 
                 // Add mock cars around user location
                 addMockCars(userLocation)
