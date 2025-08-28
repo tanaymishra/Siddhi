@@ -67,7 +67,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   }
 
   const toggleSidebar = () => { 
-    setSidebarExpanded(prev => !prev)
+    setSidebarExpanded((prev:any) => !prev)
   }
 
   const menuItems = [
