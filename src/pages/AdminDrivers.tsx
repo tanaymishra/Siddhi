@@ -493,6 +493,69 @@ const AdminDrivers: React.FC = () => {
                   </div>
                 </div>
                 
+                {/* Documents */}
+                <div>
+                  <h3 className="font-medium text-neutral-900 mb-3">Documents</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-xs sm:text-sm text-neutral-600 mb-2 block">Driver's License</label>
+                      {selectedDriver.documents.license ? (
+                        <div className="border border-neutral-200 rounded-lg p-2">
+                          <img 
+                            src={`http://localhost:5001/file/${selectedDriver.documents.license}`}
+                            alt="Driver's License"
+                            className="w-full h-32 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => window.open(`http://localhost:5001/file/${selectedDriver.documents.license}`, '_blank')}
+                          />
+                          <p className="text-xs text-neutral-500 mt-1 truncate">{selectedDriver.documents.license}</p>
+                        </div>
+                      ) : (
+                        <div className="border border-dashed border-neutral-300 rounded-lg p-4 text-center">
+                          <p className="text-xs text-neutral-500">No document uploaded</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label className="text-xs sm:text-sm text-neutral-600 mb-2 block">Vehicle Registration</label>
+                      {selectedDriver.documents.registration ? (
+                        <div className="border border-neutral-200 rounded-lg p-2">
+                          <img 
+                            src={`http://localhost:5001/file/${selectedDriver.documents.registration}`}
+                            alt="Vehicle Registration"
+                            className="w-full h-32 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => window.open(`http://localhost:5001/file/${selectedDriver.documents.registration}`, '_blank')}
+                          />
+                          <p className="text-xs text-neutral-500 mt-1 truncate">{selectedDriver.documents.registration}</p>
+                        </div>
+                      ) : (
+                        <div className="border border-dashed border-neutral-300 rounded-lg p-4 text-center">
+                          <p className="text-xs text-neutral-500">No document uploaded</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label className="text-xs sm:text-sm text-neutral-600 mb-2 block">Insurance</label>
+                      {selectedDriver.documents.insurance ? (
+                        <div className="border border-neutral-200 rounded-lg p-2">
+                          <img 
+                            src={`http://localhost:5001/file/${selectedDriver.documents.insurance}`}
+                            alt="Insurance Document"
+                            className="w-full h-32 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => window.open(`http://localhost:5001/file/${selectedDriver.documents.insurance}`, '_blank')}
+                          />
+                          <p className="text-xs text-neutral-500 mt-1 truncate">{selectedDriver.documents.insurance}</p>
+                        </div>
+                      ) : (
+                        <div className="border border-dashed border-neutral-300 rounded-lg p-4 text-center">
+                          <p className="text-xs text-neutral-500">No document uploaded</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Status */}
                 <div>
                   <h3 className="font-medium text-neutral-900 mb-3">Status</h3>

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { Driver } from '../models/Driver'
-import { uploadToCloudinary } from '../utils/cloudinary'
+import { uploadFileLocally } from '../utils/fileUpload'
 
 // Register new driver
 export const registerDriver = async (req: Request, res: Response): Promise<void> => {
@@ -48,15 +48,15 @@ export const registerDriver = async (req: Request, res: Response): Promise<void>
     let insuranceUrl = ''
 
     try {
-      // Upload documents to cloudinary or local storage
+      // Upload documents to local storage
       if (files?.driversLicense?.[0]) {
-        driversLicenseUrl = await uploadToCloudinary(files.driversLicense[0], 'drivers/licenses')
+        driversLicenseUrl = await uploadFileLocally(files.driversLicense[0], 'drivers/licenses')
       }
       if (files?.vehicleRegistration?.[0]) {
-        vehicleRegistrationUrl = await uploadToCloudinary(files.vehicleRegistration[0], 'drivers/registrations')
+        vehicleRegistrationUrl = await uploadFileLocally(files.vehicleRegistration[0], 'drivers/registrations')
       }
       if (files?.insurance?.[0]) {
-        insuranceUrl = await uploadToCloudinary(files.insurance[0], 'drivers/insurance')
+        insuranceUrl = await uploadFileLocally(files.insurance[0], 'drivers/insurance')
       }
     } catch (uploadError) {
       console.error('File upload error:', uploadError)
@@ -338,8 +338,8 @@ export const uploadDocument = async (req: Request, res: Response): Promise<void>
       return
     }
 
-    // Upload to cloudinary
-    const documentUrl = await uploadToCloudinary(file, `drivers/${documentType}`)
+    // Upload to local storage
+    const documentUrl = await uploadFileLocally(file, `drivers/${documentType}`)
 
     // Update driver document URL
     const updateField = `${documentType}Url`

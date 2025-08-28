@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
+import path from 'path'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { connectDB } from './config/database'
@@ -83,6 +84,9 @@ app.use('/api/payment', paymentRoutes)
 
 // Driver routes
 app.use('/api/drivers', driverRoutes)
+
+// File serving route
+app.use('/file', express.static(path.join(process.cwd(), 'uploads')))
 
 // Error handling middleware
 app.use(handleMulterError)
