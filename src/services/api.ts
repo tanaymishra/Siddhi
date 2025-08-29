@@ -87,6 +87,10 @@ class ApiService {
     return this.api.post('/auth/admin/login', credentials)
   }
 
+  async googleAuth(token: string) {
+    return this.api.post('/auth/google', { token })
+  }
+
   async loginDriver(email: string, password: string) {
     // Use a separate request for driver login to avoid token conflicts
     const driverApi = axios.create({

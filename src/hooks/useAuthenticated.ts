@@ -24,6 +24,7 @@ interface AuthState {
   // Actions
   login: (email: string, password: string) => Promise<void>
   adminLogin: (email: string, password: string) => Promise<void>
+  googleLogin: (token: string) => Promise<void>
   register: (userData: {
     name: string
     email: string
@@ -103,6 +104,37 @@ export const useAuthenticated = create<AuthState>()(
           })
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || 'Admin login failed'
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: errorMessage
+          })
+          throw new Error(errorMessage)
+        }
+      },
+
+      // Google login action
+      googleLogin: async (token: string) => {
+        set({ isLoading: true, error: null })
+        
+        try {
+          const response = await apiService.googleAuth(token)
+          const { accessToken, user } = response.data.data
+
+          // Store token in localStorage for API interceptor
+          localStorage.setItem('hoppon_token', accessToken)
+
+          set({
+            user,
+            token: accessToken,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null
+          })
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || 'Google login failed'
           set({
             user: null,
             token: null,

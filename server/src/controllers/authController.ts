@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { User } from '../models/User'
 import { generateTokens, generateToken } from '../utils/jwt'
 import { AuthRequest } from '../middleware/auth'
+import { verifyGoogleToken } from '../utils/googleAuth'
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -261,6 +262,78 @@ export const adminLogin = async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({
       success: false,
       message: 'Admin login failed'
+    })
+  }
+}
+
+// Google OAuth login
+export const googleAuth = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.body
+
+    if (!token) {
+      res.status(400).json({
+        success: false,
+        message: 'Google token is required'
+      })
+      return
+    }
+
+    // Verify Google token
+    const googleUser = await verifyGoogleToken(token)
+
+    // Check if user exists
+    let user = await User.findOne({ email: googleUser.email })
+
+    if (!user) {
+      // Create new user from Google data
+      user = new User({
+        name: googleUser.name,
+        email: googleUser.email,
+        avatar: googleUser.picture,
+        role: 'user',
+        isEmailVerified: googleUser.email_verified,
+        // No password needed for Google OAuth users
+        googleId: googleUser.id
+      })
+
+      await user.save()
+    } else {
+      // Update existing user with Google data if needed
+      if (!user.googleId) {
+        user.googleId = googleUser.id
+      }
+      if (!user.avatar && googleUser.picture) {
+        user.avatar = googleUser.picture
+      }
+      if (!user.isEmailVerified && googleUser.email_verified) {
+        user.isEmailVerified = googleUser.email_verified
+      }
+      await user.save()
+    }
+
+    // Check if user is active
+    if (!user.isActive) {
+      res.status(401).json({
+        success: false,
+        message: 'Account is deactivated'
+      })
+      return
+    }
+
+    // Generate tokens
+    const tokens = generateTokens(user)
+
+    res.status(200).json({
+      success: true,
+      message: 'Google authentication successful',
+      data: tokens
+    })
+  } catch (error) {
+    console.error('Google auth error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Google authentication failed'
     })
   }
 }

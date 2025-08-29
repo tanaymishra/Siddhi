@@ -14,6 +14,7 @@ interface AuthModalState {
   // Auth actions that use the useAuthenticated hook
   signIn: (email: string, password: string) => Promise<void>
   signUp: (name: string, email: string, password: string, phone?: string) => Promise<void>
+  googleAuth: (token: string) => Promise<void>
   signOut: () => void
 }
 
@@ -40,6 +41,15 @@ export const useAuthStore = create<AuthModalState>((set, get) => ({
   signUp: async (name, email, password, phone) => {
     try {
       await useAuthenticated.getState().register({ name, email, password, phone })
+      set({ isAuthModalOpen: false })
+    } catch (error) {
+      throw error
+    }
+  },
+
+  googleAuth: async (token: string) => {
+    try {
+      await useAuthenticated.getState().googleLogin(token)
       set({ isAuthModalOpen: false })
     } catch (error) {
       throw error
