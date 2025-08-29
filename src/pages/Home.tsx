@@ -155,12 +155,12 @@ const Home: React.FC = () => {
                         <Users className="w-5 h-5 text-primary-600" />
                       </div>
                       <div>
-                        <p className="font-semibold text-neutral-900">John Driver</p>
+                        <p className="font-semibold text-neutral-900">Ramesh Pathi</p>
                         <p className="text-sm text-neutral-500">⭐ 4.9 • 2 min away</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-neutral-900">$12.50</p>
+                      <p className="font-bold text-neutral-900">₹12.50</p>
                       <p className="text-sm text-neutral-500">8 min ride</p>
                     </div>
                   </div>
@@ -314,11 +314,11 @@ const Home: React.FC = () => {
               <div className="space-y-6 mb-8">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">$</span>
+                    <span className="text-white font-bold text-lg">₹</span>
                   </div>
                   <div>
                     <h4 className="font-semibold text-lg">Competitive Earnings</h4>
-                    <p className="text-primary-200">Earn up to $25/hour during peak times</p>
+                    <p className="text-primary-200">Earn up to ₹25/hour during peak times</p>
                   </div>
                 </div>
                 
@@ -367,7 +367,7 @@ const Home: React.FC = () => {
                       <p className="text-neutral-500">March 15, 2025</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-3xl font-bold text-success-600">$247.50</p>
+                      <p className="text-3xl font-bold text-success-600">₹247.50</p>
                       <p className="text-sm text-neutral-500">12 rides completed</p>
                     </div>
                   </div>
@@ -386,11 +386,11 @@ const Home: React.FC = () => {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between py-2">
                       <span className="text-sm text-neutral-600">Peak Hours Bonus</span>
-                      <span className="font-semibold text-success-600">+$45.00</span>
+                      <span className="font-semibold text-success-600">+₹45.00</span>
                     </div>
                     <div className="flex items-center justify-between py-2">
                       <span className="text-sm text-neutral-600">Tips Received</span>
-                      <span className="font-semibold text-success-600">+$23.50</span>
+                      <span className="font-semibold text-success-600">+₹23.50</span>
                     </div>
                   </div>
                 </div>
