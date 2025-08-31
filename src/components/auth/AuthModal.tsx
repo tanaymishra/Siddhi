@@ -239,8 +239,8 @@ const AuthModal: React.FC = () => {
                   </h2>
                   <p className="text-neutral-600">
                     {authMode === 'signin' 
-                      ? 'Welcome back to HoppOn' 
-                      : 'Join HoppOn today'
+                      ? 'Welcome back to SwiftDrive' 
+                      : 'Join SwiftDrive today'
                     }
                   </p>
                 </motion.div>
