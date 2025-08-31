@@ -13,7 +13,7 @@ const About: React.FC = () => {
       >
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            About HoppOn
+            About SwiftRide
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             We're passionate about revolutionizing transportation and connecting communities through safe, reliable rides.

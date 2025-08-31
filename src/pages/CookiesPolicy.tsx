@@ -187,8 +187,8 @@ const CookiesPolicy: React.FC = () => {
               </p>
               <div className="mt-4 p-4 bg-neutral-50 rounded-xl">
                 <p className="text-neutral-700">
-                  <strong>Email:</strong> privacy@hoppon.com<br />
-                  <strong>Phone:</strong> 1-800-HOPPON-1<br />
+                  <strong>Email:</strong> privacy@swiftride.com<br />
+                  <strong>Phone:</strong> 1-800-SWIFT-1<br />
                   <strong>Address:</strong> 123 Tech Street, San Francisco, CA 94105<br />
                   <strong>Cookie Settings:</strong> Available in your account preferences
                 </p>

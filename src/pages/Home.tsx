@@ -234,7 +234,7 @@ const Home: React.FC = () => {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              Why Choose <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">HoppOn</span>?
+              Why Choose <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">SwiftRide</span>?
             </motion.h2>
             <motion.p
               className="text-xl text-neutral-600 max-w-2xl mx-auto"
@@ -302,7 +302,7 @@ const Home: React.FC = () => {
               </div>
               
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Drive with HoppOn & 
+                Drive with SwiftRide & 
                 <span className="text-secondary-300"> Earn More</span>
               </h2>
               

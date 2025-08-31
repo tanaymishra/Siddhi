@@ -128,7 +128,7 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
           key: paymentData.keyId,
           amount: paymentData.amount,
           currency: paymentData.currency,
-          name: 'HoppOn',
+          name: 'SwiftRide',
           description: `Ride Payment - ₹${paymentData.fare}`,
           order_id: paymentData.orderId,
           handler: async (response: any) => {

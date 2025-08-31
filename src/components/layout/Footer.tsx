@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
                 <div className="w-24 h-10 flex items-center justify-center">
                   <img 
                     src="/logo.png" 
-                    alt="HoppOn Logo" 
+                    alt="SwiftRide Logo" 
                     className="w-24 h-10 object-contain"
                   />
                 </div>
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
               <ul className="space-y-2">
                 <li>
                   <Link to="/drive" className="text-sm text-neutral-600 hover:text-primary-600 transition-colors">
-                    Drive with HoppOn
+                    Drive with SwiftRide
                   </Link>
                 </li>
                 <li>
@@ -94,7 +94,7 @@ const Footer: React.FC = () => {
         <div className="border-t border-neutral-200 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-neutral-600">
-              © 2025 HoppOn. All rights reserved. • Connecting riders and drivers worldwide.
+              © 2025 SwiftRide. All rights reserved. • Connecting riders and drivers worldwide.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link to="/terms" className="text-sm text-neutral-600 hover:text-primary-600 transition-colors">

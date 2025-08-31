@@ -37,7 +37,7 @@ const Header: React.FC = () => {
             >
               <img
                 src="/logo.png"
-                alt="HoppOn Logo"
+                alt="SwiftRide Logo"
                 className="w-24 h-10 object-contain"
               />
             </motion.div>

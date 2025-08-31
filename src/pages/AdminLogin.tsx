@@ -65,7 +65,7 @@ const AdminLogin: React.FC = () => {
               <Card className="shadow-2xl">
                 <CardHeader className="text-center pb-8">
                   <Link to="/" className="inline-block mb-6">
-                    <img src="/logo.png" alt="HoppOn Logo" className="w-32 h-16 object-contain mx-auto" />
+                    <img src="/logo.png" alt="SwiftRide Logo" className="w-32 h-16 object-contain mx-auto" />
                   </Link>
                   <div className="flex items-center justify-center mb-4">
                     <div className="p-3 bg-primary-100 rounded-full">

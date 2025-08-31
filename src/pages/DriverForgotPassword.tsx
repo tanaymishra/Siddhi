@@ -33,7 +33,7 @@ const DriverForgotPassword: React.FC = () => {
             <Card className="shadow-2xl">
               <CardHeader className="text-center pb-8">
                 <Link to="/" className="inline-block mb-6">
-                  <img src="/logo.png" alt="HoppOn Logo" className="w-32 h-16 object-contain mx-auto" />
+                  <img src="/logo.png" alt="SwiftRide Logo" className="w-32 h-16 object-contain mx-auto" />
                 </Link>
                 <div className="w-16 h-16 bg-success-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 text-success-600" />
@@ -85,7 +85,7 @@ const DriverForgotPassword: React.FC = () => {
           <Card className="shadow-2xl">
             <CardHeader className="text-center pb-8">
               <Link to="/" className="inline-block mb-6">
-                <img src="/logo.png" alt="HoppOn Logo" className="w-32 h-16 object-contain mx-auto" />
+                <img src="/logo.png" alt="SwiftRide Logo" className="w-32 h-16 object-contain mx-auto" />
               </Link>
               <CardTitle className="text-3xl font-bold text-neutral-900">
                 Reset Password

@@ -712,7 +712,7 @@ const DriverRegistration: React.FC = () => {
                 <li>• We'll review your application within 24-48 hours</li>
                 <li>• You'll receive an email with your approval status</li>
                 <li>• Once approved, you can start driving immediately</li>
-                <li>• Download the HoppOn Driver app to get started</li>
+                <li>• Download the SwiftRide Driver app to get started</li>
               </ul>
             </div>
           </motion.div>
@@ -734,10 +734,10 @@ const DriverRegistration: React.FC = () => {
           transition={{ duration: 0.6 }}
         >
           <Link to="/" className="inline-block mb-6">
-            <img src="/logo.png" alt="HoppOn Logo" className="w-32 h-16 object-contain mx-auto" />
+            <img src="/logo.png" alt="SwiftRide Logo" className="w-32 h-16 object-contain mx-auto" />
           </Link>
           <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-            Become a <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">HoppOn Driver</span>
+            Become a <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">SwiftRide Driver</span>
           </h1>
           <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
             Join thousands of drivers earning flexible income on their own schedule. 

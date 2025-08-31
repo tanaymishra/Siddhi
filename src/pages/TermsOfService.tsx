@@ -24,7 +24,7 @@ const TermsOfService: React.FC = () => {
             <section>
               <h2 className="text-2xl font-bold text-neutral-900 mb-4">1. Acceptance of Terms</h2>
               <p className="text-neutral-700 leading-relaxed">
-                By accessing and using HoppOn's services, you accept and agree to be bound by the terms and provision of this agreement. 
+                By accessing and using SwiftRide's services, you accept and agree to be bound by the terms and provision of this agreement. 
                 If you do not agree to abide by the above, please do not use this service.
               </p>
             </section>
@@ -32,7 +32,7 @@ const TermsOfService: React.FC = () => {
             <section>
               <h2 className="text-2xl font-bold text-neutral-900 mb-4">2. Service Description</h2>
               <p className="text-neutral-700 leading-relaxed mb-4">
-                HoppOn provides a technology platform that connects passengers with independent transportation providers. 
+                SwiftRide provides a technology platform that connects passengers with independent transportation providers. 
                 We do not provide transportation services directly but facilitate connections between users and drivers.
               </p>
               <ul className="list-disc list-inside text-neutral-700 space-y-2">
@@ -46,7 +46,7 @@ const TermsOfService: React.FC = () => {
             <section>
               <h2 className="text-2xl font-bold text-neutral-900 mb-4">3. User Responsibilities</h2>
               <p className="text-neutral-700 leading-relaxed mb-4">
-                As a user of HoppOn services, you agree to:
+                As a user of SwiftRide services, you agree to:
               </p>
               <ul className="list-disc list-inside text-neutral-700 space-y-2">
                 <li>Provide accurate and complete information when creating your account</li>
@@ -60,7 +60,7 @@ const TermsOfService: React.FC = () => {
             <section>
               <h2 className="text-2xl font-bold text-neutral-900 mb-4">4. Driver Requirements</h2>
               <p className="text-neutral-700 leading-relaxed mb-4">
-                Drivers using the HoppOn platform must:
+                Drivers using the SwiftRide platform must:
               </p>
               <ul className="list-disc list-inside text-neutral-700 space-y-2">
                 <li>Hold a valid driver's license and vehicle registration</li>
@@ -83,7 +83,7 @@ const TermsOfService: React.FC = () => {
             <section>
               <h2 className="text-2xl font-bold text-neutral-900 mb-4">6. Limitation of Liability</h2>
               <p className="text-neutral-700 leading-relaxed">
-                HoppOn's liability is limited to the maximum extent permitted by law. We are not liable for any indirect, 
+                SwiftRide's liability is limited to the maximum extent permitted by law. We are not liable for any indirect, 
                 incidental, special, or consequential damages arising from your use of our services. Our total liability 
                 shall not exceed the amount paid by you for the specific service giving rise to the claim.
               </p>
@@ -92,7 +92,7 @@ const TermsOfService: React.FC = () => {
             <section>
               <h2 className="text-2xl font-bold text-neutral-900 mb-4">7. Termination</h2>
               <p className="text-neutral-700 leading-relaxed">
-                Either party may terminate this agreement at any time. HoppOn reserves the right to suspend or terminate 
+                Either party may terminate this agreement at any time. SwiftRide reserves the right to suspend or terminate 
                 accounts that violate these terms or engage in fraudulent or harmful activities.
               </p>
             </section>
@@ -112,8 +112,8 @@ const TermsOfService: React.FC = () => {
               </p>
               <div className="mt-4 p-4 bg-neutral-50 rounded-xl">
                 <p className="text-neutral-700">
-                  <strong>Email:</strong> legal@hoppon.com<br />
-                  <strong>Phone:</strong> 1-800-HOPPON-1<br />
+                  <strong>Email:</strong> legal@swiftride.com<br />
+                  <strong>Phone:</strong> 1-800-SWIFT-1<br />
                   <strong>Address:</strong> 123 Tech Street, San Francisco, CA 94105
                 </p>
               </div>
