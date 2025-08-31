@@ -410,7 +410,7 @@ const AuthModal: React.FC = () => {
                     )}
                   </AnimatePresence>
 
-                  {/* Demo credentials (signin only) */}
+                  {/* Demo credentials (signin only)
                   {authMode === 'signin' && (
                     <motion.div 
                       className="p-4 bg-blue-50 border border-blue-200 rounded-xl"
@@ -420,7 +420,7 @@ const AuthModal: React.FC = () => {
                       <p className="text-xs text-blue-600">Email: user@hoppon.com</p>
                       <p className="text-xs text-blue-600">Password: password123</p>
                     </motion.div>
-                  )}
+                  )} */}
 
                   {/* Submit button */}
                   <motion.div variants={fieldVariants}>
