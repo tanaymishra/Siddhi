@@ -218,7 +218,7 @@ export const adminLogin = async (req: Request, res: Response): Promise<void> => 
     const { email, password } = req.body
 
     // Static admin credentials for demo
-    const ADMIN_EMAIL = 'admin@hoopon.com'
+    const ADMIN_EMAIL = 'admin@swiftride.com'
     const ADMIN_PASSWORD = '12345678'
 
     if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {

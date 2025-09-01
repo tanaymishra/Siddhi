@@ -36,7 +36,7 @@ export const auth = async (
         user = {
           _id: 'admin-001',
           name: 'System Administrator',
-          email: 'admin@hoopon.com',
+          email: 'admin@swiftride.com',
           role: 'admin',
           isEmailVerified: true,
           isActive: true,

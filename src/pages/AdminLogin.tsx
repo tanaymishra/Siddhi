@@ -155,7 +155,7 @@ const AdminLogin: React.FC = () => {
                     {/* Demo Credentials */}
                     <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
                       <p className="text-sm text-amber-700 font-medium mb-2">Demo Admin Credentials:</p>
-                      <p className="text-xs text-amber-700">Email: admin@hoopon.com</p>
+                      <p className="text-xs text-amber-700">Email: admin@swiftride.com</p>
                       <p className="text-xs text-amber-700">Password: 12345678</p>
                     </div>
 
