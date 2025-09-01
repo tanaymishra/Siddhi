@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
@@ -13,40 +13,164 @@ import {
   Settings
 } from 'lucide-react'
 import { useAuthenticated } from '../hooks/useAuthenticated'
+import { apiService } from '../services/api'
+
+interface DashboardStats {
+  totalUsers: number
+  activeUsers: number
+  totalDrivers: number
+  approvedDrivers: number
+  totalRides: number
+  completedRides: number
+  totalRevenue: number
+}
+
+interface Activity {
+  id: string
+  action: string
+  user: string
+  time: string
+  type: 'user' | 'driver' | 'ride' | 'payment'
+}
+
+const RecentActivity: React.FC<{ activities: Activity[], loading: boolean }> = ({ activities, loading }) => {
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date()
+    const date = new Date(dateString)
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
+
+    if (diffInMinutes < 1) return 'Just now'
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`
+    
+    const diffInHours = Math.floor(diffInMinutes / 60)
+    if (diffInHours < 24) return `${diffInHours} hours ago`
+    
+    const diffInDays = Math.floor(diffInHours / 24)
+    return `${diffInDays} days ago`
+  }
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'user': return '👤'
+      case 'driver': return '🚗'
+      case 'ride': return '🛣️'
+      case 'payment': return '💳'
+      default: return '📝'
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex items-center justify-between py-3 border-b border-neutral-100 last:border-b-0">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-neutral-200 rounded-full animate-pulse"></div>
+              <div>
+                <div className="w-32 h-4 bg-neutral-200 rounded animate-pulse mb-1"></div>
+                <div className="w-24 h-3 bg-neutral-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+            <div className="w-16 h-3 bg-neutral-200 rounded animate-pulse"></div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (activities.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-neutral-500">No recent activity</p>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {activities.map((activity) => (
+        <div key={activity.id} className="flex items-center justify-between py-3 border-b border-neutral-100 last:border-b-0">
+          <div className="flex items-center space-x-3">
+            <span className="text-lg">{getActivityIcon(activity.type)}</span>
+            <div>
+              <p className="font-medium text-neutral-900">{activity.action}</p>
+              <p className="text-sm text-neutral-600">{activity.user}</p>
+            </div>
+          </div>
+          <p className="text-sm text-neutral-500">{formatTimeAgo(activity.time)}</p>
+        </div>
+      ))}
+    </>
+  )
+}
 
 const AdminDashboard: React.FC = () => {
   const { user } = useAuthenticated()
   const navigate = useNavigate()
+  const [stats, setStats] = useState<DashboardStats>({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalDrivers: 0,
+    approvedDrivers: 0,
+    totalRides: 0,
+    completedRides: 0,
+    totalRevenue: 0
+  })
+  const [activities, setActivities] = useState<Activity[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const stats = [
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true)
+      
+      // Use the new single API call
+      const response = await apiService.getDashboardStats()
+      
+      if (response.data.success) {
+        const { stats: dashboardStats, recentActivity } = response.data.data
+        setStats(dashboardStats)
+        setActivities(recentActivity)
+      }
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const dashboardStats = [
     {
       title: 'Total Users',
-      value: '2,847',
-      change: '+12%',
+      value: loading ? '...' : stats.totalUsers.toString(),
+      change: `${stats.activeUsers} active`,
       icon: <Users className="w-6 h-6" />,
       color: 'text-primary-600',
       bgColor: 'bg-primary-100'
     },
     {
-      title: 'Active Drivers',
-      value: '456',
-      change: '+8%',
+      title: 'Total Drivers',
+      value: loading ? '...' : stats.totalDrivers.toString(),
+      change: `${stats.approvedDrivers} approved`,
       icon: <Car className="w-6 h-6" />,
       color: 'text-success-600',
       bgColor: 'bg-success-100'
     },
     {
       title: 'Total Revenue',
-      value: '$89,432',
-      change: '+23%',
+      value: loading ? '...' : `₹${stats.totalRevenue.toFixed(2)}`,
+      change: `${stats.completedRides} completed rides`,
       icon: <DollarSign className="w-6 h-6" />,
       color: 'text-secondary-600',
       bgColor: 'bg-secondary-100'
     },
     {
-      title: 'Growth Rate',
-      value: '15.3%',
-      change: '+5%',
+      title: 'Total Rides',
+      value: loading ? '...' : stats.totalRides.toString(),
+      change: `${stats.completedRides} completed`,
       icon: <TrendingUp className="w-6 h-6" />,
       color: 'text-success-600',
       bgColor: 'bg-success-100'
@@ -60,7 +184,7 @@ const AdminDashboard: React.FC = () => {
       icon: <Users className="w-8 h-8" />,
       color: 'text-primary-600',
       bgColor: 'bg-primary-100',
-      action: () => console.log('Navigate to user management')
+      action: () => navigate('/admin/users')
     },
     {
       title: 'Driver Approval',
@@ -68,15 +192,15 @@ const AdminDashboard: React.FC = () => {
       icon: <Car className="w-8 h-8" />,
       color: 'text-success-600',
       bgColor: 'bg-success-100',
-      action: () => console.log('Navigate to driver approval')
+      action: () => navigate('/admin/drivers')
     },
     {
-      title: 'Analytics',
-      description: 'View detailed reports and metrics',
+      title: 'Ride Management',
+      description: 'Monitor all ride requests',
       icon: <BarChart3 className="w-8 h-8" />,
       color: 'text-secondary-600',
       bgColor: 'bg-secondary-100',
-      action: () => console.log('Navigate to analytics')
+      action: () => navigate('/admin/rides')
     },
     {
       title: 'System Settings',
@@ -84,7 +208,7 @@ const AdminDashboard: React.FC = () => {
       icon: <Settings className="w-8 h-8" />,
       color: 'text-neutral-600',
       bgColor: 'bg-neutral-100',
-      action: () => console.log('Navigate to settings')
+      action: () => console.log('Settings coming soon')
     }
   ]
 
@@ -112,7 +236,7 @@ const AdminDashboard: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
         >
-          {stats.map((stat, index) => (
+          {dashboardStats.map((stat, index) => (
             <Card key={index} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
@@ -185,20 +309,7 @@ const AdminDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {[
-                  { action: 'New driver registration', user: 'John Smith', time: '2 minutes ago' },
-                  { action: 'User reported an issue', user: 'Sarah Johnson', time: '15 minutes ago' },
-                  { action: 'Payment processed', user: 'Mike Davis', time: '1 hour ago' },
-                  { action: 'Driver approved', user: 'Emma Wilson', time: '2 hours ago' }
-                ].map((activity, index) => (
-                  <div key={index} className="flex items-center justify-between py-3 border-b border-neutral-100 last:border-b-0">
-                    <div>
-                      <p className="font-medium text-neutral-900">{activity.action}</p>
-                      <p className="text-sm text-neutral-600">{activity.user}</p>
-                    </div>
-                    <p className="text-sm text-neutral-500">{activity.time}</p>
-                  </div>
-                ))}
+                <RecentActivity activities={activities} loading={loading} />
               </div>
             </CardContent>
           </Card>

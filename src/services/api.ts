@@ -131,6 +131,11 @@ class ApiService {
     return this.api.put(`/drivers/admin/reject/${driverId}`, { reason })
   }
 
+  // Dashboard endpoints
+  async getDashboardStats() {
+    return this.api.get('/dashboard/stats')
+  }
+
   // Generic methods
   async get(endpoint: string) {
     return this.api.get(endpoint)

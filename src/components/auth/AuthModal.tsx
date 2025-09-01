@@ -7,12 +7,12 @@ import { useGoogleAuth } from '../../hooks/useGoogleAuth'
 import { Button } from '../ui/Button'
 
 const AuthModal: React.FC = () => {
-  const { 
-    isAuthModalOpen, 
+  const {
+    isAuthModalOpen,
     authMode,
-    closeAuthModal, 
-    setAuthMode, 
-    signIn, 
+    closeAuthModal,
+    setAuthMode,
+    signIn,
     signUp,
     googleAuth
   } = useAuthStore()
@@ -37,7 +37,7 @@ const AuthModal: React.FC = () => {
     } else {
       document.body.style.overflow = 'unset'
     }
-    
+
     return () => {
       document.body.style.overflow = 'unset'
     }
@@ -97,7 +97,7 @@ const AuthModal: React.FC = () => {
         }
         await signUp(formData.name, formData.email, formData.password, formData.phone)
       }
-      
+
       // Reset form
       setFormData({
         name: '',
@@ -132,15 +132,15 @@ const AuthModal: React.FC = () => {
   }
 
   const modalVariants = {
-    hidden: { 
-      opacity: 0, 
-      scale: 0.8, 
+    hidden: {
+      opacity: 0,
+      scale: 0.8,
       y: 50,
       rotateX: -15
     },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
+    visible: {
+      opacity: 1,
+      scale: 1,
       y: 0,
       rotateX: 0,
       transition: {
@@ -150,9 +150,9 @@ const AuthModal: React.FC = () => {
         duration: 0.6
       }
     },
-    exit: { 
-      opacity: 0, 
-      scale: 0.8, 
+    exit: {
+      opacity: 0,
+      scale: 0.8,
       y: 50,
       rotateX: -15,
       transition: {
@@ -163,7 +163,7 @@ const AuthModal: React.FC = () => {
 
   const formVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
@@ -174,8 +174,8 @@ const AuthModal: React.FC = () => {
 
   const fieldVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
       transition: {
         type: "spring",
@@ -187,7 +187,7 @@ const AuthModal: React.FC = () => {
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div 
+      <motion.div
         className="fixed inset-0 z-50 flex items-center justify-center"
         variants={backdropVariants}
         initial="hidden"
@@ -221,16 +221,16 @@ const AuthModal: React.FC = () => {
             <div className="flex-1 overflow-y-auto scrollbar-hide">
               <div className="p-8 pt-12">
                 {/* Title */}
-                <motion.div 
+                <motion.div
                   className="text-center mb-8"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                 >
                   <div className="w-32 h-16 flex items-center justify-center mx-auto mb-4">
-                    <img 
-                      src="/logo.png" 
-                      alt="HoppOn Logo" 
+                    <img
+                      src="/logo.png"
+                      alt="HoppOn Logo"
                       className="w-32 h-16 object-contain"
                     />
                   </div>
@@ -238,8 +238,8 @@ const AuthModal: React.FC = () => {
                     {authMode === 'signin' ? 'Sign In' : 'Create Account'}
                   </h2>
                   <p className="text-neutral-600">
-                    {authMode === 'signin' 
-                      ? 'Welcome back to SwiftDrive' 
+                    {authMode === 'signin'
+                      ? 'Welcome back to SwiftDrive'
                       : 'Join SwiftDrive today'
                     }
                   </p>
@@ -256,7 +256,7 @@ const AuthModal: React.FC = () => {
                 </motion.div>
 
                 {/* Divider */}
-                <motion.div 
+                <motion.div
                   className="relative mb-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -271,8 +271,8 @@ const AuthModal: React.FC = () => {
                 </motion.div>
 
                 {/* Form */}
-                <motion.form 
-                  onSubmit={handleSubmit} 
+                <motion.form
+                  onSubmit={handleSubmit}
                   className="space-y-5"
                   variants={formVariants}
                   initial="hidden"
@@ -399,7 +399,7 @@ const AuthModal: React.FC = () => {
                   {/* Error message */}
                   <AnimatePresence>
                     {error && (
-                      <motion.div 
+                      <motion.div
                         className="p-3 bg-red-50 border border-red-200 rounded-xl"
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
@@ -443,7 +443,7 @@ const AuthModal: React.FC = () => {
                 </motion.form>
 
                 {/* Switch mode */}
-                <motion.div 
+                <motion.div
                   className="mt-6 text-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

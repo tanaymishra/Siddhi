@@ -14,6 +14,7 @@ import authRoutes from './routes/auth'
 import rideRoutes from './routes/rides'
 import paymentRoutes from './routes/payment'
 import driverRoutes from './routes/drivers'
+import dashboardRoutes from './routes/dashboard'
 import { setupSocketHandlers } from './socket/socketHandlers'
 
 // Load environment variables
@@ -68,7 +69,8 @@ app.get('/api', (req, res) => {
       auth: '/api/auth',
       rides: '/api/rides',
       payment: '/api/payment',
-      drivers: '/api/drivers'
+      drivers: '/api/drivers',
+      dashboard: '/api/dashboard'
     }
   })
 })
@@ -84,6 +86,9 @@ app.use('/api/payment', paymentRoutes)
 
 // Driver routes
 app.use('/api/drivers', driverRoutes)
+
+// Dashboard routes
+app.use('/api/dashboard', dashboardRoutes)
 
 // File serving route
 app.use('/file', express.static(path.join(process.cwd(), 'uploads')))
