@@ -24,6 +24,7 @@ import AdminDrivers from './pages/AdminDrivers'
 import AdminUsers from './pages/AdminUsers'
 import AdminRides from './pages/AdminRides'
 import MapTest from './pages/MapTest'
+import MyRides from './pages/MyRides'
 
 function App() {
   return (
@@ -43,6 +44,12 @@ function App() {
           <Route path="/ride" element={
             <ProtectedRoute>
               <Ride />
+            </ProtectedRoute>
+          } />
+          {/* My Rides page - Protected */}
+          <Route path="/my-rides" element={
+            <ProtectedRoute>
+              <MyRides />
             </ProtectedRoute>
           } />
           {/* Map test page for debugging */}
