@@ -258,8 +258,17 @@ driverSchema.pre('save', async function(next) {
   if (!this.isModified('password') || !this.password) return next()
 
   try {
+    console.log('Pre-save middleware: password modified')
+    console.log('Password length:', this.password.length)
+    
+    // Skip hashing for 8-digit generated passwords (these should remain plain text)
+    // Only hash if password is longer than 8 characters (manual admin passwords)
+    if (this.password.length === 8 && /^[A-Za-z0-9]{8}$/.test(this.password)) {
+      console.log('8-digit generated password detected, storing as plain text')
+      return next()
+    }
+    
     console.log('Hashing password in pre-save middleware')
-    console.log('Original password:', this.password)
     
     // Hash password with cost of 12
     const salt = await bcrypt.genSalt(12)
@@ -282,7 +291,6 @@ driverSchema.methods.comparePassword = async function(candidatePassword: string)
   
   console.log('Comparing candidate password with stored password')
   console.log('Candidate password:', candidatePassword)
-  console.log('Stored password:', this.password)
   console.log('Stored password length:', this.password.length)
   
   // Check if password is hashed (bcrypt hashes are typically 60 characters long and start with $2)
@@ -292,7 +300,7 @@ driverSchema.methods.comparePassword = async function(candidatePassword: string)
     console.log('bcrypt.compare result:', result)
     return result
   } else {
-    console.log('Password appears to be plain text, doing direct comparison')
+    console.log('Password appears to be plain text (8-digit generated password), doing direct comparison')
     const result = candidatePassword === this.password
     console.log('Direct comparison result:', result)
     return result

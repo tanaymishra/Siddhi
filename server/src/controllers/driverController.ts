@@ -27,14 +27,14 @@ export const registerDriver = async (req: Request, res: Response): Promise<void>
     } = req.body
 
     // Check if driver already exists
-    const existingDriver = await Driver.findOne({ 
-      $or: [{ email }, { licensePlate }] 
+    const existingDriver = await Driver.findOne({
+      $or: [{ email }, { licensePlate }]
     })
 
     if (existingDriver) {
       res.status(400).json({
         success: false,
-        message: existingDriver.email === email 
+        message: existingDriver.email === email
           ? 'Driver with this email already exists'
           : 'Vehicle with this license plate is already registered'
       })
@@ -165,7 +165,7 @@ export const loginDriver = async (req: Request, res: Response): Promise<void> =>
     console.log('Comparing passwords...')
     const isPasswordValid = await driver.comparePassword!(password)
     console.log('Password comparison result:', isPasswordValid)
-    
+
     if (!isPasswordValid) {
       console.log('Password comparison failed')
       res.status(401).json({
@@ -177,7 +177,7 @@ export const loginDriver = async (req: Request, res: Response): Promise<void> =>
 
     // Generate JWT token
     const token = jwt.sign(
-      { 
+      {
         driverId: driver._id,
         email: driver.email,
         role: 'driver'
@@ -429,7 +429,7 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
   try {
     const { driverId } = req.params
 
-    // Generate a random password for the driver
+    // Generate a random 8-digit password for the driver
     const generatePassword = (): string => {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
       let password = ''
@@ -441,9 +441,21 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
 
     const generatedPassword = generatePassword()
 
-    // Find the driver first
-    const driver = await Driver.findById(driverId)
-    
+    // Update driver using findByIdAndUpdate to avoid triggering pre-save middleware
+    // This stores the plain password directly as required by the login API
+    const driver = await Driver.findByIdAndUpdate(
+      driverId,
+      {
+        status: 'approved',
+        isApproved: true,
+        approvedAt: new Date(),
+        rejectionReason: undefined,
+        rejectedAt: undefined,
+        password: generatedPassword // Store plain password directly
+      },
+      { new: true }
+    )
+
     if (!driver) {
       res.status(404).json({
         success: false,
@@ -452,18 +464,7 @@ export const approveDriver = async (req: Request, res: Response): Promise<void> 
       return
     }
 
-    // Update driver fields and save (this will trigger pre-save middleware for password hashing)
-    driver.status = 'approved'
-    driver.isApproved = true
-    driver.approvedAt = new Date()
-    driver.rejectionReason = undefined
-    driver.rejectedAt = undefined
-    
-    console.log('Setting password for driver:', generatedPassword)
-    driver.password = generatedPassword // This will be hashed by the pre-save middleware
-
-    await driver.save()
-    console.log('Driver saved with password hash')
+    console.log('Driver approved with plain password:', generatedPassword)
 
     // Create driver object with password for admin
     const driverObj = driver.toObject()
@@ -671,7 +672,7 @@ export const createMockCompletedRides = async (req: Request, res: Response): Pro
         acceptedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Random date within last week
         createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000)
       })
-      
+
       const savedRide = await ride.save()
       createdRides.push(savedRide)
     }
@@ -701,10 +702,10 @@ export const getOnlineDrivers = async (req: Request, res: Response): Promise<voi
   try {
     // Import the function from socket handlers
     const { getOnlineDriversWithLocation } = require('../socket/socketHandlers')
-    
+
     // Get online drivers from socket map
     const onlineDriversData = getOnlineDriversWithLocation()
-    
+
     // Get detailed driver info from database
     const driverIds = onlineDriversData.map((d: any) => d.driverId)
     const driversFromDB = await Driver.find({
