@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useAuthenticated } from '../hooks/useAuthenticated'
 import { getRideHistory } from '../services/rideService'
 import Header from '../components/layout/Header'
-import { MapPin, Clock, CreditCard, Car, Calendar } from 'lucide-react'
+import { MapPin, Clock, CreditCard, Car, Calendar, X } from 'lucide-react'
+import { Button } from '../components/ui/Button'
 
 interface Ride {
   _id: string
@@ -36,6 +37,7 @@ const MyRides: React.FC = () => {
   const [rides, setRides] = useState<Ride[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [cancellingRide, setCancellingRide] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchRides = async () => {
@@ -55,6 +57,43 @@ const MyRides: React.FC = () => {
 
     fetchRides()
   }, [user?.id])
+
+  const handleCancelRide = async (rideId: string) => {
+    if (!confirm('Are you sure you want to cancel this ride?')) {
+      return
+    }
+
+    try {
+      setCancellingRide(rideId)
+      
+      // Call API to cancel ride (you'll need to implement this in your API service)
+      const response = await fetch(`/api/rides/${rideId}/cancel`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+
+      if (response.ok) {
+        // Update the ride status locally
+        setRides(prevRides => 
+          prevRides.map(ride => 
+            ride._id === rideId 
+              ? { ...ride, status: 'cancelled' as const, isActive: false }
+              : ride
+          )
+        )
+      } else {
+        throw new Error('Failed to cancel ride')
+      }
+    } catch (err) {
+      console.error('Error cancelling ride:', err)
+      setError('Failed to cancel ride. Please try again.')
+    } finally {
+      setCancellingRide(null)
+    }
+  }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -210,11 +249,36 @@ const MyRides: React.FC = () => {
                     </div>
                   </div>
                   
-                  {ride.driverInfo && (
-                    <div className="text-sm text-gray-600">
-                      Driver: {ride.driverInfo.name} • {ride.driverInfo.vehicleNumber}
-                    </div>
-                  )}
+                  <div className="flex items-center space-x-3">
+                    {ride.driverInfo && (
+                      <div className="text-sm text-gray-600">
+                        Driver: {ride.driverInfo.name} • {ride.driverInfo.vehicleNumber}
+                      </div>
+                    )}
+                    
+                    {/* Cancel button - only show for pending or active rides */}
+                    {ride.isActive && (ride.status === 'pending' || ride.status === 'active') && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleCancelRide(ride._id)}
+                        disabled={cancellingRide === ride._id}
+                        className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                      >
+                        {cancellingRide === ride._id ? (
+                          <>
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-red-600 mr-1"></div>
+                            Cancelling...
+                          </>
+                        ) : (
+                          <>
+                            <X className="w-3 h-3 mr-1" />
+                            Cancel
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

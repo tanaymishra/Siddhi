@@ -215,7 +215,7 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-20">
         {/* Location Inputs */}
         <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
           {/* From Location */}

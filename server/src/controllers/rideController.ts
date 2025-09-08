@@ -256,6 +256,56 @@ export const assignDriverToRide = async (req: Request, res: Response): Promise<v
   }
 }
 
+// Cancel ride
+export const cancelRide = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params
+    const userId = req.user._id
+    
+    // Find the ride and ensure it belongs to the authenticated user
+    const ride = await Ride.findOne({ _id: id, userId })
+    
+    if (!ride) {
+      res.status(404).json({
+        success: false,
+        message: 'Ride not found'
+      })
+      return
+    }
+
+    // Check if ride can be cancelled (only pending or active rides)
+    if (!ride.isActive || (ride.status !== 'pending' && ride.status !== 'accepted')) {
+      res.status(400).json({
+        success: false,
+        message: 'This ride cannot be cancelled'
+      })
+      return
+    }
+
+    // Update ride status to cancelled
+    const updatedRide = await Ride.findByIdAndUpdate(
+      id,
+      { 
+        status: 'cancelled',
+        isActive: false
+      },
+      { new: true }
+    )
+    
+    res.status(200).json({
+      success: true,
+      message: 'Ride cancelled successfully',
+      data: updatedRide
+    })
+  } catch (error) {
+    console.error('Cancel ride error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to cancel ride'
+    })
+  }
+}
+
 // Admin: Get all rides
 export const getAllRidesAdmin = async (req: Request, res: Response): Promise<void> => {
   try {

@@ -6,6 +6,7 @@ import {
   updatePaymentStatus,
   updateActiveStatus,
   assignDriverToRide,
+  cancelRide,
   getAllRidesAdmin
 } from '../controllers/rideController'
 import { authenticate } from '../middleware/auth'
@@ -36,5 +37,8 @@ router.patch('/:id/status', updateActiveStatus)
 
 // POST /api/rides/:id/assign-driver - Assign driver to ride
 router.post('/:id/assign-driver', assignDriverToRide)
+
+// PUT /api/rides/:id/cancel - Cancel ride
+router.put('/:id/cancel', cancelRide)
 
 export default router
