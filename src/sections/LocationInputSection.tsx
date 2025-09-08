@@ -8,6 +8,8 @@ import { calculateRouteFromCoordinates } from '../utils/mapUtils'
 import { bookRide } from '../services/rideService'
 import { createPaymentOrder, verifyPayment } from '../services/paymentService'
 import BookingSuccessPopup from '../components/ui/BookingSuccessPopup'
+import CarTypeSelector from '../components/CarTypeSelector'
+import { getCarTypeById } from '../types/carTypes'
 
 // Razorpay type declaration
 declare global {
@@ -40,6 +42,9 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
     driverInfo?: any
   }>({})
   
+  // State for car type selection
+  const [selectedCarType, setSelectedCarType] = React.useState('taxi')
+  
   // State for mobile collapsed view
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const [isMobile, setIsMobile] = React.useState(false)
@@ -66,11 +71,12 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
         fromLocation.coordinates.lat,
         fromLocation.coordinates.lng,
         toLocation.coordinates.lat,
-        toLocation.coordinates.lng
+        toLocation.coordinates.lng,
+        selectedCarType
       )
     }
     return null
-  }, [fromLocation.coordinates, toLocation.coordinates])
+  }, [fromLocation.coordinates, toLocation.coordinates, selectedCarType])
 
   const handleBookRide = async () => {
     const routeToUse = staticRouteInfo || routeInfo
@@ -88,7 +94,8 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
       const bookingData = {
         fromLocation: fromLocation,
         toLocation: toLocation,
-        routeInfo: routeToUse
+        routeInfo: routeToUse,
+        carType: selectedCarType
         // userId will be extracted from JWT token on the server
       }
 
@@ -192,7 +199,7 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
 
   return (
     <motion.div
-      className={`absolute top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-auto sm:w-96 bg-white rounded-2xl shadow-xl border border-neutral-200 overflow-hidden z-10 ${className}`}
+      className={`absolute top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-auto sm:w-96 bg-white rounded-2xl shadow-xl border border-neutral-200 overflow-hidden z-10 max-h-[calc(100vh-2rem)] flex flex-col ${className}`}
       initial={{ opacity: 0, x: -50 }}
       animate={{ 
         opacity: 1, 
@@ -201,115 +208,129 @@ const LocationInputSection: React.FC<LocationInputSectionProps> = ({ className =
       }}
       transition={{ duration: 0.5 }}
     >
-      {/* Header */}
-      <div className="p-4 sm:p-6 border-b border-neutral-100">
+      {/* Header - Fixed */}
+      <div className="p-4 sm:p-6 border-b border-neutral-100 flex-shrink-0">
         <h2 className="text-lg sm:text-xl font-bold text-neutral-900 mb-1 sm:mb-2">Book Your Ride</h2>
         <p className="text-xs sm:text-sm text-neutral-600">Enter your pickup and destination</p>
       </div>
 
-      {/* Location Inputs */}
-      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-        {/* From Location */}
-        <div className="relative">
-          <div className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 z-10">
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full"></div>
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Location Inputs */}
+        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+          {/* From Location */}
+          <div className="relative">
+            <div className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 z-10">
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full"></div>
+            </div>
+            <SimpleAutocomplete
+              placeholder="Pickup location"
+              onPlaceSelect={(place) => {
+                setFromLocation({
+                  address: place.address,
+                  coordinates: { lat: place.lat, lng: place.lng }
+                })
+              }}
+            />
           </div>
-          <SimpleAutocomplete
-            placeholder="Pickup location"
-            onPlaceSelect={(place) => {
-              setFromLocation({
-                address: place.address,
-                coordinates: { lat: place.lat, lng: place.lng }
-              })
-            }}
-          />
+
+          {/* To Location */}
+          <div className="relative">
+            <div className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 z-10">
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+            </div>
+            <SimpleAutocomplete
+              placeholder="Where to?"
+              onPlaceSelect={(place) => {
+                setToLocation({
+                  address: place.address,
+                  coordinates: { lat: place.lat, lng: place.lng }
+                })
+              }}
+            />
+          </div>
         </div>
 
-        {/* To Location */}
-        <div className="relative">
-          <div className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 z-10">
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+        {/* Error Message */}
+        {error && (
+          <div className="p-3 sm:p-4 bg-red-50 border-t border-red-100">
+            <p className="text-xs sm:text-sm text-red-600">{error}</p>
           </div>
-          <SimpleAutocomplete
-            placeholder="Where to?"
-            onPlaceSelect={(place) => {
-              setToLocation({
-                address: place.address,
-                coordinates: { lat: place.lat, lng: place.lng }
-              })
-            }}
-          />
-        </div>
+        )}
+
+        {/* Loading State */}
+        {isCalculatingRoute && (
+          <div className="p-4 sm:p-6 bg-neutral-50 border-t border-neutral-100">
+            <div className="flex items-center justify-center space-x-2">
+              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-primary-600" />
+              <p className="text-xs sm:text-sm text-neutral-600">Calculating route...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Car Type Selection and Booking */}
+        {fromLocation.coordinates && toLocation.coordinates && !isCalculatingRoute && (
+          <div className="border-t border-neutral-100">
+            {/* Route Info */}
+            <div className="p-4 sm:p-6 bg-neutral-50">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                <div className="text-center">
+                  <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-full mx-auto mb-1">
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                  </div>
+                  <p className="text-xs text-neutral-600">Time</p>
+                  <p className="text-xs sm:text-sm font-semibold text-neutral-900">{staticRouteInfo?.duration || routeInfo?.duration || 'Calculating...'}</p>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full mx-auto mb-1">
+                    <Navigation className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                  </div>
+                  <p className="text-xs text-neutral-600">Distance</p>
+                  <p className="text-xs sm:text-sm font-semibold text-neutral-900">{staticRouteInfo?.distance || routeInfo?.distance || 'Calculating...'}</p>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-orange-100 rounded-full mx-auto mb-1">
+                    <span className="text-xs sm:text-sm font-bold text-orange-600">₹</span>
+                  </div>
+                  <p className="text-xs text-neutral-600">Fare</p>
+                  <p className="text-xs sm:text-sm font-semibold text-neutral-900">₹{staticRouteInfo?.fare || routeInfo?.fare || '0'}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Car Type Selector */}
+            <div className="p-4 sm:p-6">
+              <CarTypeSelector
+                selectedCarType={selectedCarType}
+                onCarTypeSelect={setSelectedCarType}
+                distanceInKm={parseFloat(staticRouteInfo?.distance?.replace(' km', '') || '0')}
+              />
+            </div>
+
+            {/* Book Button */}
+            <div className="p-4 sm:p-6 pt-0">
+              <Button
+                className="w-full bg-green-600 hover:bg-green-700 text-sm sm:text-base"
+                size={window.innerWidth < 640 ? "default" : "lg"}
+                onClick={handleBookRide}
+                disabled={isCalculatingRoute}
+              >
+                {isCalculatingRoute ? (
+                  <>
+                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
+                    Booking...
+                  </>
+                ) : (
+                  <>
+                    <Car className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                    Book {getCarTypeById(selectedCarType)?.name} - ₹{staticRouteInfo?.fare || routeInfo?.fare || '0'}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Error Message */}
-      {error && (
-        <div className="p-3 sm:p-4 bg-red-50 border-t border-red-100">
-          <p className="text-xs sm:text-sm text-red-600">{error}</p>
-        </div>
-      )}
-
-      {/* Loading State */}
-      {isCalculatingRoute && (
-        <div className="p-4 sm:p-6 bg-neutral-50 border-t border-neutral-100">
-          <div className="flex items-center justify-center space-x-2">
-            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-primary-600" />
-            <p className="text-xs sm:text-sm text-neutral-600">Calculating route...</p>
-          </div>
-        </div>
-      )}
-
-
-
-      {/* Fare Estimate and Book Button */}
-      {fromLocation.coordinates && toLocation.coordinates && !isCalculatingRoute && (
-        <div className="p-4 sm:p-6 bg-neutral-50 border-t border-neutral-100">
-          {/* Route Info */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-3 sm:mb-4">
-            <div className="text-center">
-              <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-full mx-auto mb-1">
-                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
-              </div>
-              <p className="text-xs text-neutral-600">Time</p>
-              <p className="text-xs sm:text-sm font-semibold text-neutral-900">{staticRouteInfo?.duration || routeInfo?.duration || 'Calculating...'}</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full mx-auto mb-1">
-                <Navigation className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
-              </div>
-              <p className="text-xs text-neutral-600">Distance</p>
-              <p className="text-xs sm:text-sm font-semibold text-neutral-900">{staticRouteInfo?.distance || routeInfo?.distance || 'Calculating...'}</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-orange-100 rounded-full mx-auto mb-1">
-                <span className="text-xs sm:text-sm font-bold text-orange-600">₹</span>
-              </div>
-              <p className="text-xs text-neutral-600">Fare</p>
-              <p className="text-xs sm:text-sm font-semibold text-neutral-900">₹{staticRouteInfo?.fare || routeInfo?.fare || '0'}</p>
-            </div>
-          </div>
-
-          {/* Book Button */}
-          <Button
-            className="w-full bg-green-600 hover:bg-green-700 text-sm sm:text-base"
-            size={window.innerWidth < 640 ? "default" : "lg"}
-            onClick={handleBookRide}
-            disabled={isCalculatingRoute}
-          >
-            {isCalculatingRoute ? (
-              <>
-                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
-                Booking...
-              </>
-            ) : (
-              <>
-                <Car className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                Book Now - ₹{staticRouteInfo?.fare || routeInfo?.fare || '0'}
-              </>
-            )}
-          </Button>
-        </div>
-      )}
 
       {/* Booking Success Popup */}
       <BookingSuccessPopup

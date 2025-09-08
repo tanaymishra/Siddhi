@@ -13,6 +13,7 @@ export interface RideBookingData {
   fromLocation: LocationInput
   toLocation: LocationInput
   routeInfo: RouteInfo
+  carType: string
   userId?: string
   paymentMethod?: string
   specialRequests?: string

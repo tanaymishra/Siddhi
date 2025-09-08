@@ -51,9 +51,15 @@ export const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2
     return R * c // Distance in kilometers
 }
 
-// Calculate fare based on distance (₹12 per km)
-export const calculateFare = (distanceInKm: number): number => {
-    const perKmRate = 12 // ₹12 per km
+// Calculate fare based on distance (₹12 per km for taxi)
+export const calculateFare = (distanceInKm: number, carTypeId: string = 'taxi'): number => {
+    // Import car types dynamically to avoid circular dependency
+    const carTypeRates: { [key: string]: number } = {
+        'taxi': 12,
+        'sedan': 18,
+        'premium': 25
+    }
+    const perKmRate = carTypeRates[carTypeId] || 12
     return Math.round(distanceInKm * perKmRate)
 }
 
@@ -77,10 +83,11 @@ export const calculateRouteFromCoordinates = (
     fromLat: number, 
     fromLng: number, 
     toLat: number, 
-    toLng: number
+    toLng: number,
+    carTypeId: string = 'taxi'
 ) => {
     const distanceInKm = calculateDistance(fromLat, fromLng, toLat, toLng)
-    const fare = calculateFare(distanceInKm)
+    const fare = calculateFare(distanceInKm, carTypeId)
     const duration = calculateTime(distanceInKm)
     const distance = `${distanceInKm.toFixed(1)} km`
     
@@ -125,7 +132,7 @@ export const calculateRoute = (
             const routeInfo: RouteInfo = {
                 distance: leg.distance?.text || '0 km',
                 duration: leg.duration?.text || '0 min',
-                fare: calculateFare(leg.distance?.value || 0)
+                fare: calculateFare((leg.distance?.value || 0) / 1000, 'taxi') // Convert meters to km, default to taxi
             }
 
             onSuccess(routeInfo)

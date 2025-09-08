@@ -18,13 +18,23 @@ const getRandomDriver = () => {
 // Create a new ride
 export const createRide = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { fromLocation, toLocation, routeInfo } = req.body
+    const { fromLocation, toLocation, routeInfo, carType } = req.body
 
     // Validate required fields
     if (!fromLocation || !toLocation || !routeInfo) {
       res.status(400).json({
         success: false,
         message: 'Missing required fields: fromLocation, toLocation, routeInfo'
+      })
+      return
+    }
+
+    // Validate car type
+    const validCarTypes = ['taxi', 'sedan', 'premium']
+    if (carType && !validCarTypes.includes(carType)) {
+      res.status(400).json({
+        success: false,
+        message: 'Invalid car type. Must be one of: taxi, sedan, premium'
       })
       return
     }
@@ -37,6 +47,7 @@ export const createRide = async (req: AuthRequest, res: Response): Promise<void>
       fromLocation,
       toLocation,
       routeInfo,
+      carType: carType || 'taxi', // Default to taxi if not specified
       userId,
       driverInfo: null, // No driver assigned initially
       status: 'pending',
@@ -54,6 +65,7 @@ export const createRide = async (req: AuthRequest, res: Response): Promise<void>
       message: 'Ride booked successfully! Looking for available drivers...',
       data: {
         rideId: savedRide._id,
+        carType: savedRide.carType,
         driverInfo: savedRide.driverInfo, // Will be null initially
         estimatedArrival: 'Searching for driver...',
         fare: savedRide.routeInfo.fare,

@@ -20,6 +20,7 @@ export interface IRide extends Document {
     duration: string
     fare: number
   }
+  carType: 'taxi' | 'sedan' | 'premium'
   userId?: string
   driverInfo?: {
     driverId?: string
@@ -63,6 +64,12 @@ const RideSchema: Schema = new Schema(
       distance: { type: String, required: true },
       duration: { type: String, required: true },
       fare: { type: Number, required: true }
+    },
+    carType: { 
+      type: String, 
+      enum: ['taxi', 'sedan', 'premium'],
+      default: 'taxi',
+      required: true
     },
     userId: { type: String, required: false },
     driverInfo: {
